@@ -303,6 +303,43 @@ def report_text(report, plan):
     return "\n".join(lines)
 
 
+def summary_text(report, plan):
+    """analyze_transcript tool'unun LLM'e verdiği kısa özet: önce iki senaryo, sonra kaynaklı kurallar, eksik
+    zorunlular ve açık seçmeli yuvaları. Ders sınıflandırması ve dolu yuvalar dışarıda kalır; tam rapor (~11 bin
+    karakter) verildiğinde LLM "bu dönem geçilirse" senaryosunu ve açık seçmeli AKTS'yi çoğu cevapta atlıyordu."""
+    s = report["secmeli"]
+    rules = {r["id"]: r for r in report["kurallar"]}
+    total, compulsory = rules["toplam_akts"], rules["zorunlu_dersler"]
+    met = {True: "karşılanıyor", False: "karşılanmıyor"}
+    lines = [
+        f"Öğretim planı: {plan['kaynak']}",
+        "",
+        "İKİ SENARYO",
+        f"1) Şu an: {report['gecilen_akts']} / {total['gereken']} AKTS; zorunlu dersler {compulsory['mevcut']} / "
+        f"{compulsory['gereken']}; seçmeli {s['gecilen_akts']} / {s['gereken_akts']} AKTS ({s['acik_akts']} AKTS açık); "
+        f"GNO {report['gno']}; mezuniyet şartları {met[report['tum_sartlar_karsilandi']]}.",
+        f"2) Bu dönem alınan dersler geçilirse: {report['devam_edenler_gecilirse_akts']} / {total['gereken']} AKTS; "
+        f"zorunlu dersler {compulsory['devam_edenler_gecilirse']} / {compulsory['gereken']}; seçmeli "
+        f"{s['devam_edenler_gecilirse_akts']} / {s['gereken_akts']} AKTS ({s['devam_edenler_gecilirse_acik_akts']} AKTS "
+        f"açık); mezuniyet şartları {met[report['devam_edenler_gecilirse_tum_sartlar_karsilandi']]}.",
+        "",
+        "KURALLAR (şu an → bu dönem geçilirse)",
+    ]
+    for r in report["kurallar"]:
+        sources = "; ".join(f"{k['belge']}, {k['madde']}" for k in r["kaynak"])
+        lines.append(f"- {r['aciklama']} gereken {r['gereken']}, şu an {r['mevcut']}, "
+                     f"geçilirse {r['devam_edenler_gecilirse']}. [{sources}]")
+    lines += ["", "EKSİK ZORUNLU DERSLER"]
+    lines += [f"- {c['ad']} ({c['yariyil']}. yarıyıl, {c['akts']} AKTS, {STATUS_TEXT[c['durum']]})"
+              for c in report["eksik_zorunlu"]]
+    lines += ["", "AÇIK SEÇMELİ YUVALARI"]
+    for y in s["yuvalar"]:
+        if not y["doldu"]:
+            then = "bu dönem geçilirse doluyor" if y["devam_edenler_gecilirse_doldu"] else "bu dönem geçilse de açık"
+            lines.append(f"- {y['ad']} ({y['yariyil']}. yarıyıl, {y['akts']} AKTS): {then}")
+    return "\n".join(lines)
+
+
 if __name__ == "__main__":
     import transcript
 

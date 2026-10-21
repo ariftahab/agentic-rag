@@ -10,7 +10,6 @@ verilir. Transkript LLM'in argümanı değildir; oturumda durur ve analyze_trans
 LLM'e transkriptin kendisi değil, yalnız değerlendirme raporu gider (kişisel bilgi zaten parser'da ayıklanır).
 """
 import base64
-import json
 from datetime import date
 
 import langchain_google_genai.chat_models as _genai_chat
@@ -96,8 +95,7 @@ def make_tools(retriever, plan, transcript):
         geçilirse ulaşılacak AKTS ve eksik zorunlu dersler (durumlarıyla). Transkript yüklenmemişse bunu bildirir."""
         if transcript is None:
             return NO_TRANSCRIPT
-        report = graduation.evaluate(transcript, plan)
-        return json.dumps({"ogretim_plani": plan.get("kaynak"), **report}, ensure_ascii=False)
+        return graduation.summary_text(graduation.evaluate(transcript, plan), plan)
 
     return [StructuredTool.from_function(search_regulations), StructuredTool.from_function(analyze_transcript)]
 

@@ -71,9 +71,7 @@ def test_analyze_transcript_evaluates_session_transcript():
     result, _, tool_messages = ask_with_analysis(SAMPLE, PLAN)
     assert result["answer"] == "nihai cevap"
     assert result["tool_calls"] == [{"name": "analyze_transcript", "args": {}}]
-    report = json.loads(tool_messages[0].content)
-    expected = graduation.evaluate(SAMPLE, PLAN)
-    assert {k: report[k] for k in expected} == expected
+    assert tool_messages[0].content == graduation.summary_text(graduation.evaluate(SAMPLE, PLAN), PLAN)
 
 
 def test_analyze_transcript_without_transcript_asks_for_historical():

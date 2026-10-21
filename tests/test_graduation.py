@@ -324,3 +324,22 @@ def test_requirements_summary_without_a_transcript():
             "alan_disi_secmeli", "alan_disi_secmeli_istisna"} <= set(ids)
     assert all(r["kaynak"] for r in summary["kurallar"])
     assert next(r for r in summary["kurallar"] if r["id"] == "toplam_akts")["deger"] == 240
+
+
+def test_llm_summary_starts_with_both_scenarios():
+    report = graduation.evaluate(SAMPLE, PLAN)
+    lines = graduation.summary_text(report, PLAN).splitlines()
+    assert lines[3].startswith("1) Şu an: 10 / ")
+    assert lines[4].startswith("2) Bu dönem alınan dersler geçilirse: 19 / ")
+
+
+def test_llm_summary_lists_missing_courses_with_their_status():
+    text = graduation.summary_text(graduation.evaluate(SAMPLE, PLAN), PLAN)
+    assert "- Fizik I (1. yarıyıl, 6 AKTS, başarısız)" in text
+    assert "- Bitirme Projesi I (7. yarıyıl, 5 AKTS, bu dönem alınıyor)" in text
+
+
+def test_llm_summary_leaves_out_course_classification():
+    report = graduation.evaluate(SAMPLE, PLAN)
+    assert "Yapay Zeka" in str(report["siniflandirma"])
+    assert "Yapay Zeka" not in graduation.summary_text(report, PLAN)
