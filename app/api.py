@@ -9,14 +9,16 @@ hataları uygun HTTP durum kodlarına çevirir. İş mantığı (kayıt, geri bi
 import os
 import secrets
 from contextlib import asynccontextmanager
-from typing import Literal
+from typing import Any, Literal
 
 from fastapi import Depends, FastAPI, HTTPException, Request, status
+from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import FileResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel, Field
 
-from app.service import ChatService
+from app.service import MAX_TRANSCRIPT_BYTES, ChatService
+from transcript import ASK_FOR_HISTORICAL, TranscriptFormatError
 
 
 # --- Şemalar (API sözleşmesi) ---
@@ -54,6 +56,33 @@ class AskResponse(BaseModel):
     answer: str
     rewritten_query: str | None = Field(description="Geçmişe göre yeniden yazılan soru; rewrite yoksa null")
     sources: list[Source]
+    latency_ms: int
+
+
+class TranscriptResponse(BaseModel):
+    transcript: dict[str, Any] = Field(description="Kişisel bilgisiz transkript (ad, numara, TC yok); istemci saklar")
+    course_count: int
+
+
+class AgentAskRequest(BaseModel):
+    question: str = Field(min_length=1, max_length=1000, examples=["Mezun olmak için neyim eksik?"])
+    history: list[Message] = Field(default_factory=list, description="Önceki mesajlar (stateless: istemci tutar)")
+    session_id: str | None = None
+    transcript: dict[str, Any] | None = Field(default=None, description="POST /transcript'in döndürdüğü transkript")
+    confirmations: dict[str, str | None] = Field(
+        default_factory=dict, description="Eşdeğerlik teyitleri: {plan dışı ders kodu: plan ders kodu | null}")
+
+
+class ToolCall(BaseModel):
+    name: str
+    args: dict[str, Any]
+
+
+class AgentAskResponse(BaseModel):
+    id: str
+    answer: str
+    tool_calls: list[ToolCall]
+    confirmations: dict[str, str | None] = Field(description="Güncel teyitler; istemci bir sonraki isteğe ekler")
     latency_ms: int
 
 
@@ -173,6 +202,54 @@ def ask(req: AskRequest, service: ChatService = Depends(get_service)):
         sources=[_source(s) for s in record["kaynaklar"]],
         latency_ms=record["latency_ms"],
     )
+
+
+@app.post("/transcript", response_model=TranscriptResponse, tags=["danışmanlık"],
+          openapi_extra={"requestBody": {"required": True,
+                                         "content": {"application/pdf": {"schema": {"type": "string",
+                                                                                    "format": "binary"}}}}})
+async def upload_transcript(request: Request, service: ChatService = Depends(get_service)):
+    """OBS tarihsel transkriptini (PDF, istek gövdesinin kendisi) okur; kişisel bilgisiz JSON döner.
+
+    Hiçbir şey diske ya da log'a yazılmaz. multipart/form-data yerine ham gövde: Starlette multipart'ta 1 MB'ı
+    aşan dosyaları geçici dosyaya (diske) yazar; ham gövde ise yalnız bellekte okunur ve boyutu baştan sınırlanır.
+    """
+    data = bytearray()
+    async for chunk in request.stream():
+        data += chunk
+        if len(data) > MAX_TRANSCRIPT_BYTES:
+            raise HTTPException(status.HTTP_413_CONTENT_TOO_LARGE,
+                                "Dosya transkript için fazla büyük. " + ASK_FOR_HISTORICAL)
+    if not data:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "Dosya boş. " + ASK_FOR_HISTORICAL)
+    try:
+        # pdfplumber bloklayan bir çağrı: event loop'u tutmasın diye thread havuzunda çalışır.
+        t = await run_in_threadpool(service.parse_transcript, bytes(data))
+    except TranscriptFormatError as e:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, str(e))
+    return TranscriptResponse(transcript=t, course_count=len(t["dersler"]))
+
+
+@app.post("/agent/ask", response_model=AgentAskResponse, tags=["danışmanlık"])
+def agent_ask(req: AgentAskRequest, service: ChatService = Depends(get_service)):
+    """Danışmanlık agent'ı (tool calling). Transkript ve teyitler her istekte istemciden gelir (sunucu stateless);
+    güncel teyitler cevapta döner. Log'a yalnız metadata yazılır (logs/agent.jsonl), soru ve cevap yazılmaz."""
+    try:
+        result = service.ask_agent(req.question, [m.model_dump() for m in req.history], transcript=req.transcript,
+                                   confirmations=dict(req.confirmations), session_id=req.session_id)
+    except Exception as e:
+        raise _llm_error(e)
+    return AgentAskResponse(**result)
+
+
+def _llm_error(e):
+    """LLM çağrısındaki hatayı istemciye uygun HTTP cevabına çevirir (hata service'te zaten kaydedildi)."""
+    if "ResourceExhausted" in type(e).__name__ or "429" in str(e):
+        return HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE,
+                             "LLM kotası doldu (Gemini ücretsiz kota). Daha sonra tekrar deneyin.")
+    if "503" in str(e) or "UNAVAILABLE" in str(e):
+        return HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "LLM şu an yoğun (503). Biraz sonra tekrar deneyin.")
+    return HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, f"Cevap üretilemedi: {type(e).__name__}")
 
 
 @app.post("/feedback", status_code=status.HTTP_201_CREATED, tags=["sohbet"])

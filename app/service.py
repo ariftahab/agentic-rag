@@ -10,7 +10,12 @@ Kayıtlar append-only JSONL dosyalarıdır (her satır bir JSON nesnesi, satırl
   logs/degerlendirme.jsonl  elle değerlendirme (cevap etiketi, kaynak doğru mu, hata aşaması); "id" ile bağlı
 Aynı cevaba birden fazla geri bildirim / değerlendirme yazılabilir; en son yazılan geçerlidir.
 Tek istisna delete(): yöneticinin istediği bir soru-cevap (ör. uygunsuz soru) üç dosyadan da kalıcı olarak silinir.
+
+Agent (transkriptli danışmanlık) istekleri ayrı bir dosyaya, yalnız metadata olarak yazılır:
+  logs/agent.jsonl          tool adları, süre, hata türü, transkript var mıydı; soru ve cevap metni YOK
+Transkript yükleme hiçbir şey yazmaz: PDF bellekte okunur, sonuç istemciye döner ve unutulur.
 """
+import io
 import json
 import os
 import subprocess
@@ -20,10 +25,16 @@ import uuid
 from collections import Counter
 from datetime import datetime
 
+from langchain_google_genai import ChatGoogleGenerativeAI
+
 import config
+import graduation
+import transcript as transcript_parser
+from agent import REQUEST_TIMEOUT_S, AdvisorAgent
 from rag import RagBot, source_label
 
 LOG_DIR = config.ROOT / "logs"
+MAX_TRANSCRIPT_BYTES = 5 * 1024 * 1024  # OBS transkripti ~40 KB; sınır yalnız kötüye kullanıma karşı
 
 # Elle değerlendirme etiketleri (API şemaları da aynı değerleri kullanır).
 ANSWER_LABELS = ("dogru", "kismen", "yanlis", "cevapsiz")  # cevapsiz: bilgi yokken doğru şekilde "bilgim yok" dedi
@@ -44,15 +55,17 @@ def _now():
 
 
 class ChatService:
-    def __init__(self, bot, experiment_id, log_dir=LOG_DIR):
-        # bot dışarıdan verilir (dependency injection): testlerde gerçek modeller yerine sahte bir bot verilebilir.
+    def __init__(self, bot, experiment_id, log_dir=LOG_DIR, agent=None):
+        # bot ve agent dışarıdan verilir (dependency injection): testlerde gerçek modeller yerine sahteleri verilebilir.
         self.bot = bot
+        self.agent = agent
         self.experiment_id = experiment_id
         self.log_dir = log_dir
         self.log_dir.mkdir(parents=True, exist_ok=True)
         self.chat_log = log_dir / "sohbet.jsonl"
         self.feedback_log = log_dir / "geri_bildirim.jsonl"
         self.evaluation_log = log_dir / "degerlendirme.jsonl"
+        self.agent_log = log_dir / "agent.jsonl"
         self._chunks = {c.metadata["chunk_id"]: c for c in bot.retriever.chunks}
         # Sunucu açılırken bir kez okunur: hangi kod sürümü cevap veriyor? (commit edilmemiş değişiklik varsa "-dirty")
         commit = _git("rev-parse", "--short", "HEAD")
@@ -68,7 +81,19 @@ class ChatService:
         """Modelleri yükler (yavaş: index + GPU modelleri). Uygulama açılırken bir kez çağrılır."""
         experiment_id = experiment_id or config.PRODUCTION_EXPERIMENT
         cfg = config.RagConfig.from_dict(config.load_experiment(experiment_id)["params"])
-        return cls(RagBot.from_config(cfg), experiment_id)
+        return cls.from_config(cfg, experiment_id)
+
+    @classmethod
+    def from_config(cls, cfg, experiment_id):
+        """RagBot'u ve agent'ı kurar. Agent RagBot'un Retriever'ını paylaşır: index, bge-m3 ve reranker GPU'ya
+        bir kez yüklenir (6 GB GPU'da ikinci kopya sığmaz, sığsa da aynı modeli iki kez tutmanın anlamı yok)."""
+        bot = RagBot.from_config(cfg)
+        # Agent'ın LLM'i ayrı nesne: tool sonucu içeren isteklerde API bazen dakikalarca beklediği için timeout'lu
+        # (AdvisorAgent.from_config ile aynı ayarlar); RagBot'un LLM'ine dokunulmaz.
+        llm = ChatGoogleGenerativeAI(model=cfg.llm_model, temperature=cfg.llm_temperature, max_retries=2,
+                                     timeout=REQUEST_TIMEOUT_S)
+        agent = AdvisorAgent(bot.retriever, llm, graduation.load_plan())
+        return cls(bot, experiment_id, agent=agent)
 
     # --- Kayıt yardımcıları ---
 
@@ -139,6 +164,62 @@ class ChatService:
             record["latency_ms"] = round((time.perf_counter() - started) * 1000)
             self._append(self.chat_log, record)
             self._known_ids.add(record["id"])
+
+    @staticmethod
+    def parse_transcript(data):
+        """PDF baytlarını bellekte okur (BytesIO: geçici dosya yok); kişisel bilgisiz transkript sözlüğünü döner.
+
+        Hiçbir şey kaydedilmez. Desteklenmeyen ya da okunamayan dosyada TranscriptFormatError (mesajı kullanıcıya
+        gösterilebilir); pdfplumber'ın kendi hataları (PDF değil, bozuk dosya) da bu hataya çevrilir.
+        """
+        if len(data) > MAX_TRANSCRIPT_BYTES:
+            raise transcript_parser.TranscriptFormatError(
+                "Dosya transkript için fazla büyük. " + transcript_parser.ASK_FOR_HISTORICAL)
+        try:
+            return transcript_parser.parse_transcript(io.BytesIO(data))
+        except transcript_parser.TranscriptFormatError:
+            raise
+        except Exception as e:
+            raise transcript_parser.TranscriptFormatError(
+                "Dosya PDF olarak okunamadı. " + transcript_parser.ASK_FOR_HISTORICAL) from e
+
+    def ask_agent(self, question, history=None, transcript=None, confirmations=None, session_id=None):
+        """Agent'a sorar. `confirmations` yerinde güncellenir (confirm_equivalence); sunucu saklamaz, istemciye döner.
+
+        Log'a yalnız metadata yazılır, soru ve cevap metni yazılmaz. Transkriptsiz istekler için de aynı kural
+        geçerli (tek kural, basit): geçmişte önceki transkriptli cevaplar olabilir, tool argümanlarında (ör.
+        confirm_equivalence) transkriptteki ders adları geçer. Bu yüzden tool'ların yalnız adları tutulur.
+        Hata da yalnız türüyle tutulur (mesajında içerik olabilir).
+        """
+        if self.agent is None:
+            raise RuntimeError("Agent kurulmamış")
+        confirmations = {} if confirmations is None else confirmations
+        record = {
+            "id": uuid.uuid4().hex,
+            "zaman": _now(),
+            "oturum": session_id,
+            "transkript": transcript is not None,
+            "gecmis_uzunlugu": len(history or []),
+            "tool_lar": [],
+            "tur": None,
+            "config": self.experiment_id,
+            "commit": self.commit,
+            "latency_ms": None,
+            "hata": None,
+        }
+        started = time.perf_counter()
+        try:
+            result = self.agent.ask(question, history, transcript=transcript, confirmations=confirmations)
+            record["tool_lar"] = [c["name"] for c in result["tool_calls"]]
+            record["tur"] = result.get("turns")
+        except Exception as e:
+            record["hata"] = type(e).__name__
+            raise
+        finally:
+            record["latency_ms"] = round((time.perf_counter() - started) * 1000)
+            self._append(self.agent_log, record)
+        return {"id": record["id"], "answer": result["answer"], "tool_calls": result["tool_calls"],
+                "confirmations": confirmations, "latency_ms": record["latency_ms"]}
 
     def feedback(self, answer_id, rating, note=None):
         """rating: 1 (👍) ya da -1 (👎). Bilinmeyen bir cevap kimliği için KeyError."""
