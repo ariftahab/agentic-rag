@@ -18,8 +18,11 @@ Başlangıç 2026-10-21: production EXP-001 = campus-chatbot retrieval hattı, c
        503'te yedek modele geçiş (fallback) ve/veya production modelini değiştirmek (deney). Soru seti hazır olunca:
        `gemini-3.5-flash-lite` ve Claude Haiku 5.5 karşılaştırması (tahmini ~0,001 $/soru).
 5. [ ] **Paket sürümleri** — langchain-google-genai 3.0.1 thought signature hatası `agent.py`'de yamalı; 4.x
-       `langchain-core` 1.0.4 sabitlemesiyle çakışıyor. En güncel sürümlerle ayrı ortamda test (2026-10-21 başlatıldı);
-       sonuca göre yükseltme ve yamanın kaldırılması.
+       `langchain-core` 1.0.4 sabitlemesiyle çakışıyor. En güncel sürümlerle ayrı ortamda test (2026-10-21): `pip check`
+       temiz, 35 test geçiyor, retrieval aynı sonucu veriyor, CUDA çalışıyor (torch 2.11.0+cu128, langchain-core 1.6.12,
+       langchain-google-genai 4.4.2, transformers 5.20.2, sentence-transformers 6.2.0, huggingface_hub 1.33.0). Açık:
+       index yükleme + arama 16,1 sn (mevcut 8,6 sn), agent'ın canlı tool turu 4.x'te ve yamasız denenmedi. Yükseltme
+       retrieval davranışını değiştirebileceği için deney olarak (yeni index fingerprint'i, sonuçların karşılaştırması).
 6. [ ] **Soru seti v1** — danışmanlık + transkript senaryoları (#12); baseline EXP-001 ve agent bununla koşulur.
 7. [ ] **2021 ders içerikleri corpus v2** — soru seti hazır olunca deney olarak.
 8. [ ] **Lisansüstü belgeleri** — şimdilik corpus'ta (kullanıcı kararı 2026-10-21).
