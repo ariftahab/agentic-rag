@@ -30,7 +30,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 import config
 import graduation
 import transcript as transcript_parser
-from agent import REQUEST_TIMEOUT_S, AdvisorAgent
+from agent import AGENT_LLM_MODEL, REQUEST_TIMEOUT_S, AdvisorAgent
 from rag import RagBot, source_label
 
 LOG_DIR = config.ROOT / "logs"
@@ -90,7 +90,7 @@ class ChatService:
         bot = RagBot.from_config(cfg)
         # Agent'ın LLM'i ayrı nesne: tool sonucu içeren isteklerde API bazen dakikalarca beklediği için timeout'lu
         # (AdvisorAgent.from_config ile aynı ayarlar); RagBot'un LLM'ine dokunulmaz.
-        llm = ChatGoogleGenerativeAI(model=cfg.llm_model, temperature=cfg.llm_temperature, max_retries=2,
+        llm = ChatGoogleGenerativeAI(model=AGENT_LLM_MODEL, temperature=cfg.llm_temperature, max_retries=2,
                                      timeout=REQUEST_TIMEOUT_S)
         agent = AdvisorAgent(bot.retriever, llm, graduation.load_plan())
         return cls(bot, experiment_id, agent=agent)

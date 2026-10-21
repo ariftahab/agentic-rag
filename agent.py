@@ -25,6 +25,9 @@ from rag import Retriever, _format_context, _to_messages, token_usage
 
 MAX_TURNS = 5  # bir soru için en fazla LLM çağrısı (tool turları + nihai cevap)
 REQUEST_TIMEOUT_S = 180  # tek bir LLM isteği için en fazla bekleme
+# Agent'ın modeli production RagBot'tan ayrı: gemini-3.1-flash-lite 2026-10-21'de sık 503 verdi, web'de agent
+# cevapları 50-318 sn sürdü; 3.5-flash-lite aynı sorularda 3-5 sn. Karşılaştırma soru seti hazır olunca deney olarak.
+AGENT_LLM_MODEL = "gemini-3.5-flash-lite"
 
 
 # --- langchain-google-genai 3.0.x düzeltmesi: thought signature ---
@@ -175,7 +178,7 @@ class AdvisorAgent:
         store, chunks, _ = ingest.load_index(cfg)
         # timeout: tool sonucu içeren isteklerde API bazen dakikalarca cevap vermiyor (2026-10-21); süresiz beklemek
         # yerine hata verilir, chat.py bunu yakalayıp sohbete devam eder.
-        llm = ChatGoogleGenerativeAI(model=cfg.llm_model, temperature=cfg.llm_temperature, max_retries=2,
+        llm = ChatGoogleGenerativeAI(model=AGENT_LLM_MODEL, temperature=cfg.llm_temperature, max_retries=2,
                                      timeout=REQUEST_TIMEOUT_S)
         return cls(Retriever(cfg, store, chunks), llm, graduation.load_plan())
 
