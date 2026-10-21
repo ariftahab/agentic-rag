@@ -70,7 +70,7 @@ her değişiklik "kod iyileştirmesi" olarak değil, **deney** olarak yapılır:
   yazılır; kullanıcının **açık onayı** olmadan config yazılmaz, deney koşulmaz. Deneyler kendiliğinden zincirlenmez:
   bir deney biter → sonuç yorumlanır → sonraki önerilir → onay. (Neden: 2026-10-01'de deneyler art arda koşuldu.)
 - **Alt küme teşhisi önce (2026-10-17):** Bir prompt veya mantık değişikliği önce yalnız hedeflediği sorunlu sorularda
-  denenir (`experiments/teshis_alt_kume.py`, takip akışı için `teshis_takip_netlestirme.py`). Teşhis deney sayılmaz:
+  denenir (`experiments/teshis_alt_kume.py`). Teşhis deney sayılmaz:
   config yazılmaz, denenen kod **commit edilmeden** working tree'de denenir, sonucu TODO'ya kısaca yazılır. İyileşme
   kullanıcıya raporlanır; tam koşuya **kullanıcı karar verir**. Kod yalnız tam deneye ya da production'a gidecekse commit edilir.
 - **Tam koşu yalnız mimari değişiklikte:** Retrieval/generation davranışını geniş ölçüde değiştiren değişiklikler tam
@@ -94,16 +94,17 @@ her değişiklik "kod iyileştirmesi" olarak değil, **deney** olarak yapılır:
 - `venv/Scripts/python.exe -m experiments.run EXP-XXX [--llm] [--yeniden] [--karsilastir]` / `--all`
 - `venv/Scripts/python.exe -m experiments.report`
 - `venv/Scripts/python.exe experiments/teshis_alt_kume.py <EXP-ID> <param=değer+...> <soru id'leri> <çıktı.json> [EXP...]`
-- `venv/Scripts/python.exe experiments/teshis_takip_netlestirme.py <llm_model> <çıktı.json> [param=değer+...]`
 - `venv/Scripts/python.exe ingest.py [EXP-ID] [--cache-yok]`
 - Windows'ta Türkçe çıktı için `PYTHONIOENCODING=utf-8` gerekebilir.
 
 ## Mimari
-**Güncel durum (2026-10-21):** production **EXP-001** = campus-chatbot EXP-038'in aynısı, yalnız belge kümesi farklı:
-corpus **v1** (58 belge: genel öğrenci mevzuatı, mühendislik staj yönergesi, makine mühendisliği bitirme projesi esasları,
-lisansüstü), pdfplumber, `structural_v2`, bge-m3, hybrid (vector 30 + BM25 30, RRF) + bge-reranker fp16 (30 aday → 5 chunk),
-`gemini-3.1-flash-lite`, ana prompt `v1_kapsamsiz`, netleştirme `v1_netlestirme` (tetik: `scope_labels_v1`), sabit cevap
-`summer_staj_v1`. Henüz soru seti yok (`eval/` boş; ilk set `sorular_v1`). Agentic kısım tasarlanacak (TODO).
+**Güncel durum (2026-10-21):** production **EXP-001** = campus-chatbot EXP-038'in retrieval hattı: corpus **v1**
+(24 belge: Mühendislik Fakültesi öğrencisinin danışmanlığında gereken mevzuat + lisansüstü), pdfplumber, `structural_v2`,
+bge-m3, hybrid (vector 30 + BM25 30, RRF) + bge-reranker fp16 (30 aday → 5 chunk), `gemini-3.1-flash-lite`, tek prompt
+`v1`, sabit cevap `summer_v1` (yaz okulu). Kapsam mekanizmaları (netleştirme, kapsam tamamlama, staj sabit cevabı)
+tek fakülte olduğu için çıkarıldı. Henüz soru seti yok (ilk set `sorular_v1`).
+**Hedef:** sistem tamamen agentic olacak: danışman hocanın işlerini yapan bir agent (ör. transkript yükleme, "mezun
+olmak için kaç kredi lazım" gibi tool calling). Belge ne kadar az o kadar iyi: yalnız mühendislikle ve danışmanlıkla ilgili.
 İsimlendirme: corpus, prompt ve soru setleri v1'den başlar.
 
 - `config.py` — yollar, `CORPORA`, `DOCUMENTS`, `RagConfig` (tüm RAG parametreleri; sonradan eklenenlerin varsayılanı
@@ -111,16 +112,16 @@ lisansüstü), pdfplumber, `structural_v2`, bge-m3, hybrid (vector 30 + BM25 30,
 - `ingest.py` — PDF okuma (`pypdf` | `pdfplumber`), chunking (`recursive` | `structural` | `structural_v2` | `structural_v3`;
   mevzuat madde madde, uzun maddeler fıkra sınırından, takvimde tablo başına bir chunk). İndeks `vectorstore/<fingerprint>/`;
   belge bazında cache `vectorstore/_cache/` (yalnız değişen belgeler işlenir).
-- `rag.py` — `Retriever.rank()`/`search()`: vector | bm25 | hybrid (RRF) + reranker. `PROMPTS`: v1_kapsamsiz, v1_netlestirme.
+- `rag.py` — `Retriever.rank()`/`search()`: vector | bm25 | hybrid (RRF) + reranker. `PROMPTS`: v1.
   `RagBot` (stateless): `ask(question, history)` → rewrite (geçmiş varsa) → sabit cevap kontrolü (`fixed_answer`) →
-  retrieval → netleştirme tetiği (`needs_clarification`, `data/belge_kapsam_v1.json` etiketleri) → Gemini.
+  retrieval → Gemini.
 - `chat.py` — CLI. `app/` — FastAPI (`api.py`), iş mantığı ve JSONL log'ları (`service.py`, `logs/`), vanilla JS frontend
   (`static/`: sohbet, belgeler, /admin değerlendirme), `main.py` (tek sunucu).
 - `experiments/` — `evaluation.py` (kanıt tabanlı ilgililik, MRR@10, Hit@k, bağlam isabeti, cevap doğruluğu, netleştirme ve
   birleştirme metrikleri, McNemar/Wilcoxon), `run.py` (koşucu; takip sorularında rewrite önbellekli), `report.py`,
   `teshis_*.py` (alt küme teşhisleri).
 - `eval/` — soru setleri (`sorular_v1.json` ile başlayacak); grup A bulma, B kapsam, C çekimser kalma, D takip (`gecmis`),
-  E birleştirme; `beklenen_davranis: netlestirme`.
+  E birleştirme.
 
 ## Notlar
 - LLM: Gemini (`langchain-google-genai`), `.env` içinde `GOOGLE_API_KEY`; kota için memory `gemini-free-quota`.

@@ -2,7 +2,6 @@
 
 Tüm davranış bir config.RagConfig ile belirlenir; bkz. experiments/configs/.
 """
-import json
 import re
 import time
 import unicodedata
@@ -38,26 +37,6 @@ def source_label(doc):
     return f"{m['title']}, s. {m['page']}"
 
 
-# --- Kapsam tamamlama (scope_search) ---
-# Aynı konuda kendi kuralını koyan öğrenci grupları ("paralel kapsamlar") ve sorguya eklenen adları. Genel bir soruda
-# (ör. "Mezun olmak için kaç kredi?") reranker genel kuralı öne alır; fakülteye özel maddeler context'e ulaşmaz
-# (campus-chatbot EXP-023: kapsam isabeti 0,51). Kapsam adı sorguya eklenince reranker o kapsamın maddesini doğru puanlar.
-SCOPE_FILES = {"parallel_v1": config.DATA_DIR / "belge_kapsam_v1.json"}
-PARALLEL_SCOPES = {
-    "genel_onlisans_lisans": "önlisans ve lisans",
-    "tip": "Tıp Fakültesi",
-    "dis": "Diş Hekimliği Fakültesi",
-    "hukuk": "Hukuk Fakültesi",
-    "lisansustu": "lisansüstü, yüksek lisans ve doktora",
-}
-# Soru bir kapsamı adıyla anıyorsa kullanıcı o kapsamı soruyordur; tamamlama yapılmaz.
-SCOPE_MENTION = re.compile(r"\btıp|\bdiş|\bhukuk|lisansüstü|yüksek lisans|doktora|önlisans|ön lisans", re.IGNORECASE)
-SCOPE_CANDIDATES = 10   # her kapsamda vector ve BM25'ten alınan aday sayısı
-SCOPE_RERANK = 5        # kapsam içinde reranker'a giden aday sayısı
-SCOPE_MIN_SCORE = 0.0   # eklenmek için en düşük reranker puanı (kalibrasyonla belirlenecek)
-SCOPE_EXTRA_MAX = 4     # context'e eklenebilecek en fazla chunk
-
-
 class Retriever:
     """cfg.retrieval'a göre vektör, BM25 ya da ikisinin RRF birleşimi; varsa reranker ile yeniden sıralar."""
 
@@ -73,14 +52,6 @@ class Retriever:
             if cfg.reranker_dtype == "fp16":
                 # Ağırlıklar 16 bit: GPU'da ~3× hızlı, ~1 GB daha az bellek; puanlar fp32'den çok az farklıdır.
                 self.reranker.model.half()
-        self.scope_of = {}  # chunk_id -> paralel kapsam (yalnız paralel kapsamlardaki belgelerin chunk'ları)
-        if cfg.scope_search:
-            labels = json.loads(SCOPE_FILES[cfg.scope_search].read_text(encoding="utf-8"))["belgeler"]
-            for c in chunks:
-                scope = labels.get(c.metadata["source"], {}).get("kapsam")
-                if scope in PARALLEL_SCOPES:
-                    self.scope_of[c.metadata["chunk_id"]] = scope
-
     def _vector_ids(self, query, k):
         return [d.metadata["chunk_id"] for d in self.store.similarity_search(query, k=k)]
 
@@ -123,50 +94,9 @@ class Retriever:
             scores = self.reranker.predict([(query, self.chunks[i].page_content) for i in head], batch_size=8)
             head = [head[j] for j in sorted(range(len(head)), key=lambda j: scores[j], reverse=True)]
             ids = head + tail
-        trace["context_n"] = cfg.final_k  # LLM'e giden parça sayısı (kapsam tamamlama artırabilir)
-        if cfg.scope_search:
-            ids = self._complete_scopes(query, ids, trace)
+        trace["context_n"] = cfg.final_k  # LLM'e giden parça sayısı
         trace["final"] = list(ids)
         return [self.chunks[i] for i in ids]
-
-    def _complete_scopes(self, query, ids, trace):
-        """Context'te temsil edilmeyen paralel kapsamların en iyi chunk'ını o kapsamın belgelerinde arayıp ekler.
-
-        Yalnız context'te en az bir paralel kapsam belgesi varsa (soru bu yönetmeliklerin konusu) ve soru bir kapsamı
-        adıyla anmıyorsa devreye girer. Eklenen chunk'lar context'in sonuna (final_k'dan sonra) konur.
-        """
-        k = self.cfg.final_k
-        present = {self.scope_of[i] for i in ids[:k] if i in self.scope_of}
-        trace["scope_added"] = []
-        if not present or SCOPE_MENTION.search(query):
-            return ids
-        found = []
-        for scope, label in PARALLEL_SCOPES.items():
-            if scope in present:
-                continue
-            allowed = {i for i, s in self.scope_of.items() if s == scope}
-            scoped_query = f"{query} ({label})"
-            vec = [d.metadata["chunk_id"] for d in self.store.similarity_search(
-                scoped_query, k=SCOPE_CANDIDATES, filter=lambda md: md["chunk_id"] in allowed,
-                fetch_k=len(self.chunks))]
-            bm_scores = self.bm25.get_scores(tokenize(scoped_query))
-            bm = sorted((i for i in allowed if bm_scores[i] > 0), key=lambda i: bm_scores[i], reverse=True)
-            fused = {}
-            for ranked in (vec, bm[:SCOPE_CANDIDATES]):
-                for rank, chunk_id in enumerate(ranked):
-                    fused[chunk_id] = fused.get(chunk_id, 0) + 1 / (self.cfg.rrf_k + rank)
-            cands = sorted(fused, key=fused.get, reverse=True)[:SCOPE_RERANK]
-            if not cands:
-                continue
-            scores = self.reranker.predict([(scoped_query, self.chunks[i].page_content) for i in cands], batch_size=8)
-            best = max(range(len(cands)), key=lambda j: scores[j])
-            trace["scope_added"].append({"kapsam": scope, "chunk_id": cands[best], "puan": round(float(scores[best]), 4),
-                                         "eklendi": bool(scores[best] >= SCOPE_MIN_SCORE)})
-            if scores[best] >= SCOPE_MIN_SCORE:
-                found.append((float(scores[best]), cands[best]))
-        extra = [i for _, i in sorted(found, reverse=True)[:SCOPE_EXTRA_MAX] if i not in ids[:k]]
-        trace["context_n"] = k + len(extra)
-        return ids[:k] + extra + [i for i in ids[k:] if i not in extra]
 
     def search(self, query):
         trace = {}
@@ -176,56 +106,21 @@ class Retriever:
 
 # --- Prompt'lar ---
 # Sürümler silinmez; eski deneylerin tekrar üretilebilmesi için yenisi yeni anahtarla eklenir.
-# v1'ler campus-chatbot'un son production prompt'larıdır (v8_kapsamsiz ve v7_netlestirme), metin birebir aynı.
 
-# v1_kapsamsiz: ana prompt. Soruda kapsam yoksa genel kural; fakülte yalnız cevap hem genel belgede hem ayrı bir
-# fakülte/program belgesinde varsa sorulur.
-_V1_SYSTEM = """Sen Bolu Abant İzzet Baysal Üniversitesi (BAİBÜ) öğrencilerine yardım eden bir asistansın.
-
-Kurallar:
-- Yalnızca aşağıdaki "Bağlam" bölümündeki bilgilere dayanarak cevap ver.
-- Cevap bağlamda yoksa yalnızca "{no_answer}" yaz.
-- Kullandığın her bilginin sonunda kaynağını köşeli parantezle belirt (bağlamdaki parça etiketlerinde yazan belge adı ve madde).
-- Bağlamdaki her belgenin kimi kapsadığını belge adından ve içeriğinden anla: tüm üniversite mi, belirli bir fakülte
-  veya yüksekokul mu, belirli bir öğretim düzeyi mi (ön lisans, lisans, lisansüstü), belirli bir öğrenci grubu mu.
-- Soru bir fakülte, yüksekokul, program veya öğretim düzeyi belirtiyorsa o kapsamın kuralını ver; bağlamda o kapsama
-  özgü bir düzenleme yoksa genel kuralı ver ve bunun genel kural olduğunu belirt.
-- Soru bir kapsam belirtmiyorsa genel kuralı ver. Genel kural, bütün öğrencileri ya da bütün ön lisans ve lisans
-  öğrencilerini kapsayan belgedeki kuraldır.
-- Öğrencinin fakültesini sorup sormayacağına şu iki adımla karar ver:
-  1) Bağlamda bu sorunun cevabını içeren belgeleri belirle.
-  2) Cevap hem genel belgede hem de belirli bir fakülteye, yüksekokula veya programa ait ayrı bir belgede yer alıyorsa
-     (ör. genel yönetmelikte ve Tıp Fakültesi yönetmeliğinde ayrı ayrı düzenlenmişse) genel kuralı yaz, tek cümleyle
-     bazı fakülte veya programlarda bu kuralın farklı olabileceğini söyle ve son cümlede öğrencinin hangi fakültede veya
-     programda okuduğunu sor.
-     Cevap tek bir belgede yer alıyorsa cevabı kaynağıyla doğrudan yaz ve cevabı orada bitir.
-- Farklı belgeler aynı kuralı veriyorsa bu kuralı tek cümlede, kaynaklarını aynı köşeli parantezde ';' ile ayırarak yaz.
-- Belgede bir istisna veya kapsam notu varsa ve soruyla ilgiliyse belirt.
-- Bugünün tarihi: {today}. Tarih sorularında gerekirse bu tarihin öncesinde mi sonrasında mı olduğunu belirt.
-- Kısa, net ve Türkçe cevap ver.
-
-Bağlam:
-{context}"""
-
-# v1_netlestirme: netleştirme tetiği açıldığında (context'te farklı paralel kapsamların belgeleri, soruda kapsam yok)
-# fakülte sorusu koşulsuz istenir; cevap bağlamda yoksa genel "bilgim yok" kuralı geçerli kalır.
-_V1_CLARIFY_SYSTEM = """Sen Bolu Abant İzzet Baysal Üniversitesi (BAİBÜ) öğrencilerine yardım eden bir asistansın.
+# v1: campus-chatbot'un son production prompt'undan (v8_kapsamsiz) türetildi. Corpus yalnız Mühendislik Fakültesi
+# öğrencilerine uygulanan belgeler olduğu için fakülte sorma ve kapsam ayırma kuralları çıkarıldı; soran öğrenci
+# Mühendislik Fakültesi öğrencisi kabul edilir.
+_V1_SYSTEM = """Sen Bolu Abant İzzet Baysal Üniversitesi (BAİBÜ) Mühendislik Fakültesi öğrencilerine yardım eden bir asistansın.
 
 Kurallar:
 - Yalnızca aşağıdaki "Bağlam" bölümündeki bilgilere dayanarak cevap ver.
 - Cevap bağlamda yoksa yalnızca "{no_answer}" yaz.
 - Kullandığın her bilginin sonunda kaynağını köşeli parantezle belirt (bağlamdaki parça etiketlerinde yazan belge adı ve madde).
-- Bağlamdaki her belgenin kimi kapsadığını belge adından ve içeriğinden anla: tüm üniversite mi, belirli bir fakülte
-  veya yüksekokul mu, belirli bir öğretim düzeyi mi (ön lisans, lisans, lisansüstü), belirli bir öğrenci grubu mu.
-- Soru bir fakülte, yüksekokul, program veya öğretim düzeyi belirtiyorsa o kapsamın kuralını ver; bağlamda o kapsama
-  özgü bir düzenleme yoksa genel kuralı ver ve bunun genel kural olduğunu belirt.
-- Bu soruda öğrencinin fakültesi, bölümü veya öğretim düzeyi belli değil ve bağlamdaki kural bunlara göre
-  değişebiliyor. Bağlamda sorunun cevabı varsa genel kuralı bir veya iki cümleyle, kaynağıyla yaz; ardından tek cümleyle
-  bazı fakülte veya programlarda bu kuralın farklı olabileceğini söyle ve son cümlede öğrencinin hangi fakültede veya
-  programda okuduğunu sor. Genel kural, bütün öğrencileri ya da bütün ön lisans ve lisans öğrencilerini kapsayan
-  belgedeki kuraldır.
+- Soran kişiyi Mühendislik Fakültesinde lisans öğrencisi olarak kabul et; soru lisansüstü eğitimi soruyorsa lisansüstü
+  belgelerdeki kuralı ver.
+- Bağlamda hem genel bir kural hem Mühendislik Fakültesine özgü bir kural varsa Mühendislik Fakültesine özgü kuralı esas al.
 - Farklı belgeler aynı kuralı veriyorsa bu kuralı tek cümlede, kaynaklarını aynı köşeli parantezde ';' ile ayırarak yaz.
-- Belgede bir istisna veya kapsam notu varsa ve soruyla ilgiliyse belirt.
+- Belgede bir istisna notu varsa ve soruyla ilgiliyse belirt.
 - Bugünün tarihi: {today}. Tarih sorularında gerekirse bu tarihin öncesinde mi sonrasında mı olduğunu belirt.
 - Kısa, net ve Türkçe cevap ver.
 
@@ -238,18 +133,9 @@ def _format_context(docs):
 
 
 PROMPTS = {
-    "v1_kapsamsiz": {
+    "v1": {
         "template": ChatPromptTemplate.from_messages([
             ("system", _V1_SYSTEM),
-            MessagesPlaceholder("history"),
-            ("human", "{input}"),
-        ]),
-        "format": _format_context,
-        "history": True,
-    },
-    "v1_netlestirme": {
-        "template": ChatPromptTemplate.from_messages([
-            ("system", _V1_CLARIFY_SYSTEM),
             MessagesPlaceholder("history"),
             ("human", "{input}"),
         ]),
@@ -292,19 +178,6 @@ RECITATION_FALLBACK = ("Bu sorunun cevabı aşağıdaki kaynaklarda yer alıyor,
 SUMMER_PATTERN = re.compile(r"yaz\s*okul|yaz\s*öğretim")
 SUMMER_ANSWER = (f"{config.NO_ANSWER} Yaz öğretimi (yaz okulu) yönetmeliği yürürlükten kaldırıldığı için yaz okulu "
                  "hakkında güncel bir bilgi veremiyorum. Güncel durum için Öğrenci İşleri Daire Başkanlığına başvurabilirsiniz.")
-
-# fixed_answers="summer_staj_v1": staj kuralları her birimin kendi yönergesinde; herkesi kapsayan uygulamalı eğitimler
-# yönergesi somut süre vermiyor ("en az 20 iş günü, bölüm kurulu belirler"). Birim belirtilmeyen staj sorusunda model
-# bütün birimlerin yönergelerini sıralıyordu (v7 ve kapsam etiketli context ile de, 2026-10-17); kullanıcı kararıyla
-# retrieval yapılmadan birim sorulur. Takip sorusunda rewrite birim adını sorguya kattığı için normal yol çalışır
-# (turizm rehberliği: 30+30, mühendislik: 40 iş günü). Kalıp yeniden yazılmış sorguya uygulanır.
-STAJ_PATTERN = re.compile(r"\bstaj")
-UNIT_MENTION = re.compile(
-    r"fakülte|yüksekokul|\bmyo\b|meslek yüksek|bölüm|program|enstitü|\btıp|\bdiş|hukuk|turizm|rehberli|otelcilik|"
-    r"mühendis|mimarlık|ziraat|iibf|iktisadi|fizik tedavi|hemşire|eğitim fakülte|gerede|mengen|sağlık bilim|"
-    r"spor bilim|güzel sanat|islami|ilahiyat|fen edebiyat|lisansüstü|yüksek lisans|doktora|ön ?lisans")
-STAJ_ANSWER = ("Staj süresi ve kuralları fakülteden fakülteye, hatta bölümden bölüme değişiklik gösteriyor. Size doğru "
-               "bilgi verebilmem için hangi fakültede veya bölümde okuduğunuzu söyleyebilir misiniz?")
 
 REWRITE_SYSTEM = (
     "Sana bir sohbet geçmişi ve kullanıcının son sorusu verilecek. Son soruyu, geçmişi görmeden de "
@@ -350,12 +223,6 @@ class RagBot:
         self.llm = llm
         self.prompt = PROMPTS[cfg.prompt_version]
         self.template = with_citation_style(self.prompt["template"], cfg.citation_style)
-        self.clarify_template = (with_citation_style(PROMPTS[cfg.clarify_prompt]["template"], cfg.citation_style)
-                                 if cfg.clarify_trigger else None)
-        self.scope_labels = {}  # belge -> kapsam etiketi (yalnız clarify_trigger açıksa)
-        if cfg.clarify_trigger:
-            self.scope_labels = {src: v.get("kapsam") for src, v in json.loads(
-                SCOPE_FILES["parallel_v1"].read_text(encoding="utf-8"))["belgeler"].items()}
         self.rewrite_chain = ChatPromptTemplate.from_messages([
             ("system", REWRITE_SYSTEM),
             MessagesPlaceholder("history"),
@@ -369,17 +236,6 @@ class RagBot:
         llm = ChatGoogleGenerativeAI(model=cfg.llm_model, temperature=cfg.llm_temperature, max_retries=2)
         return cls(cfg, Retriever(cfg, store, chunks), llm)
 
-    def needs_clarification(self, query, docs):
-        """Netleştirme kararını LLM yerine belge etiketleri verir (campus-chatbot EXP-025: LLM'e bırakınca soruların %45'inde soruyordu).
-
-        Context'te en az iki farklı paralel kapsamın (genel, tıp, diş, hukuk, lisansüstü) belgesi varsa konu birden fazla
-        yönetmelikte ayrı düzenleniyor demektir; soru bir kapsamı adıyla anıyorsa sormaya gerek yoktur.
-        """
-        if not self.cfg.clarify_trigger or SCOPE_MENTION.search(query):
-            return False
-        scopes = {self.scope_labels.get(d.metadata["source"]) for d in docs}
-        return len(scopes & set(PARALLEL_SCOPES)) >= 2
-
     def rewrite(self, question, history=None):
         """Geçmiş varsa (ve prompt geçmiş kullanıyorsa) soruyu bağımsız hale getirir; yoksa aynen döndürür."""
         messages = _to_messages(history)
@@ -390,10 +246,8 @@ class RagBot:
     def fixed_answer(self, query):
         """Belgelerden cevaplanmaması gereken konular için sabit cevap; yoksa None."""
         text = tr_lower(query)
-        if self.cfg.fixed_answers == "summer_staj_v1" and SUMMER_PATTERN.search(text):
+        if self.cfg.fixed_answers == "summer_v1" and SUMMER_PATTERN.search(text):
             return SUMMER_ANSWER
-        if self.cfg.fixed_answers == "summer_staj_v1" and STAJ_PATTERN.search(text) and not UNIT_MENTION.search(text):
-            return STAJ_ANSWER
         return None
 
     def retrieve(self, question, history=None):
@@ -406,7 +260,7 @@ class RagBot:
         query = self.rewrite(question, history)
         fixed = self.fixed_answer(query)
         if fixed:
-            return {"answer": fixed, "query": query, "docs": [], "generation_ms": 0.0, "clarify": False}
+            return {"answer": fixed, "query": query, "docs": [], "generation_ms": 0.0}
         docs = self.retriever.search(query)
         variables = {"input": question, "context": self.prompt["format"](docs)}
         if self.prompt["history"]:
@@ -415,9 +269,7 @@ class RagBot:
                 "no_answer": config.NO_ANSWER,
                 "today": date.today().strftime("%d.%m.%Y"),
             })
-        clarify = self.needs_clarification(query, docs)
-        template = self.clarify_template if clarify else self.template
-        chain = template | self.llm
+        chain = self.template | self.llm
         started = time.perf_counter()  # yalnız cevap üretimi: retrieval ve rewrite hariç
         message = chain.invoke(variables)
         usage = [message.usage_metadata]
@@ -431,4 +283,4 @@ class RagBot:
             answer = message.text.strip() or RECITATION_FALLBACK
         generation_ms = (time.perf_counter() - started) * 1000
         return {"answer": answer, "query": query, "docs": docs, "generation_ms": generation_ms,
-                "clarify": clarify, "usage": token_usage(usage)}
+                "usage": token_usage(usage)}

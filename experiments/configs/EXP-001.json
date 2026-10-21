@@ -1,9 +1,9 @@
 {
  "id": "EXP-001",
- "baslik": "Başlangıç yapılandırması: campus-chatbot production (EXP-038), mühendislik corpus v1",
+ "baslik": "Başlangıç yapılandırması: campus-chatbot retrieval hattı, mühendislik corpus v1, tek prompt",
  "ust_deney": null,
  "veri_seti": "sorular_v1",
- "neden": "Deney değil, başlangıç (baseline) yapılandırması. campus-chatbot'un production'ı (EXP-038) Mühendislik Fakültesi belgelerine (corpus v1, 58 belge) indirgenmiş haliyle; agentic RAG değişiklikleri bununla karşılaştırılacak. Prompt'lar yeniden adlandırıldı, metinleri aynı (v8_kapsamsiz -> v1_kapsamsiz, v7_netlestirme -> v1_netlestirme).",
+ "neden": "Deney değil, başlangıç (baseline) yapılandırması; agentic RAG değişiklikleri bununla karşılaştırılacak. campus-chatbot production'ının (EXP-038) retrieval hattı aynen alındı (pdfplumber, structural_v2, bge-m3, hybrid + bge-reranker fp16, 3.1-flash-lite). Corpus tek fakülteye (Mühendislik, danışmanlıkta gereken 24 belge) indiği için kapsam mekanizmaları çıkarıldı: netleştirme tetiği ve prompt'u, kapsam tamamlama, staj sabit cevabı; tek prompt v1 (v8_kapsamsiz'den fakülte sorma ve kapsam ayırma kuralları çıkarılarak). Yaz okulu sabit cevabı kalır (summer_v1).",
  "hipotez": "Soru seti henüz yok; koşu yapılmadı.",
  "birincil_metrik": "answer_acc",
  "beklenen_yon": "degisim_yok",
@@ -26,12 +26,10 @@
   "final_k": 5,
   "llm_model": "gemini-3.1-flash-lite",
   "llm_temperature": 0.3,
-  "prompt_version": "v1_kapsamsiz",
+  "prompt_version": "v1",
   "reranker_dtype": "fp16",
-  "clarify_trigger": "scope_labels_v1",
-  "fixed_answers": "summer_staj_v1",
-  "clarify_prompt": "v1_netlestirme"
+  "fixed_answers": "summer_v1"
  },
  "notlar": "",
- "kisa_not": "Başlangıç yapılandırması, koşu yok: campus-chatbot EXP-038 + corpus v1 (mühendislik, 58 belge)."
+ "kisa_not": "Başlangıç yapılandırması, koşu yok: campus-chatbot retrieval hattı + corpus v1 (mühendislik, 24 belge), tek prompt v1."
 }

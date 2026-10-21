@@ -237,8 +237,6 @@ def answer_rows(bot, items, wait):
                      **answer_extras(item, answer, maddeler)})
         if usage:  # sabit cevaplarda (yaz okulu) LLM çağrılmaz, token yok
             rows[-1]["tokens"] = usage
-        if out and out.get("clarify") is not None and bot.cfg.clarify_trigger:
-            rows[-1]["netlestirme_tetik"] = int(out["clarify"])  # etiketler netleştirme prompt'unu açtı mı
         print(f"  {item['id']} cevap {'OK' if rows[-1]['answer_ok'] else 'YANLIŞ'}")
         if n + 1 < len(items):
             time.sleep(wait)
