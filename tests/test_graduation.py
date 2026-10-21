@@ -2,6 +2,8 @@
 
 Beklenen değerler elle hesaplanmıştır; plan ve transkript bilerek küçük tutulur.
 """
+import pytest
+
 import graduation
 
 PLAN = {
@@ -219,6 +221,7 @@ def test_extra_passed_elective_ects_is_reported_as_surplus():
         course(2025, "Bahar", "SIB", "Siber Güvenlik", 4, "AA"),
     ), ELECTIVE_PLAN)["secmeli"]
     assert (s["gecilen_akts"], s["acik_akts"], s["fazla_akts"]) == (24, 0, 4)
+    assert s["devam_edenler_gecilirse_acik_akts"] == 0                 # fazlalık açığı eksiye düşürmez
 
 
 def test_course_in_two_pools_is_kept_for_the_slot_that_needs_it():
@@ -406,7 +409,13 @@ def test_unmatched_course_is_listed_and_still_counts_towards_total_ects():
 
 def test_confirmed_equivalence_completes_the_plan_course():
     report = graduation.evaluate(ERASMUS_SAMPLE, MATCH_PLAN, confirmations={"E2": "MIK"})
-    assert matched(report)["Microcomputer Systems"] == ("Mikroişlemciler", "teyit")
+    assert matched(report) == {
+        "Operating Systems": ("İşletim Sistemleri I", "otomatik"),
+        "Microcomputer Systems": ("Mikroişlemciler", "teyit"),     # teyit sonraki dersleri atlatmıyor
+        "Database Systems": ("Veritabanı Yönetim Sistemleri", "otomatik"),
+        "Computer Networks": ("Veri İletişimi ve Bilgisayar Ağları", "otomatik"),
+        "Embedded Computer Systems": ("Gömülü Sistemler", "otomatik"),
+    }
     assert "Mikroişlemciler" not in [c["ad"] for c in report["eksik_zorunlu"]]
     assert report["eslesmeyen"] == []
 
@@ -455,3 +464,191 @@ def test_llm_summary_asks_about_unconfirmed_courses_right_after_the_scenarios():
 def test_llm_summary_does_not_ask_again_after_a_no_equivalent_confirmation():
     report = graduation.evaluate(ERASMUS_SAMPLE, MATCH_PLAN, confirmations={"E2": None})
     assert "hangi derse sayıldı" not in graduation.summary_text(report, MATCH_PLAN)
+
+
+# --- Mutasyon testinde (cosmic-ray) yakalanmayan davranışlar -----------------------------------
+def test_summer_term_follows_spring_of_the_same_year():
+    # Transkriptte sıra karışık olsa da Yaz, Bahar'dan sonradır: Bahar'da FF, Yaz okulunda CC -> geçti.
+    report = graduation.evaluate(transcript(
+        course(2024, "Yaz", "Z1", "Matematik I", 6, "CC"),
+        course(2024, "Bahar", "Z1", "Matematik I", 6, "FF"),
+    ), PLAN)
+    assert report["gecilen_akts"] == 6
+
+
+def test_repeated_course_is_classified_once_and_later_courses_still_are():
+    report = graduation.evaluate(transcript(
+        course(2023, "Güz", "Z1", "Matematik I", 6, "FF"),
+        course(2024, "Güz", "Z1", "Matematik I", 6, "CC"),
+        course(2024, "Güz", "Z2", "Fizik I", 6, "CC"),
+    ), PLAN)
+    assert [c["kod"] for c in report["siniflandirma"]] == ["Z1", "Z2"]
+
+
+def rule_values(report, rule_id):
+    r = rule(report, rule_id)
+    return r["gereken"], r["mevcut"], r["devam_edenler_gecilirse"], r["karsilandi"], r["devam_edenler_gecilirse_karsilandi"]
+
+
+def test_rule_values_when_requirements_are_not_met():
+    # PLAN: 5 zorunlu (6+6+4+5+5 = 26 AKTS). Geçilen 6 + 4 = 10; Bitirme Projesi I geçilirse 15, Yapay Zeka planda
+    # yok ama AKTS'si sayılır: 19. Eksik 3 zorunlu (Fizik I, Staj I, Bitirme Projesi I); biri devam ediyor.
+    report = graduation.evaluate(SAMPLE, PLAN)
+    assert rule_values(report, "toplam_akts") == (240, 10, 19, False, False)
+    assert rule_values(report, "zorunlu_dersler") == (5, 2, 3, False, False)
+    assert rule_values(report, "secmeli_akts") == (0, 0, 0, True, True)
+
+
+def test_rule_values_when_requirements_are_met_this_term():
+    # BIG_PLAN, 2023 girişli: gereken 230 + 20 = 250 (Alan Dışı isteğe bağlı). Geçilen 230 + 16 seçmeli = 246;
+    # Yapay Sinir Ağları (4) geçilirse 250.
+    report = graduation.evaluate(transcript(
+        course(2023, "Güz", "Z1", "Matematik I", 230, "AA"),
+        course(2023, "Güz", "ETK", "Mühendislik Etiği", 4, "CC"),
+        course(2023, "Bahar", "GIR", "Girişimcilik", 4, "AA"),
+        course(2024, "Bahar", "PDO", "Python ile Derin Öğrenme", 4, "CB"),
+        course(2025, "Güz", "YZ", "Yapay Zeka", 4, "BB"),
+        course(2026, "Güz", "YSA", "Yapay Sinir Ağları", 4, None),
+        enrolled=2023, gpa=3.1), BIG_PLAN)
+    assert rule_values(report, "toplam_akts") == (250, 246, 250, False, True)
+    assert rule_values(report, "zorunlu_dersler") == (1, 1, 1, True, True)
+    assert rule_values(report, "secmeli_akts") == (20, 16, 20, False, True)
+    assert rule_values(report, "alan_disi_secmeli") == (0, 0, 0, True, True)
+    assert rule_values(report, "gno_alt_siniri") == (2.0, 3.1, 3.1, True, True)
+
+
+def test_out_of_field_elective_is_required_from_the_first_year_it_applies():
+    # Yönerge: 2024-2025 ve sonrasında kaydolanlar için zorunlu (sınır değer 2024).
+    r = rule(graduation.evaluate(transcript(course(2024, "Güz", "Z1", "Matematik I", 6, "CC"), enrolled=2024),
+                                 RULES_PLAN), "alan_disi_secmeli")
+    assert r["zorunlu"] is True
+
+
+def test_out_of_field_rule_counts_only_the_out_of_field_slot():
+    # Rektörlük seçmelisi dolu, Alan Dışı boş: Alan Dışı kuralı karşılanmaz. Diksiyon geçilince 1 / 1.
+    other = graduation.evaluate(transcript(course(2025, "Bahar", "GIR", "Girişimcilik", 4, "AA"), enrolled=2025),
+                                RULES_PLAN)
+    assert rule_values(other, "alan_disi_secmeli") == (1, 0, 0, False, False)
+    done = graduation.evaluate(transcript(course(2025, "Bahar", "ADS1", "Diksiyon ve Hitabet", 2, "AA"), enrolled=2025),
+                               RULES_PLAN)
+    assert rule_values(done, "alan_disi_secmeli") == (1, 1, 1, True, True)
+
+
+def test_only_the_out_of_field_slot_is_optional_for_early_enrollees():
+    slots = graduation.evaluate(transcript(course(2023, "Güz", "Z1", "Matematik I", 6, "CC"), enrolled=2023),
+                                RULES_PLAN)["secmeli"]["yuvalar"]
+    assert [(y["ad"], y["zorunlu"]) for y in slots] == [
+        ("Rek. Seçmeli I", True), ("Rek. Seçmeli II", True), ("Seçmeli VI", True),
+        ("Alan Dışı Seçmeli Ders", False), ("Seçmeli VII", True)]
+
+
+def test_course_smaller_than_the_slot_does_not_fill_it():
+    slots = graduation.evaluate(transcript(course(2023, "Bahar", "GIR", "Girişimcilik", 3, "AA")),
+                                ELECTIVE_PLAN)["secmeli"]["yuvalar"]
+    assert (slots[0]["dersler"], slots[0]["doldu"]) == (["Girişimcilik"], False)
+
+
+def test_course_larger_than_the_slot_fills_it_alone():
+    # Mühendislik Etiği (6) Rek. Seçmeli I'i (4) tek başına doldurur; Girişimcilik Rek. Seçmeli II'ye kalır.
+    slots = graduation.evaluate(transcript(
+        course(2023, "Güz", "ETK", "Mühendislik Etiği", 6, "CC"),
+        course(2023, "Bahar", "GIR", "Girişimcilik", 4, "AA"),
+    ), ELECTIVE_PLAN)["secmeli"]["yuvalar"]
+    assert [(y["dersler"], y["doldu"]) for y in slots[:2]] == [(["Mühendislik Etiği"], True), (["Girişimcilik"], True)]
+
+
+def test_elective_gap_if_this_term_passes():
+    # Gereken 20; geçilen 4 + 4 = 8, Python ile Derin Öğrenme geçilirse 12 -> açık 12 ve 8.
+    s = graduation.evaluate(transcript(
+        course(2023, "Güz", "ETK", "Mühendislik Etiği", 4, "CC"),
+        course(2023, "Bahar", "GIR", "Girişimcilik", 4, "AA"),
+        course(2026, "Güz", "PDO", "Python ile Derin Öğrenme", 4, None),
+    ), ELECTIVE_PLAN)["secmeli"]
+    assert (s["acik_akts"], s["devam_edenler_gecilirse_acik_akts"]) == (12, 8)
+
+
+def test_requirements_summary_lists_each_rule_once_with_the_out_of_field_ects():
+    summary = graduation.graduation_requirements(RULES_PLAN)
+    ids = [r["id"] for r in summary["kurallar"]]
+    assert len(ids) == len(set(ids))
+    assert next(r for r in summary["kurallar"] if r["id"] == "alan_disi_secmeli")["akts"] == 2
+
+
+@pytest.mark.parametrize("a, b, expected", [
+    ("Operating Systems", "Operating Systems I", 2 / 3),
+    ("Computer Networks", "Data Communication and Computer Networks", 0.5),   # "and" sayılmaz
+    ("Microcomputer Systems", "Microprocessors", 0.0),
+    ("Operating Systems", "", 0.0),
+])
+def test_name_similarity(a, b, expected):
+    assert graduation.name_similarity(a, b) == pytest.approx(expected)
+
+
+def test_automatic_match_reports_its_similarity():
+    report = graduation.evaluate(ERASMUS_SAMPLE, MATCH_PLAN)
+    assert {m["ad"]: m["benzerlik"] for m in report["eslesmeler"]}["Operating Systems"] == 0.67
+
+
+def test_plan_course_without_english_name_is_not_matched_by_its_empty_name():
+    plan = {**PLAN, "zorunlu_dersler": [{"kod": "Z1", "ad": "Matematik I", "yariyil": 1, "kredi": 4, "akts": 6}]}
+    report = graduation.evaluate(transcript(erasmus("E1", "Operating Systems", 5, "DC")), plan)
+    assert report["eslesmeler"] == []
+
+
+def test_erasmus_courses_against_the_real_plan():
+    report = graduation.evaluate(ERASMUS_SAMPLE, graduation.load_plan())
+    assert matched(report) == {
+        "Operating Systems": ("İşletim Sistemleri I", "otomatik"),
+        "Database Systems": ("Veritabanı Yönetim Sistemleri", "otomatik"),
+        "Computer Networks": ("Veri İletişimi ve Bilgisayar Ağları", "otomatik"),
+        "Embedded Computer Systems": ("Gömülü Sistemler", "otomatik"),
+    }
+    assert [c["ad"] for c in report["eslesmeyen"]] == ["Microcomputer Systems"]
+
+
+def test_llm_summary_states_requirements_rules_and_open_slots():
+    report = graduation.evaluate(ELECTIVE_SAMPLE, RULES_PLAN)
+    text = graduation.summary_text(report, RULES_PLAN)
+    assert "mezuniyet şartları karşılanmıyor" in text
+    assert "- Mezuniyet için genel ağırlıklı not ortalaması (GNO) en az 2,00 olur. gereken 2.0, şu an 3.0" in text
+    assert "- Seçmeli VII (7. yarıyıl, 8 AKTS): bu dönem geçilse de açık" in text
+    assert "Rek. Seçmeli I (" not in text                       # dolu yuva listelenmez
+
+
+def test_report_text_for_the_terminal():
+    text = graduation.report_text(graduation.evaluate(ELECTIVE_SAMPLE, RULES_PLAN), RULES_PLAN)
+    assert "  - 6. yarıyıl  Alan Dışı Seçmeli Ders (2 AKTS): boş/eksik (isteğe bağlı)  [-]" in text
+    assert "  - 7. yarıyıl  Seçmeli VII (8 AKTS): boş/eksik  [Yapay Zeka]" in text
+    assert "  - toplam_akts: 12 / 240 -> karşılanmadı; 16 -> karşılanmadı" in text
+
+
+@pytest.mark.parametrize("ects, met", [(239, False), (240, True), (300, True)])
+def test_total_ects_boundary(ects, met):
+    # PLAN toplamı 26 < 240: yönetmelikteki 240 bağlayıcı; 240 tam sınır, 300 > 256 (küçük tamsayı önbelleği dışı).
+    report = graduation.evaluate(transcript(course(2023, "Güz", "Z1", "Matematik I", ects, "AA")), PLAN)
+    assert rule_values(report, "toplam_akts") == (240, ects, ects, met, met)
+
+
+def test_elective_rule_when_the_gap_remains_this_term():
+    # ELECTIVE_SAMPLE: seçmeli 4 + 4 + 4 = 12, Yapay Zeka geçilirse 16; gereken 20.
+    report = graduation.evaluate(ELECTIVE_SAMPLE, RULES_PLAN)
+    assert rule_values(report, "secmeli_akts") == (20, 12, 16, False, False)
+
+
+def test_llm_summary_says_requirements_are_met():
+    done = transcript(
+        course(2023, "Güz", "Z1", "Matematik I", 230, "AA"),
+        course(2023, "Güz", "ETK", "Mühendislik Etiği", 4, "CC"),
+        course(2023, "Bahar", "GIR", "Girişimcilik", 4, "AA"),
+        course(2024, "Bahar", "PDO", "Python ile Derin Öğrenme", 4, "CB"),
+        course(2025, "Güz", "YZ", "Yapay Zeka", 4, "BB"),
+        course(2025, "Bahar", "YSA", "Yapay Sinir Ağları", 4, "BA"),
+        enrolled=2023, gpa=3.1)
+    text = graduation.summary_text(graduation.evaluate(done, BIG_PLAN), BIG_PLAN)
+    assert "mezuniyet şartları karşılanıyor" in text
+    assert "karşılanmıyor" not in text
+
+
+def test_report_text_lists_unmatched_out_of_plan_courses():
+    text = graduation.report_text(graduation.evaluate(ERASMUS_SAMPLE, MATCH_PLAN), MATCH_PLAN)
+    assert "Planda olmayan dersler (1):\n  - Microcomputer Systems (E2)\n" in text
