@@ -155,17 +155,18 @@ def test_agent_ask_uses_transcript_and_returns_updated_confirmations(tmp_path):
     assert body["confirmations"] == {"E2": "MIK"}
 
 
-def test_agent_log_has_metadata_only(tmp_path):
+def test_agent_log_keeps_question_answer_and_tool_calls(tmp_path):
     client = make_client(tmp_path, confirm_then_answer())
     client.post("/agent/ask", json={"question": QUESTION, "transcript": SAMPLE,
                                     "history": [{"role": "user", "content": "Önceki soru"}]})
     assert [p.name for p in tmp_path.iterdir()] == ["agent.jsonl"]
-    text = log_text(tmp_path)
-    for leaked in (QUESTION, ANSWER, "Önceki soru", "Microcomputer Systems", "Mikroişlemciler", "3.1", "E2"):
-        assert leaked not in text
-    record = json.loads(text)
+    record = json.loads(log_text(tmp_path))
+    assert (record["soru"], record["cevap"]) == (QUESTION, ANSWER)
+    assert record["tool_cagrilari"] == [{"name": "confirm_equivalence",
+                                         "args": {"transcript_course": "Microcomputer Systems",
+                                                  "plan_course": "Mikroişlemciler"}}]
     assert record["transkript"] is True
-    assert record["tool_lar"] == ["confirm_equivalence"]
+    assert "Önceki soru" not in log_text(tmp_path)                      # geçmiş ve transkript yazılmaz
     assert record["hata"] is None and record["latency_ms"] is not None
 
 

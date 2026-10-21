@@ -12,7 +12,7 @@ Aynı cevaba birden fazla geri bildirim / değerlendirme yazılabilir; en son ya
 Tek istisna delete(): yöneticinin istediği bir soru-cevap (ör. uygunsuz soru) üç dosyadan da kalıcı olarak silinir.
 
 Agent (transkriptli danışmanlık) istekleri ayrı bir dosyaya, yalnız metadata olarak yazılır:
-  logs/agent.jsonl          tool adları, süre, hata türü, transkript var mıydı; soru ve cevap metni YOK
+  logs/agent.jsonl          agent soru-cevapları: soru, cevap, tool çağrıları (argümanlarıyla), süre, hata türü
 Transkript yükleme hiçbir şey yazmaz: PDF bellekte okunur, sonuç istemciye döner ve unutulur.
 """
 import io
@@ -186,10 +186,10 @@ class ChatService:
     def ask_agent(self, question, history=None, transcript=None, confirmations=None, session_id=None):
         """Agent'a sorar. `confirmations` yerinde güncellenir (confirm_equivalence); sunucu saklamaz, istemciye döner.
 
-        Log'a yalnız metadata yazılır, soru ve cevap metni yazılmaz. Transkriptsiz istekler için de aynı kural
-        geçerli (tek kural, basit): geçmişte önceki transkriptli cevaplar olabilir, tool argümanlarında (ör.
-        confirm_equivalence) transkriptteki ders adları geçer. Bu yüzden tool'ların yalnız adları tutulur.
-        Hata da yalnız türüyle tutulur (mesajında içerik olabilir).
+        Log'a soru, cevap ve tool çağrıları (argümanlarıyla) yazılır: geliştirme aşamasında cevap kalitesi ve
+        süre bu kayıtlardan incelenir (kullanıcı kararı 2026-10-21). Transkriptin kendisi yazılmaz; kişisel bilgiler
+        (ad, numara, TC) parser'da ayıklandığı için cevaplarda yok, ama cevaplar GNO ve ders listesi içerir.
+        Yayına almadan önce bu kayıt yeniden düşünülecek (TODO). Hata yalnız türüyle tutulur.
         """
         if self.agent is None:
             raise RuntimeError("Agent kurulmamış")
@@ -199,6 +199,8 @@ class ChatService:
             "zaman": _now(),
             "oturum": session_id,
             "transkript": transcript is not None,
+            "soru": question,
+            "cevap": None,
             "gecmis_uzunlugu": len(history or []),
             "tool_lar": [],
             "tur": None,
@@ -211,6 +213,8 @@ class ChatService:
         try:
             result = self.agent.ask(question, history, transcript=transcript, confirmations=confirmations)
             record["tool_lar"] = [c["name"] for c in result["tool_calls"]]
+            record["tool_cagrilari"] = result["tool_calls"]
+            record["cevap"] = result["answer"]
             record["tur"] = result.get("turns")
         except Exception as e:
             record["hata"] = type(e).__name__
