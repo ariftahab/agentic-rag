@@ -1,0 +1,8 @@
+[cosmic-ray]
+module-path = "graduation.py"
+timeout = 60.0
+excluded-modules = []
+test-command = "C:/dev/agentic-rag/venv/Scripts/python.exe -X utf8 -m pytest -x -q -p no:cacheprovider tests/test_graduation.py"
+
+[cosmic-ray.distributor]
+name = "local"
