@@ -3,6 +3,21 @@
 Yalnız açık işler, sırasıyla. Yapılanların sonuçları config `notlar` alanlarında, `experiments/experiment_log.md`'de;
 tarihçe git'te. Agentic yolun işleri GitHub issue'larında (spec #1, ticket'lar #2-#12).
 
+## Kaldığımız yer (2026-10-21 akşam)
+
+- **Mutasyon testi (cosmic-ray, `graduation.py`):** ilk koşu 658 mutanttan 137'si hayatta; testler eklendi
+  (`c5862b4`), ikinci koşuda 55 hayatta (hepsi incelendi: 4 gerçek boşluk testlendi, kalanlar eşdeğer ya da
+  `__main__`). **Son koşu yapılmadı:** test komutu `-X utf8` ile düzeltildi (Türkçe pytest çıktısı yüzünden
+  öldürülen mutantlar INCOMPETENT görünüyordu). Komut: `venv/Scripts/cosmic-ray init cosmic-ray.toml <db>` →
+  `exec` → `cr-report`. Koşu sürerken `graduation.py` yerinde değişir; başka test/iş koşulmaz.
+- **#7 what-if:** tasarım onaylı, başlanmadı (subagent ile yapılacak). Bitti tanımı: "'Yapay Zeka ve Görüntü İşleme
+  alırsam seçmeli AKTS'm tamamlanır mı?' `simulate_courses` çağrısıyla, elle hesaplanmış AKTS sonucuyla
+  cevaplanıyor." Aynı işte küçük düzeltme: `graduation.summary_text` zorunlu dersleri "31 / 40" diye yazıyor, birim
+  yok; agent bunu AKTS sandı ("ders" birimi eklenmeli).
+- **#10 tarayıcı kontrolü kullanıcıda:** yükleme metni, "Transkript yüklü (45 ders)" etiketi, tool listesi,
+  "Kaldır", yenilemede transkriptin gitmesi, yarıyıl düzenli PDF'te hata mesajı.
+- Son mutasyon koşusu #7'den sonra (yeni kodu da kapsasın) yapılabilir.
+
 ## Sıra
 
 Başlangıç 2026-10-21: production EXP-001 = campus-chatbot retrieval hattı, corpus v1 (Mühendislik, 24 belge), tek prompt v1.
