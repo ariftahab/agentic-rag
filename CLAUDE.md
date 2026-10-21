@@ -128,3 +128,17 @@ olmak için kaç kredi lazım" gibi tool calling). Belge ne kadar az o kadar iyi
 - Donanım: RTX 4050 Laptop (6 GB), torch `2.9.0+cu128`; embedding ve reranker GPU'da.
   Latency ölçerken GPU'yu kullanan başka uygulama (emülatör vb.) kapalı olmalı.
 - `langchain-core` 1.0.4'e sabit; yükseltme diğer langchain paketleriyle uyumu bozabilir.
+
+## Agent skills
+
+### Issue tracker
+
+Issue'lar ve spec'ler bu reponun GitHub Issues'unda (`gh` CLI). See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Varsayılan beş label: needs-triage, needs-info, ready-for-agent, ready-for-human, wontfix. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: kökte `GLOSSARY.md` + `docs/adr/` (gerektikçe oluşturulur). See `docs/agents/domain.md`.
