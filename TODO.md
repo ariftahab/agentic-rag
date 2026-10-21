@@ -18,6 +18,10 @@ tarihçe git'te. Agentic yolun işleri GitHub issue'larında (spec #1, ticket'la
   "Kaldır", yenilemede transkriptin gitmesi, yarıyıl düzenli PDF'te hata mesajı.
 - Son mutasyon koşusu #7'den sonra (yeni kodu da kapsasın) yapılabilir.
 
+- **Agent log'u geçici olarak tam:** `logs/agent.jsonl` soru, cevap ve tool argümanlarını tutuyor (kullanıcı kararı
+  2026-10-21, geliştirme için). Yayına almadan önce gizlilik yeniden ele alınacak (#10'un "log'da transkript içeriği
+  yok" ölçütü şu an bilerek sağlanmıyor).
+
 ## Sıra
 
 Başlangıç 2026-10-21: production EXP-001 = campus-chatbot retrieval hattı, corpus v1 (Mühendislik, 24 belge), tek prompt v1.
