@@ -8,280 +8,360 @@
       "ad": "Bilgisayar Mühendisliğine Giriş",
       "yariyil": 1,
       "kredi": 2,
-      "akts": 2
+      "akts": 2,
+      "ad_en": "Introduction to Computer Engineering",
+      "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
     },
     {
       "kod": "1906001032015",
       "ad": "Fizik I",
       "yariyil": 1,
       "kredi": 4,
-      "akts": 6
+      "akts": 6,
+      "ad_en": "Physics I",
+      "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
     },
     {
       "kod": "1906001052015",
       "ad": "Kimya",
       "yariyil": 1,
       "kredi": 4,
-      "akts": 6
+      "akts": 6,
+      "ad_en": "Chemistry",
+      "ad_en_kaynak": "çeviri"
     },
     {
       "kod": "1906001072015",
       "ad": "Matematik I",
       "yariyil": 1,
       "kredi": 4,
-      "akts": 6
+      "akts": 6,
+      "ad_en": "Mathematics I",
+      "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
     },
     {
       "kod": "1906001092015",
       "ad": "Atatürk İlkeleri ve Inkilap Tarihi I",
       "yariyil": 1,
       "kredi": 2,
-      "akts": 2
+      "akts": 2,
+      "ad_en": "Principles of Atatürk and History of Turkish Revolution I",
+      "ad_en_kaynak": "çeviri"
     },
     {
       "kod": "1906001112015",
       "ad": "Türk Dili I",
       "yariyil": 1,
       "kredi": 2,
-      "akts": 2
+      "akts": 2,
+      "ad_en": "Turkish Language I",
+      "ad_en_kaynak": "çeviri"
     },
     {
       "kod": "1906001132015",
       "ad": "Yabancı Dil I",
       "yariyil": 1,
       "kredi": 2,
-      "akts": 2
+      "akts": 2,
+      "ad_en": "Foreign Language I",
+      "ad_en_kaynak": "çeviri"
     },
     {
       "kod": "1906001172019",
       "ad": "Kariyer Planlama",
       "yariyil": 1,
       "kredi": 1,
-      "akts": 2
+      "akts": 2,
+      "ad_en": "Career planning",
+      "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
     },
     {
       "kod": "1906001022015",
       "ad": "C Programlama",
       "yariyil": 2,
       "kredi": 3,
-      "akts": 4
+      "akts": 4,
+      "ad_en": "C Programming",
+      "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
     },
     {
       "kod": "1906001042015",
       "ad": "Fizik II",
       "yariyil": 2,
       "kredi": 4,
-      "akts": 6
+      "akts": 6,
+      "ad_en": "Physics II",
+      "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
     },
     {
       "kod": "1906001062015",
       "ad": "Lineer Cebir",
       "yariyil": 2,
       "kredi": 3,
-      "akts": 4
+      "akts": 4,
+      "ad_en": "Linear Algebra",
+      "ad_en_kaynak": "çeviri"
     },
     {
       "kod": "1906001082015",
       "ad": "Matematik II",
       "yariyil": 2,
       "kredi": 4,
-      "akts": 6
+      "akts": 6,
+      "ad_en": "Mathematics II",
+      "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
     },
     {
       "kod": "1906001102015",
       "ad": "Atatürk İlkeleri ve Inkilap Tarihi II",
       "yariyil": 2,
       "kredi": 2,
-      "akts": 2
+      "akts": 2,
+      "ad_en": "Principles of Atatürk and History of Turkish Revolution II",
+      "ad_en_kaynak": "çeviri"
     },
     {
       "kod": "1906001122015",
       "ad": "Türk Dili II",
       "yariyil": 2,
       "kredi": 2,
-      "akts": 2
+      "akts": 2,
+      "ad_en": "Turkish Language II",
+      "ad_en_kaynak": "çeviri"
     },
     {
       "kod": "1906001142015",
       "ad": "Yabancı Dil II",
       "yariyil": 2,
       "kredi": 2,
-      "akts": 2
+      "akts": 2,
+      "ad_en": "Foreign Language II",
+      "ad_en_kaynak": "çeviri"
     },
     {
       "kod": "1906002012015",
       "ad": "Nesne Tabanlı Programlama",
       "yariyil": 3,
       "kredi": 4,
-      "akts": 6
+      "akts": 6,
+      "ad_en": "Object Oriented Programming",
+      "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
     },
     {
       "kod": "1906002032015",
       "ad": "Ayrık Matematik",
       "yariyil": 3,
       "kredi": 3,
-      "akts": 3
+      "akts": 3,
+      "ad_en": "Discrete Mathematics",
+      "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
     },
     {
       "kod": "1906002052015",
       "ad": "Veri Yapıları",
       "yariyil": 3,
       "kredi": 4,
-      "akts": 4
+      "akts": 4,
+      "ad_en": "Data Structures",
+      "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
     },
     {
       "kod": "1906002072015",
       "ad": "Mesleki İngilizce",
       "yariyil": 3,
       "kredi": 3,
-      "akts": 3
+      "akts": 3,
+      "ad_en": "Professional English",
+      "ad_en_kaynak": "çeviri"
     },
     {
       "kod": "1906002092015",
       "ad": "Diferansiyel Denklemler",
       "yariyil": 3,
       "kredi": 4,
-      "akts": 5
+      "akts": 5,
+      "ad_en": "Differential Equations",
+      "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
     },
     {
       "kod": "1906002112015",
       "ad": "Elektrik Devreleri",
       "yariyil": 3,
       "kredi": 4,
-      "akts": 5
+      "akts": 5,
+      "ad_en": "Electric circuits",
+      "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
     },
     {
       "kod": "1906002022015",
       "ad": "Simulasyon Sistemleri",
       "yariyil": 4,
       "kredi": 4,
-      "akts": 7
+      "akts": 7,
+      "ad_en": "Simulation Systems",
+      "ad_en_kaynak": "çeviri"
     },
     {
       "kod": "1906002042015",
       "ad": "Otomata Teorisi",
       "yariyil": 4,
       "kredi": 3,
-      "akts": 7
+      "akts": 7,
+      "ad_en": "Automata Theory",
+      "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
     },
     {
       "kod": "1906002062015",
       "ad": "Olasılık ve İstatistik",
       "yariyil": 4,
       "kredi": 3,
-      "akts": 4
+      "akts": 4,
+      "ad_en": "Probability and Statistics",
+      "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
     },
     {
       "kod": "1906002082015",
       "ad": "Sayısal Elektronik",
       "yariyil": 4,
       "kredi": 4,
-      "akts": 4
+      "akts": 4,
+      "ad_en": "Digital Electronics",
+      "ad_en_kaynak": "çeviri"
     },
     {
       "kod": "1906002102015",
       "ad": "Proje Planlama ve Yönetimi",
       "yariyil": 4,
       "kredi": 3,
-      "akts": 4
+      "akts": 4,
+      "ad_en": "Projects Planning and Management",
+      "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
     },
     {
       "kod": "1906003012015",
       "ad": "Mikroişlemciler",
       "yariyil": 5,
       "kredi": 4,
-      "akts": 5
+      "akts": 5,
+      "ad_en": "Microprocessors",
+      "ad_en_kaynak": "çeviri"
     },
     {
       "kod": "1906003032015",
       "ad": "Algoritma Analizi",
       "yariyil": 5,
       "kredi": 4,
-      "akts": 6
+      "akts": 6,
+      "ad_en": "Algorithm Analysis",
+      "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
     },
     {
       "kod": "1906003052015",
       "ad": "İşletim Sistemleri I",
       "yariyil": 5,
       "kredi": 4,
-      "akts": 5
+      "akts": 5,
+      "ad_en": "Operating Systems I",
+      "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
     },
     {
       "kod": "1906003072015",
       "ad": "Bilgisayar Mimarisi I",
       "yariyil": 5,
       "kredi": 3,
-      "akts": 5
+      "akts": 5,
+      "ad_en": "Computer Architecture I",
+      "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
     },
     {
       "kod": "1906003092015",
       "ad": "Staj I",
       "yariyil": 5,
       "kredi": 0,
-      "akts": 5
+      "akts": 5,
+      "ad_en": "Internship I",
+      "ad_en_kaynak": "çeviri"
     },
     {
       "kod": "1906003022015",
       "ad": "Veritabanı Yönetim Sistemleri",
       "yariyil": 6,
       "kredi": 4,
-      "akts": 6
+      "akts": 6,
+      "ad_en": "Database Management Systems",
+      "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
     },
     {
       "kod": "1906003042015",
       "ad": "Sistem Programlama",
       "yariyil": 6,
       "kredi": 4,
-      "akts": 6
+      "akts": 6,
+      "ad_en": "System Programming",
+      "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
     },
     {
       "kod": "1906003062015",
       "ad": "Gömülü Sistemler",
       "yariyil": 6,
       "kredi": 4,
-      "akts": 5
+      "akts": 5,
+      "ad_en": "Embedded Systems",
+      "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
     },
     {
       "kod": "1906003082015",
       "ad": "Yazılım Mühendisliği",
       "yariyil": 6,
       "kredi": 4,
-      "akts": 5
+      "akts": 5,
+      "ad_en": "Software Engineering",
+      "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
     },
     {
       "kod": "1906003102015",
       "ad": "Sinyaller ve Sistemler",
       "yariyil": 6,
       "kredi": 3,
-      "akts": 4
+      "akts": 4,
+      "ad_en": "Signals and Systems",
+      "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
     },
     {
       "kod": "1906004012015",
       "ad": "Bitirme Projesi I",
       "yariyil": 7,
       "kredi": 3,
-      "akts": 5
+      "akts": 5,
+      "ad_en": "Engineering Project I",
+      "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
     },
     {
       "kod": "1906004032015",
       "ad": "Staj II",
       "yariyil": 7,
       "kredi": 0,
-      "akts": 5
+      "akts": 5,
+      "ad_en": "Internship II",
+      "ad_en_kaynak": "çeviri"
     },
     {
       "kod": "1906004022015",
       "ad": "Veri İletişimi ve Bilgisayar Ağları",
       "yariyil": 8,
       "kredi": 4,
-      "akts": 5
+      "akts": 5,
+      "ad_en": "Data Communication and Computer Networks",
+      "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
     },
     {
       "kod": "1906004042015",
       "ad": "Bitirme Projesi II",
       "yariyil": 8,
       "kredi": 3,
-      "akts": 5
+      "akts": 5,
+      "ad_en": "Engineering Project II",
+      "ad_en_kaynak": "çeviri"
     }
   ],
   "secmeli_yuvalar": [
@@ -296,127 +376,169 @@
           "kod": "ANE0002",
           "ad": "Uygulamalı Spor",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Applied Sports",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "MIM0002",
           "ad": "Bilim Felsefesine Giriş",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Introduction to Philosophy of Science",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "İLH0001",
           "ad": "Günümüz İnanç Problemleri",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Contemporary Problems of Faith",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "HEM0006",
           "ad": "Araştırma Etiği",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Research Ethics",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "İLH0003",
           "ad": "Hz.Muhammedin Hayatı ve Ahlakı",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Life and Ethics of Prophet Muhammad",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "İLH0005",
           "ad": "Anadolu Halk İnançları",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Anatolian Folk Beliefs",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "HEM0002",
           "ad": "Aile Sağlığı",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Family Health",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "MIM0001",
           "ad": "Serbest El Çizimi",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Freehand Drawing",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "HEM0005",
           "ad": "Aile Planlaması",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Family Planning",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "1906001152016",
           "ad": "Mühendislik Etiği",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Engineering Ethics",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "HEM0003",
           "ad": "Cinsel Sağlık",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Sexual Health",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "BESY0001",
           "ad": "Doğa Sporları ve Rekreasyon",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Outdoor Sports and Recreation",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "REKL001",
           "ad": "Girişimcilik",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Entrepreneurship",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "HEM0004",
           "ad": "Adölesan Sağlığı",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Adolescent Health",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "HEM0007",
           "ad": "Sağlığın Geliştirilmesi",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Health Promotion",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "MIM0003",
           "ad": "Mimarlıkta İleri Modelleme Teknikleri",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Advanced Modeling Techniques in Architecture",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "İLH0004",
           "ad": "İslam Estetiği",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Islamic Aesthetics",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "İLH0002",
           "ad": "İslam Düşüncesinde Din-Devlet İlişkisi",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Religion-State Relations in Islamic Thought",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "ANE0001",
           "ad": "Sağlıklı Yaşam Spor ve Fiziksel Uygunluk",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Healthy Living, Sports and Physical Fitness",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "HEM0001",
           "ad": "İlk Yardım",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "First Aid",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "BESY0002",
           "ad": "Spor Bilgisi ve Kültürü",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Sports Knowledge and Culture",
+          "ad_en_kaynak": "çeviri"
         }
       ]
     },
@@ -431,127 +553,169 @@
           "kod": "HEM0004",
           "ad": "Adölesan Sağlığı",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Adolescent Health",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "HEM0006",
           "ad": "Araştırma Etiği",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Research Ethics",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "HEM0005",
           "ad": "Aile Planlaması",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Family Planning",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "ANE0001",
           "ad": "Sağlıklı Yaşam Spor ve Fiziksel Uygunluk",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Healthy Living, Sports and Physical Fitness",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "REKL001",
           "ad": "Girişimcilik",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Entrepreneurship",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "HEM0002",
           "ad": "Aile Sağlığı",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Family Health",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "İLH0005",
           "ad": "Anadolu Halk İnançları",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Anatolian Folk Beliefs",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "İLH0001",
           "ad": "Günümüz İnanç Problemleri",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Contemporary Problems of Faith",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "HEM0003",
           "ad": "Cinsel Sağlık",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Sexual Health",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "MIM0002",
           "ad": "Bilim Felsefesine Giriş",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Introduction to Philosophy of Science",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "İLH0003",
           "ad": "Hz.Muhammedin Hayatı ve Ahlakı",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Life and Ethics of Prophet Muhammad",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "İLH0002",
           "ad": "İslam Düşüncesinde Din-Devlet İlişkisi",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Religion-State Relations in Islamic Thought",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "İLH0004",
           "ad": "İslam Estetiği",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Islamic Aesthetics",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "HEM0007",
           "ad": "Sağlığın Geliştirilmesi",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Health Promotion",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "ANE0002",
           "ad": "Uygulamalı Spor",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Applied Sports",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "1906001152016",
           "ad": "Mühendislik Etiği",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Engineering Ethics",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "HEM0001",
           "ad": "İlk Yardım",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "First Aid",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "MIM0003",
           "ad": "Mimarlıkta İleri Modelleme Teknikleri",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Advanced Modeling Techniques in Architecture",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "MIM0001",
           "ad": "Serbest El Çizimi",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Freehand Drawing",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "BESY0002",
           "ad": "Spor Bilgisi ve Kültürü",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Sports Knowledge and Culture",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "BESY0001",
           "ad": "Doğa Sporları ve Rekreasyon",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Outdoor Sports and Recreation",
+          "ad_en_kaynak": "çeviri"
         }
       ]
     },
@@ -566,25 +730,33 @@
           "kod": "1906002132015",
           "ad": "Programlama Dilleri Temelleri",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Programming Languages Fundamentals",
+          "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
         },
         {
           "kod": "1906002152015",
           "ad": "Mühendislik Ekonomisi",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Engineering Economics",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "1906002172023",
           "ad": "Kablosuz Algılayıcı Ağlar",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Wireless Sensor Networks",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "1906002192023",
           "ad": "Web Programlama",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Web Programming",
+          "ad_en_kaynak": "çeviri"
         }
       ]
     },
@@ -599,37 +771,49 @@
           "kod": "1906002122015",
           "ad": "Mobil Programlama",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Mobile Programming",
+          "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
         },
         {
           "kod": "1906002142015",
           "ad": "Yabancı Dilde Okuma ve Konuşma",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Reading and Speaking in a Foreign Language",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "1906002162015",
           "ad": "Görsel Programlama",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Visual Programming",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "MM0005",
           "ad": "İnsan Hakları",
           "kredi": 3,
-          "akts": 5
+          "akts": 5,
+          "ad_en": "Human Rights",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "1906002182023",
           "ad": "Uydu Haberleşme ve Hücresel Haberleşme",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Satellite and Cellular Communication",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "1906002212023",
           "ad": "Python Programlamaya Giriş",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Introduction to Python Programming",
+          "ad_en_kaynak": "çeviri"
         }
       ]
     },
@@ -644,49 +828,65 @@
           "kod": "1906003112015",
           "ad": "Dosya Yapıları",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "File Structures",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "1906003132015",
           "ad": "Doğal Dil İşleme",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Natural Language Processing",
+          "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
         },
         {
           "kod": "1906003152015",
           "ad": "Paralel Hesaplama",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Parallel Computing",
+          "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
         },
         {
           "kod": "1906003172019",
           "ad": "Tasarım Desenleri",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Design Patterns",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "MTH0630423",
           "ad": "Siber Güvenlik",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Cyber Security",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "MM0004",
           "ad": "Gönüllülük Çalışması",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Volunteering Studies",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "1906003192025",
           "ad": "Veri Yönetişimi",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Data Governance",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "1906003212026",
           "ad": "Makine Öğrenmesine Giriş",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Introduction to Machine Learning",
+          "ad_en_kaynak": "çeviri"
         }
       ]
     },
@@ -701,61 +901,81 @@
           "kod": "MTH0630223",
           "ad": "Dijital Dönüşüm Ekosistemi",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Digital Transformation Ecosystem",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "1906003122015",
           "ad": "İşletim Sistemleri II",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Operating Systems II",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "1906003142015",
           "ad": "Bilgisayar Mimarisi II",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Computer Architecture II",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "1906003162015",
           "ad": "Derleyici Tasarımı",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Compiler Design",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "1906003182018",
           "ad": "Kontrol Sistemleri",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Control Systems",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "1906003202018",
           "ad": "Araştırma Yöntemleri ve Seminer",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Research Methods and Seminar",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "1906004292025",
           "ad": "Python ile Derin Öğrenme",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Deep Learning with Python",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "MTH0630423",
           "ad": "Siber Güvenlik",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Cyber Security",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "1906003222026",
           "ad": "Sektörde Yazılım Test Mühendisliği",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Software Test Engineering in Industry",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "1906003242026",
           "ad": "İleri Makine Öğrenmesi",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Advanced Machine Learning",
+          "ad_en_kaynak": "çeviri"
         }
       ]
     },
@@ -770,31 +990,41 @@
           "kod": "ADSD0107924",
           "ad": "Bilim ve Toplum",
           "kredi": 2,
-          "akts": 3
+          "akts": 3,
+          "ad_en": "Science and Society",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "ADSD0108224",
           "ad": "Türk Musikisi",
           "kredi": 2,
-          "akts": 3
+          "akts": 3,
+          "ad_en": "Turkish Music",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "ADSD2006624",
           "ad": "Günümüz Sanatı",
           "kredi": 2,
-          "akts": 2
+          "akts": 2,
+          "ad_en": "Contemporary Art",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "ADSD2502624",
           "ad": "Diksiyon ve Hitabet",
           "kredi": 2,
-          "akts": 2
+          "akts": 2,
+          "ad_en": "Diction and Rhetoric",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "ADSD2502824",
           "ad": "İslam ve Medeniyet",
           "kredi": 2,
-          "akts": 2
+          "akts": 2,
+          "ad_en": "Islam and Civilization",
+          "ad_en_kaynak": "çeviri"
         }
       ]
     },
@@ -809,73 +1039,97 @@
           "kod": "1906004052015",
           "ad": "İleri Veri Tabanı Yönetim Sistemleri",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Advanced Database Management Systems",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "1906004152015",
           "ad": "Sayısal Sinyal İşleme",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Digital Signal Processing",
+          "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
         },
         {
           "kod": "1906004072015",
           "ad": "Robotik",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Robotics",
+          "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
         },
         {
           "kod": "1906004212018",
           "ad": "Sensor Ağları",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Sensor Networks",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "1906004232018",
           "ad": "Bilişim Hukuku",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Information Technology Law",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "1906004132015",
           "ad": "Veri Madenciliği",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Data mining",
+          "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
         },
         {
           "kod": "1906004252018",
           "ad": "Nesnelerin İnterneti",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Internet of Things",
+          "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
         },
         {
           "kod": "1906004172015",
           "ad": "Yapay Sinir Ağları",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Artificial Neural Networks",
+          "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
         },
         {
           "kod": "1906004092015",
           "ad": "Bulanık Mantık",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Fuzzy Logic",
+          "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
         },
         {
           "kod": "1906004192015",
           "ad": "E Ticaret",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "E Commerce",
+          "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
         },
         {
           "kod": "1906004112015",
           "ad": "Yapay Zeka",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Artificial Intelligence",
+          "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
         },
         {
           "kod": "1906004272023",
           "ad": "Nanoteknoloji",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Nanotechnology",
+          "ad_en_kaynak": "çeviri"
         }
       ]
     },
@@ -890,67 +1144,89 @@
           "kod": "1906004202015",
           "ad": "Uzman Sistemler",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Expert Systems",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "1906004142015",
           "ad": "Pyhton Programlama",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Python Programming",
+          "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
         },
         {
           "kod": "1906004082015",
           "ad": "Görüntü İşleme",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Image Processing",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "1906004222015",
           "ad": "Bulut Bilişim",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Cloud Computing",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "1906004102015",
           "ad": "Bilgisayarlı Görme",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Computer Vision",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "1906004162015",
           "ad": "Biyoenformatik",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Bioinformatics",
+          "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
         },
         {
           "kod": "1906004182015",
           "ad": "Haberleşme Sistemleri",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Communication Systems",
+          "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
         },
         {
           "kod": "1906004062015",
           "ad": "Bilgi ve Ağ Güvenliği",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Information and Network Security",
+          "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
         },
         {
           "kod": "1906004242019",
           "ad": "Biyomedikal Mühendisliğine Giriş",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Introduction to Biomedical Engineering",
+          "ad_en_kaynak": "çeviri"
         },
         {
           "kod": "1906004122015",
           "ad": "Kuantumsal Hesaplamanın Temelleri",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Fundamentals of Quantum Computation",
+          "ad_en_kaynak": "BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)"
         },
         {
           "kod": "1906004262026",
           "ad": "Veri Bilimine Giriş",
           "kredi": 3,
-          "akts": 4
+          "akts": 4,
+          "ad_en": "Introduction to Data Science",
+          "ad_en_kaynak": "çeviri"
         }
       ]
     }
