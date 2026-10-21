@@ -2,7 +2,7 @@
 
 Bolu Abant İzzet Baysal Üniversitesi Mühendislik Fakültesi öğrencileri için agentic RAG chatbot.
 [campus-chatbot](https://github.com/ariftahab/campus-chatbot) mimarisinden (commit `0004309`, production EXP-038)
-türetildi; belge kümesi Mühendislik Fakültesi öğrencilerine uygulanan belgelerle sınırlı (58 belge).
+türetildi; belge kümesi Mühendislik Fakültesi öğrencisinin danışmanlığında gereken belgelerle sınırlı (24 belge).
 RAG bileşenlerindeki her değişiklik tekrar üretilebilir bir deney olarak kaydedilir
 (bkz. `experiments/experiment_log.md`, `python -m experiments.report` üretir).
 
