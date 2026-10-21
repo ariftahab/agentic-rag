@@ -16,5 +16,7 @@ langchain-google-genai==3.0.1
 fastapi==0.142.2
 uvicorn[standard]==0.54.0
 httpx==0.28.1
+# Test.
+pytest==9.1.1
 # transformers huggingface-hub<1.0 istiyor; hub 1.x/2.x embedding modelinin yüklenmesini bozuyor.
 huggingface-hub==0.36.0

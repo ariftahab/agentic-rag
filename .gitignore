@@ -216,3 +216,6 @@ __marimo__/
 daily_log/
 learning_log/
 my_notes/
+
+# Gerçek transkriptler (kişisel veri) repoya girmez; yalnız yerel parser testleri kullanır
+tests/private/
