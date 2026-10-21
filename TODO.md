@@ -7,8 +7,7 @@ tarihçe git'te. Agentic yolun işleri GitHub issue'larında (spec #1, ticket'la
 
 Başlangıç 2026-10-21: production EXP-001 = campus-chatbot retrieval hattı, corpus v1 (Mühendislik, 24 belge), tek prompt v1.
 
-1. [ ] **Sıradaki ticket'lar** — #6 Erasmus eşlemesi (İngilizce ad + kelime örtüşmesi; adlar `data/BILG_2021.pdf`'te,
-       bulunamayanlar çeviri), #7 what-if, #8 ders programı (`data/2026_27_Güz_Lisans_v2.pdf`), #10 arayüz, #11 metrikler.
+1. [ ] **Sıradaki ticket'lar** — #7 what-if, #8 ders programı (`data/2026_27_Güz_Lisans_v2.pdf`), #10 arayüz, #11 metrikler.
 2. [ ] **Model erişilebilirliği** — `gemini-3.1-flash-lite` 2026-10-21'de sık 503 verdi (3.8-flash da). Seçenekler:
        503'te yedek modele geçiş (fallback) ve/veya production modelini değiştirmek (deney). Soru seti hazır olunca:
        `gemini-3.5-flash-lite` ve Claude Haiku 5.5 karşılaştırması (tahmini ~0,001 $/soru).
