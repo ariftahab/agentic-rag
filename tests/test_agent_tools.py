@@ -88,3 +88,39 @@ def test_llm_never_receives_personal_values():
     sent = "\n".join(str(m.content) for messages in llm.received for m in messages)
     for value in PERSONAL["kisisel_degerler"]:
         assert value not in sent
+
+
+ERASMUS_PLAN = {**PLAN, "zorunlu_dersler": PLAN["zorunlu_dersler"] + [
+    {"kod": "MIK", "ad": "Mikroişlemciler", "ad_en": "Microprocessors", "yariyil": 5, "kredi": 4, "akts": 5}]}
+ERASMUS_SAMPLE = {**SAMPLE, "dersler": SAMPLE["dersler"] + [
+    {**_course(2025, "Güz", "E2", "Microcomputer Systems", 5, "AA"), "erasmus": True}]}
+
+
+def confirm(args, confirmations):
+    llm = ScriptedChatModel([
+        AIMessage("", tool_calls=[{"name": "confirm_equivalence", "args": args, "id": "1"}]),
+        AIMessage("nihai cevap"),
+    ])
+    AdvisorAgent(retriever=None, llm=llm, plan=ERASMUS_PLAN).ask(
+        "Microcomputer Systems Mikroişlemciler yerine sayıldı", transcript=ERASMUS_SAMPLE, confirmations=confirmations)
+    return next(m for m in llm.received[-1] if isinstance(m, ToolMessage)).content
+
+
+def test_confirm_equivalence_is_kept_in_the_session_and_applied():
+    confirmations = {}
+    content = confirm({"transcript_course": "Microcomputer Systems", "plan_course": "Mikroişlemciler"}, confirmations)
+    assert confirmations == {"E2": "MIK"}
+    assert "Microcomputer Systems (5 AKTS) → Mikroişlemciler: kullanıcı teyit etti" in content
+
+
+def test_confirm_equivalence_records_no_equivalent():
+    confirmations = {}
+    confirm({"transcript_course": "microcomputer systems", "plan_course": ""}, confirmations)
+    assert confirmations == {"E2": None}
+
+
+def test_confirm_equivalence_with_unknown_plan_course_is_not_recorded():
+    confirmations = {}
+    content = confirm({"transcript_course": "Microcomputer Systems", "plan_course": "Kuantum Fiziği"}, confirmations)
+    assert confirmations == {}
+    assert "Kuantum Fiziği" in content and "bulunamadı" in content

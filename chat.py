@@ -56,6 +56,7 @@ def main():
     print("Hazır. Çıkmak için 'çık', yeni konuya geçmek için 'yeni' yazın.")
 
     history = []  # bot stateless; sohbet geçmişini burada tutuyoruz
+    confirmations = {}  # plan dışı derslerin teyit edilen eşdeğerleri; transkriptle birlikte yaşar, "yeni" silmez
     while True:
         try:
             question = input("\nSoru: ").strip()
@@ -75,7 +76,8 @@ def main():
         print("Cevap düşünülüyor...")
         try:
             if use_agent:
-                result = bot.ask(question, history, transcript=transcript, on_tool_call=print_tool_call)
+                result = bot.ask(question, history, transcript=transcript, on_tool_call=print_tool_call,
+                                 confirmations=confirmations)
             else:
                 result = bot.ask(question, history)
         except Exception as e:  # kota, ağ, API hataları döngüyü öldürmesin

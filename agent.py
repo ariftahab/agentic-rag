@@ -78,8 +78,13 @@ NO_TRANSCRIPT = ("Bu oturumda yüklenmiş bir transkript yok. Kullanıcıdan OBS
 TURN_LIMIT_ANSWER = "Bu soruyu belirlenen adım sayısı içinde cevaplayamadım. Soruyu daha dar sorabilir misiniz?"
 
 
-def make_tools(retriever, plan, transcript):
-    """Bu çağrıya (oturuma) bağlı tool'lar. `transcript` closure'da durur; LLM'in görebileceği bir argüman değildir."""
+def _same_name(a, b):
+    return graduation.name_similarity(a, b) == 1.0
+
+
+def make_tools(retriever, plan, transcript, confirmations):
+    """Bu çağrıya (oturuma) bağlı tool'lar. `transcript` ve `confirmations` closure'da durur; LLM'in görebileceği
+    argümanlar değildir. confirm_equivalence `confirmations` sözlüğünü yerinde günceller (çağıran taraf saklar)."""
 
     def search_regulations(query: str) -> str:
         """Üniversitenin yönetmelik ve yönergelerinde (staj, ders kaydı, sınavlar, mezuniyet, yatay geçiş, lisansüstü vb.)
@@ -95,9 +100,34 @@ def make_tools(retriever, plan, transcript):
         geçilirse ulaşılacak AKTS ve eksik zorunlu dersler (durumlarıyla). Transkript yüklenmemişse bunu bildirir."""
         if transcript is None:
             return NO_TRANSCRIPT
-        return graduation.summary_text(graduation.evaluate(transcript, plan), plan)
+        return graduation.summary_text(graduation.evaluate(transcript, plan, confirmations=confirmations), plan)
 
-    return [StructuredTool.from_function(search_regulations), StructuredTool.from_function(analyze_transcript)]
+    def confirm_equivalence(transcript_course: str, plan_course: str) -> str:
+        """Kullanıcının teyidini kaydeder: transkriptteki plan dışı bir dersin (Erasmus, intibak) öğretim planındaki
+        hangi derse sayıldığı. Kayıttan sonra güncel transkript analizini döndürür.
+
+        Args:
+            transcript_course: Transkriptteki plan dışı dersin adı, analizde yazdığı gibi (ör. "Microcomputer Systems").
+            plan_course: Öğretim planındaki dersin Türkçe ya da İngilizce adı (ör. "Mikroişlemciler"); kullanıcı plandaki
+                hiçbir derse karşılık gelmediğini söylediyse boş metin.
+        """
+        if transcript is None:
+            return NO_TRANSCRIPT
+        course = next((c for c in transcript["dersler"] if _same_name(c["ad"], transcript_course)), None)
+        if course is None:
+            return f'Transkriptte "{transcript_course}" adlı ders bulunamadı. Adı analizde yazdığı gibi kullan.'
+        target = None
+        if plan_course.strip():
+            target = next((c for c in graduation.plan_courses(plan)
+                           if _same_name(c["ad"], plan_course) or _same_name(c.get("ad_en", ""), plan_course)), None)
+            if target is None:
+                return (f'Öğretim planında "{plan_course}" adlı ders bulunamadı. Kullanıcıdan plandaki dersin adını '
+                        "iste ya da eksik dersler listesindeki adlardan birini kullan.")
+        confirmations[course["kod"]] = target["kod"] if target else None
+        saved = f"{course['ad']} → {target['ad']}" if target else f"{course['ad']}: plandaki bir derse karşılık gelmiyor"
+        return f"Kaydedildi ({saved}). Güncel analiz:\n\n" + analyze_transcript()
+
+    return [StructuredTool.from_function(f) for f in (search_regulations, analyze_transcript, confirm_equivalence)]
 
 
 class AdvisorAgent:
@@ -119,12 +149,14 @@ class AdvisorAgent:
                                      timeout=REQUEST_TIMEOUT_S)
         return cls(Retriever(cfg, store, chunks), llm, graduation.load_plan())
 
-    def ask(self, question, history=None, transcript=None, on_tool_call=None):
+    def ask(self, question, history=None, transcript=None, on_tool_call=None, confirmations=None):
         """Cevap üretir. `on_tool_call(name, args)` verilirse her tool çağrısında çağrılır (terminalde göstermek için).
+        `confirmations` oturumun eşdeğerlik teyitleridir ({plan dışı ders kodu: plan ders kodu | None}); transkript
+        gibi çağıran taraf saklar, confirm_equivalence yerinde günceller.
 
         Dönüş: {"answer", "tool_calls": [{"name", "args"}], "turns", "usage"}.
         """
-        tools = make_tools(self.retriever, self.plan, transcript)
+        tools = make_tools(self.retriever, self.plan, transcript, {} if confirmations is None else confirmations)
         by_name = {t.name: t for t in tools}
         llm = self.llm.bind_tools(tools)
         system = self.system.format(no_answer=config.NO_ANSWER, today=date.today().strftime("%d.%m.%Y"))
