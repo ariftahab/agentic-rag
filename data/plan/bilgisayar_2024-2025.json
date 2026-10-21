@@ -283,5 +283,676 @@
       "kredi": 3,
       "akts": 5
     }
+  ],
+  "secmeli_yuvalar": [
+    {
+      "ad": "Rek. Seçmeli I",
+      "kod": "1906001992015",
+      "yariyil": 1,
+      "akts": 4,
+      "tur": "rektorluk",
+      "havuz": [
+        {
+          "kod": "ANE0002",
+          "ad": "Uygulamalı Spor",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "MIM0002",
+          "ad": "Bilim Felsefesine Giriş",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "İLH0001",
+          "ad": "Günümüz İnanç Problemleri",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "HEM0006",
+          "ad": "Araştırma Etiği",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "İLH0003",
+          "ad": "Hz.Muhammedin Hayatı ve Ahlakı",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "İLH0005",
+          "ad": "Anadolu Halk İnançları",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "HEM0002",
+          "ad": "Aile Sağlığı",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "MIM0001",
+          "ad": "Serbest El Çizimi",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "HEM0005",
+          "ad": "Aile Planlaması",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906001152016",
+          "ad": "Mühendislik Etiği",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "HEM0003",
+          "ad": "Cinsel Sağlık",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "BESY0001",
+          "ad": "Doğa Sporları ve Rekreasyon",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "REKL001",
+          "ad": "Girişimcilik",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "HEM0004",
+          "ad": "Adölesan Sağlığı",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "HEM0007",
+          "ad": "Sağlığın Geliştirilmesi",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "MIM0003",
+          "ad": "Mimarlıkta İleri Modelleme Teknikleri",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "İLH0004",
+          "ad": "İslam Estetiği",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "İLH0002",
+          "ad": "İslam Düşüncesinde Din-Devlet İlişkisi",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "ANE0001",
+          "ad": "Sağlıklı Yaşam Spor ve Fiziksel Uygunluk",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "HEM0001",
+          "ad": "İlk Yardım",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "BESY0002",
+          "ad": "Spor Bilgisi ve Kültürü",
+          "kredi": 3,
+          "akts": 4
+        }
+      ]
+    },
+    {
+      "ad": "Rek. Seçmeli II",
+      "kod": "1906001982015",
+      "yariyil": 2,
+      "akts": 4,
+      "tur": "rektorluk",
+      "havuz": [
+        {
+          "kod": "HEM0004",
+          "ad": "Adölesan Sağlığı",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "HEM0006",
+          "ad": "Araştırma Etiği",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "HEM0005",
+          "ad": "Aile Planlaması",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "ANE0001",
+          "ad": "Sağlıklı Yaşam Spor ve Fiziksel Uygunluk",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "REKL001",
+          "ad": "Girişimcilik",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "HEM0002",
+          "ad": "Aile Sağlığı",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "İLH0005",
+          "ad": "Anadolu Halk İnançları",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "İLH0001",
+          "ad": "Günümüz İnanç Problemleri",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "HEM0003",
+          "ad": "Cinsel Sağlık",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "MIM0002",
+          "ad": "Bilim Felsefesine Giriş",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "İLH0003",
+          "ad": "Hz.Muhammedin Hayatı ve Ahlakı",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "İLH0002",
+          "ad": "İslam Düşüncesinde Din-Devlet İlişkisi",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "İLH0004",
+          "ad": "İslam Estetiği",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "HEM0007",
+          "ad": "Sağlığın Geliştirilmesi",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "ANE0002",
+          "ad": "Uygulamalı Spor",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906001152016",
+          "ad": "Mühendislik Etiği",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "HEM0001",
+          "ad": "İlk Yardım",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "MIM0003",
+          "ad": "Mimarlıkta İleri Modelleme Teknikleri",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "MIM0001",
+          "ad": "Serbest El Çizimi",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "BESY0002",
+          "ad": "Spor Bilgisi ve Kültürü",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "BESY0001",
+          "ad": "Doğa Sporları ve Rekreasyon",
+          "kredi": 3,
+          "akts": 4
+        }
+      ]
+    },
+    {
+      "ad": "Seçmeli III",
+      "kod": "1906002992015",
+      "yariyil": 3,
+      "akts": 4,
+      "tur": "bolum",
+      "havuz": [
+        {
+          "kod": "1906002132015",
+          "ad": "Programlama Dilleri Temelleri",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906002152015",
+          "ad": "Mühendislik Ekonomisi",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906002172023",
+          "ad": "Kablosuz Algılayıcı Ağlar",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906002192023",
+          "ad": "Web Programlama",
+          "kredi": 3,
+          "akts": 4
+        }
+      ]
+    },
+    {
+      "ad": "Seçmeli IV",
+      "kod": "1906002982015",
+      "yariyil": 4,
+      "akts": 4,
+      "tur": "bolum",
+      "havuz": [
+        {
+          "kod": "1906002122015",
+          "ad": "Mobil Programlama",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906002142015",
+          "ad": "Yabancı Dilde Okuma ve Konuşma",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906002162015",
+          "ad": "Görsel Programlama",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "MM0005",
+          "ad": "İnsan Hakları",
+          "kredi": 3,
+          "akts": 5
+        },
+        {
+          "kod": "1906002182023",
+          "ad": "Uydu Haberleşme ve Hücresel Haberleşme",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906002212023",
+          "ad": "Python Programlamaya Giriş",
+          "kredi": 3,
+          "akts": 4
+        }
+      ]
+    },
+    {
+      "ad": "Seçmeli V",
+      "kod": "1906003992025",
+      "yariyil": 5,
+      "akts": 4,
+      "tur": "bolum",
+      "havuz": [
+        {
+          "kod": "1906003112015",
+          "ad": "Dosya Yapıları",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906003132015",
+          "ad": "Doğal Dil İşleme",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906003152015",
+          "ad": "Paralel Hesaplama",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906003172019",
+          "ad": "Tasarım Desenleri",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "MTH0630423",
+          "ad": "Siber Güvenlik",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "MM0004",
+          "ad": "Gönüllülük Çalışması",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906003192025",
+          "ad": "Veri Yönetişimi",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906003212026",
+          "ad": "Makine Öğrenmesine Giriş",
+          "kredi": 3,
+          "akts": 4
+        }
+      ]
+    },
+    {
+      "ad": "Seçmeli VI",
+      "kod": "1906003982025",
+      "yariyil": 6,
+      "akts": 4,
+      "tur": "bolum",
+      "havuz": [
+        {
+          "kod": "MTH0630223",
+          "ad": "Dijital Dönüşüm Ekosistemi",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906003122015",
+          "ad": "İşletim Sistemleri II",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906003142015",
+          "ad": "Bilgisayar Mimarisi II",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906003162015",
+          "ad": "Derleyici Tasarımı",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906003182018",
+          "ad": "Kontrol Sistemleri",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906003202018",
+          "ad": "Araştırma Yöntemleri ve Seminer",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906004292025",
+          "ad": "Python ile Derin Öğrenme",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "MTH0630423",
+          "ad": "Siber Güvenlik",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906003222026",
+          "ad": "Sektörde Yazılım Test Mühendisliği",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906003242026",
+          "ad": "İleri Makine Öğrenmesi",
+          "kredi": 3,
+          "akts": 4
+        }
+      ]
+    },
+    {
+      "ad": "Alan Dışı Seçmeli Ders",
+      "kod": "1906003962025",
+      "yariyil": 6,
+      "akts": 2,
+      "tur": "alan_disi",
+      "havuz": [
+        {
+          "kod": "ADSD0107924",
+          "ad": "Bilim ve Toplum",
+          "kredi": 2,
+          "akts": 3
+        },
+        {
+          "kod": "ADSD0108224",
+          "ad": "Türk Musikisi",
+          "kredi": 2,
+          "akts": 3
+        },
+        {
+          "kod": "ADSD2006624",
+          "ad": "Günümüz Sanatı",
+          "kredi": 2,
+          "akts": 2
+        },
+        {
+          "kod": "ADSD2502624",
+          "ad": "Diksiyon ve Hitabet",
+          "kredi": 2,
+          "akts": 2
+        },
+        {
+          "kod": "ADSD2502824",
+          "ad": "İslam ve Medeniyet",
+          "kredi": 2,
+          "akts": 2
+        }
+      ]
+    },
+    {
+      "ad": "Seçmeli VII",
+      "kod": "1906004992015",
+      "yariyil": 7,
+      "akts": 20,
+      "tur": "bolum",
+      "havuz": [
+        {
+          "kod": "1906004052015",
+          "ad": "İleri Veri Tabanı Yönetim Sistemleri",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906004152015",
+          "ad": "Sayısal Sinyal İşleme",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906004072015",
+          "ad": "Robotik",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906004212018",
+          "ad": "Sensor Ağları",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906004232018",
+          "ad": "Bilişim Hukuku",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906004132015",
+          "ad": "Veri Madenciliği",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906004252018",
+          "ad": "Nesnelerin İnterneti",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906004172015",
+          "ad": "Yapay Sinir Ağları",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906004092015",
+          "ad": "Bulanık Mantık",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906004192015",
+          "ad": "E Ticaret",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906004112015",
+          "ad": "Yapay Zeka",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906004272023",
+          "ad": "Nanoteknoloji",
+          "kredi": 3,
+          "akts": 4
+        }
+      ]
+    },
+    {
+      "ad": "Seçmeli VIII",
+      "kod": "1906004982015",
+      "yariyil": 8,
+      "akts": 20,
+      "tur": "bolum",
+      "havuz": [
+        {
+          "kod": "1906004202015",
+          "ad": "Uzman Sistemler",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906004142015",
+          "ad": "Pyhton Programlama",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906004082015",
+          "ad": "Görüntü İşleme",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906004222015",
+          "ad": "Bulut Bilişim",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906004102015",
+          "ad": "Bilgisayarlı Görme",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906004162015",
+          "ad": "Biyoenformatik",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906004182015",
+          "ad": "Haberleşme Sistemleri",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906004062015",
+          "ad": "Bilgi ve Ağ Güvenliği",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906004242019",
+          "ad": "Biyomedikal Mühendisliğine Giriş",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906004122015",
+          "ad": "Kuantumsal Hesaplamanın Temelleri",
+          "kredi": 3,
+          "akts": 4
+        },
+        {
+          "kod": "1906004262026",
+          "ad": "Veri Bilimine Giriş",
+          "kredi": 3,
+          "akts": 4
+        }
+      ]
+    }
   ]
 }
