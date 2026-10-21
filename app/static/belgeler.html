@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Belgeler · BAİBÜ Kampüs Asistanı</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/common.js" defer></script>
+  <script>
+    // Belge listesi: bir kez yüklenir, arama tarayıcıda filtrelenir; satıra tıklayınca chunk'lar panelde açılır.
+    let docs = [];
+
+    function render(query = "") {
+      const q = norm(query);
+      const rows = q ? docs.filter((d) => norm(`${d.title} ${d.source}`).includes(q)) : docs;
+      document.getElementById("count").textContent = `${rows.length} / ${docs.length} belge`;
+      document.getElementById("list").innerHTML = rows.map((d, i) => `
+        <button class="doc-row" data-i="${docs.indexOf(d)}">
+          <span class="t">${escapeHtml(d.title)}</span>
+          <span class="k">${escapeHtml(d.kind || "")}</span>
+          <span class="n">${d.chunk_count} chunk</span>
+        </button>`).join("");
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const list = document.getElementById("list");
+      try {
+        docs = (await api("/documents")).sort((a, b) => a.title.localeCompare(b.title, "tr"));
+        render();
+      } catch (e) {
+        list.innerHTML = `<div class="doc-row">${escapeHtml(e.message)}</div>`;
+      }
+      document.getElementById("search").addEventListener("input", (e) => render(e.target.value));
+      list.addEventListener("click", (e) => {
+        const row = e.target.closest(".doc-row[data-i]");
+        if (row) { const d = docs[row.dataset.i]; openDocument(d.source, d.title); }
+      });
+    });
+  </script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">BAİBÜ Kampüs Asistanı<small>mevzuat asistanı</small></div>
+      <nav class="nav">
+        <a href="/">Sohbet</a>
+        <a href="/belgeler" class="active">Belgeler</a>
+        <a href="/admin">Değerlendirme</a>
+      </nav>
+      <div class="status"></div>
+    </div>
+  </header>
+  <main class="page">
+    <h1>Belgeler</h1>
+    <p class="lead">Asistanın cevap verirken kullandığı belgeler. <span id="count"></span></p>
+    <input class="search" id="search" type="search" placeholder="Belge adında ara…" aria-label="Belge ara">
+    <div class="doc-list" id="list"></div>
+  </main>
+</body>
+</html>

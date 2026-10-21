@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Değerlendirme · BAİBÜ Kampüs Asistanı</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
+  <script src="/static/common.js" defer></script>
+  <script src="/static/admin.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">BAİBÜ Kampüs Asistanı<small>mevzuat asistanı</small></div>
+      <nav class="nav">
+        <a href="/">Sohbet</a>
+        <a href="/belgeler">Belgeler</a>
+        <a href="/admin" class="active">Değerlendirme</a>
+      </nav>
+      <div class="status"></div>
+    </div>
+  </header>
+  <main class="page">
+    <h1>Değerlendirme</h1>
+    <p class="lead">Kayıtlı soru-cevapları elle etiketle. Aynı cevabı tekrar kaydedersen en sonuncusu geçerli olur.</p>
+    <div class="stats" id="stats"></div>
+    <p class="stages" id="stages"></p>
+    <div class="toolbar">
+      <label><input type="checkbox" id="only-pending" checked> Yalnız değerlendirilmemişler</label>
+      <span id="shown" style="margin-left:auto;color:var(--text-muted);font-size:13px"></span>
+    </div>
+    <div id="records"></div>
+  </main>
+</body>
+</html>
