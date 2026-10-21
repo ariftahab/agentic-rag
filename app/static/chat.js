@@ -4,6 +4,10 @@ const state = {
   history: [],                     // API'ye giden sade geçmiş: [{role, content}], kaynak listesi yok
   sessionId: crypto.randomUUID(),  // log'da bu sohbetin sorularını gruplar
   busy: false,
+  // Transkript ve eşdeğerlik teyitleri yalnız bu değişkende durur (localStorage/sessionStorage yok): sayfa
+  // yenilenince ya da kapanınca kaybolur. Sunucu da saklamaz; her /agent/ask isteğine eklenir.
+  transcript: null,                // POST /transcript'in döndürdüğü kişisel bilgisiz JSON
+  confirmations: {},               // {plan dışı ders kodu: plan ders kodu | null}; agent günceller, biz geri göndeririz
 };
 
 const $ = (id) => document.getElementById(id);
@@ -50,6 +54,66 @@ function addBotMessage(body) {
     btn.addEventListener("click", () => sendFeedback(body.id, btn, div)));
 }
 
+// Agent cevabı: kaynak düğmeleri ve 👍/👎 yok (agent cevapları soru-cevap log'una yazılmaz); altında çağrılan
+// tool'lar görünür ki kullanıcı cevabın hangi hesaptan ya da aramadan geldiğini bilsin.
+function addAgentMessage(body) {
+  const tools = body.tool_calls.map((c) => {
+    const args = Object.values(c.args).map((v) => JSON.stringify(v)).join(", ");
+    return `<code>${escapeHtml(c.name)}(${escapeHtml(args)})</code>`;
+  }).join(" → ");
+  addEl("msg-bot", `
+    <div class="answer">${renderAnswer(body.answer)}</div>
+    <div class="tools">${tools ? `Kullanılan tool'lar: ${tools}` : "Tool kullanılmadı"}</div>
+    <div class="meta"><span>${(body.latency_ms / 1000).toFixed(1)} sn</span><span>danışmanlık agent'ı</span></div>`);
+}
+
+// --- Transkript ---
+
+function showTranscript() {
+  const loaded = state.transcript !== null;
+  $("transcript-badge").hidden = !loaded;
+  $("transcript-hint").hidden = loaded;
+  $("transcript-pick").textContent = loaded ? "Başka transkript yükle" : "Transkript yükle";
+  if (loaded) $("transcript-label").textContent = `Transkript yüklü (${state.transcript.dersler.length} ders)`;
+}
+
+// PDF istek gövdesinin kendisi olarak gider (multipart değil): sunucu dosyayı yalnız bellekte okur.
+async function uploadTranscript(file) {
+  let res;
+  try {
+    res = await fetch("/transcript", { method: "POST", headers: { "Content-Type": "application/pdf" }, body: file });
+  } catch {
+    throw new Error("Sunucuya ulaşılamadı. Sunucu çalışıyor mu?");
+  }
+  const data = await res.json().catch(() => null);
+  if (!res.ok) throw new Error((data && typeof data.detail === "string" && data.detail) ||
+    "Lütfen OBS'den tarihsel transkripti yükleyin.");
+  return data;
+}
+
+async function onTranscriptFile(file) {
+  if (!file) return;
+  const note = addEl("typing", "Transkript okunuyor");
+  try {
+    const body = await uploadTranscript(file);
+    state.transcript = body.transcript;
+    state.confirmations = {}; // teyitler yüklenen transkripte aittir
+    note.remove();
+    addEl("msg-info", `Transkript yüklendi (${body.course_count} ders). Sorularınız artık transkriptle cevaplanacak.`);
+  } catch (e) {
+    note.remove();
+    addEl("msg-error", escapeHtml(`Transkript yüklenemedi: ${e.message}`));
+  }
+  showTranscript();
+}
+
+function removeTranscript() {
+  state.transcript = null;
+  state.confirmations = {};
+  showTranscript();
+  addEl("msg-info", "Transkript kaldırıldı. Sorular yalnız mevzuattan cevaplanacak.");
+}
+
 async function sendFeedback(answerId, btn, msgEl) {
   const rating = Number(btn.dataset.rating);
   try {
@@ -67,12 +131,25 @@ async function ask(question) {
   addUserMessage(question);
   const typing = addEl("typing", "Cevap hazırlanıyor");
   try {
-    const body = await api("/ask", {
-      method: "POST",
-      body: { question, history: state.history, session_id: state.sessionId },
-    });
-    typing.remove();
-    addBotMessage(body);
+    let body;
+    if (state.transcript) {
+      // Transkript yüklüyse danışmanlık agent'ı (tool calling); değilse eskisi gibi mevzuat sohbeti (/ask).
+      body = await api("/agent/ask", {
+        method: "POST",
+        body: { question, history: state.history, session_id: state.sessionId,
+                transcript: state.transcript, confirmations: state.confirmations },
+      });
+      state.confirmations = body.confirmations;
+      typing.remove();
+      addAgentMessage(body);
+    } else {
+      body = await api("/ask", {
+        method: "POST",
+        body: { question, history: state.history, session_id: state.sessionId },
+      });
+      typing.remove();
+      addBotMessage(body);
+    }
     state.history.push({ role: "user", content: question }, { role: "assistant", content: body.answer });
   } catch (e) {
     // Hata ekranda görünür ama geçmişe eklenmez: sonraki soruların rewrite'ını bozmasın.
@@ -85,10 +162,11 @@ async function ask(question) {
   }
 }
 
+// Yeni sohbet geçmişi siler; yüklü transkript ve teyitler kalır (terminaldeki chat.py'de de böyle).
 function newChat() {
   state.history = [];
   state.sessionId = crypto.randomUUID();
-  els.inner.querySelectorAll(".msg-user, .msg-bot, .msg-error").forEach((el) => el.remove());
+  els.inner.querySelectorAll(".msg-user, .msg-bot, .msg-error, .msg-info").forEach((el) => el.remove());
   els.empty.hidden = false;
   panel.close();
   els.input.focus();
@@ -121,6 +199,13 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   els.input.addEventListener("input", autoGrow);
   $("new-chat").addEventListener("click", newChat);
+  const fileInput = $("transcript-file");
+  $("transcript-pick").addEventListener("click", () => fileInput.click());
+  fileInput.addEventListener("change", () => {
+    onTranscriptFile(fileInput.files[0]);
+    fileInput.value = ""; // aynı dosya tekrar seçilirse de change olayı gelsin
+  });
+  $("transcript-remove").addEventListener("click", removeTranscript);
   els.empty.querySelectorAll(".examples button").forEach((b) =>
     b.addEventListener("click", () => ask(b.textContent)));
   els.input.focus();

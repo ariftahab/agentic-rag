@@ -192,6 +192,24 @@ a.cite:hover { text-decoration: underline; }
 .link-btn { background: none; border: 0; padding: 0; color: var(--text-muted); font-size: 12px; text-decoration: underline; }
 .link-btn:hover { color: var(--text); }
 
+/* Transkript yükleme satırı (yazı kutusunun üstünde) ve agent cevabındaki tool listesi */
+.transcript-bar {
+  max-width: var(--content-width); margin: 0 auto 6px; font-size: 12.5px; color: var(--text-muted);
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px;
+}
+.transcript-bar #transcript-pick { color: var(--accent); }
+.transcript-badge {
+  display: inline-flex; align-items: center; gap: 8px; padding: 2px 10px; border-radius: 999px;
+  background: var(--accent-soft); color: var(--accent); font-weight: 600;
+}
+.transcript-badge[hidden] { display: none; }
+.msg-info {
+  align-self: center; background: var(--accent-soft); color: var(--accent);
+  padding: 6px 14px; border-radius: 999px; font-size: 13px;
+}
+.tools { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+.tools code { background: var(--surface-2); border-radius: 4px; padding: 0 4px; }
+
 /* --- Kaynak paneli (sağdan açılır) --- */
 
 .panel {
