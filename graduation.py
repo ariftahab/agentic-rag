@@ -7,6 +7,7 @@ Komut satırı (gerçek transkriptle elle doğrulamak için):
     python graduation.py <tarihsel_transkript.pdf>
 """
 import json
+import re
 import sys
 
 import config
@@ -17,6 +18,14 @@ RULES_PATH = config.DATA_DIR / "plan" / "yonetmelik_kurallari.json"
 # Bir akademik yıl içindeki sıra; yıl akademik yılın başlangıcı olduğu için (yıl, sıra) kronolojiktir.
 TERM_ORDER = {"Güz": 0, "Bahar": 1, "Yaz": 2}
 STATUS_TEXT = {"alinmadi": "alınmadı", "basarisiz": "başarısız", "devam_ediyor": "bu dönem alınıyor"}
+UNMATCHED_STATUS_TEXT = {"gecti": "geçti", "basarisiz": "başarısız", "devam_ediyor": "bu dönem alınıyor"}
+
+# Plan dışı ders (Erasmus, intibak) ile plan dersinin adları arasında otomatik eşleme eşiği (kelime kümelerinin
+# Jaccard benzerliği). Gerçek transkriptle seçildi: "Operating Systems" ~ "Operating Systems I" 0,67,
+# "Computer Networks" ~ "Data Communication and Computer Networks" 0,5 eşlenir; "Microcomputer Systems" en fazla
+# 0,33 alır ve kullanıcıya sorulur.
+MATCH_THRESHOLD = 0.5
+STOPWORDS = {"and", "of", "the", "in", "to", "for", "with", "a", "an", "ve", "ile", "için"}
 
 
 def _term_key(course):
@@ -45,13 +54,83 @@ def _latest_status(courses, passing):
     return passed, ongoing
 
 
-def evaluate(transcript, plan, rules=None):
+def _words(name):
+    name = name.replace("I", "ı").replace("İ", "i").lower()
+    return {w for w in re.findall(r"\w+", name) if w not in STOPWORDS}
+
+
+def name_similarity(a, b):
+    """İki ders adının kelime kümelerinin Jaccard benzerliği (ortak kelime / toplam farklı kelime)."""
+    wa, wb = _words(a), _words(b)
+    return len(wa & wb) / len(wa | wb) if wa and wb else 0.0
+
+
+def plan_courses(plan):
+    """Plandaki bütün dersler (zorunlular ve seçmeli havuzları), kod başına bir kez; "zorunlu" alanıyla."""
+    result = {c["kod"]: {**c, "zorunlu": True} for c in plan["zorunlu_dersler"]}
+    for slot in plan.get("secmeli_yuvalar", []):
+        for c in slot["havuz"]:
+            result.setdefault(c["kod"], {**c, "zorunlu": False})
+    return list(result.values())
+
+
+def _best_match(name, candidates):
+    """Adı en benzer plan dersi; eşik altındaysa ya da eşitlik zorunlu ders tercihiyle de çözülmüyorsa None."""
+    scored = [(max(name_similarity(name, c["ad"]), name_similarity(name, c.get("ad_en", ""))), c)
+              for c in candidates]
+    best = max((s for s, _ in scored), default=0.0)
+    if best < MATCH_THRESHOLD:
+        return None, best
+    top = [c for s, c in scored if s == best]
+    if len(top) > 1:
+        top = [c for c in top if c["zorunlu"]] or top
+    return (top[0], best) if len(top) == 1 else (None, best)
+
+
+def _match_unplanned(courses, plan, passed, ongoing, confirmations):
+    """Plan dışı dersleri plan derslerine eşler: önce kullanıcı teyidi, sonra İngilizce/Türkçe ad benzerliği.
+
+    Dönüş: (eşlemeler, eşlenemeyenler). Hedef adayları, transkriptte kendi koduyla geçilmiş plan dersleri dışındaki
+    plan dersleridir."""
+    by_code = {c["kod"]: c for c in plan_courses(plan)}
+    passed_codes = {c["kod"] for c in passed}
+    status = {**{c["kod"]: "devam_ediyor" for c in ongoing}, **{c["kod"]: "gecti" for c in passed}}
+    candidates = [c for c in by_code.values() if c["kod"] not in passed_codes]
+    matches, unmatched, seen = [], [], set()
+    for c in courses:
+        if c["kod"] in by_code or c["kod"] in seen:
+            continue
+        seen.add(c["kod"])
+        base = {"kod": c["kod"], "ad": c["ad"], "akts": c["akts"], "durum": status.get(c["kod"], "basarisiz")}
+        if c["kod"] in confirmations:
+            target = by_code.get(confirmations[c["kod"]])
+            if target is None:
+                unmatched.append({**base, "teyit_edildi": True})
+                continue
+            matches.append({**base, "plan_kod": target["kod"], "plan_ad": target["ad"], "yontem": "teyit"})
+            continue
+        target, score = _best_match(c["ad"], candidates)
+        if target is None:
+            unmatched.append({**base, "teyit_edildi": False})
+        else:
+            matches.append({**base, "plan_kod": target["kod"], "plan_ad": target["ad"], "yontem": "otomatik",
+                            "benzerlik": round(score, 2)})
+    return matches, unmatched
+
+
+def evaluate(transcript, plan, rules=None, confirmations=None):
     """Transkripti plan ve kurallarla karşılaştırır; iki senaryo: şu an ve bu dönemin dersleri geçilirse.
 
-    `rules` verilmezse yönetmelik kuralları `RULES_PATH`'ten okunur."""
+    `rules` verilmezse yönetmelik kuralları `RULES_PATH`'ten okunur. `confirmations` kullanıcının teyit ettiği
+    eşlemelerdir: {plan dışı ders kodu: plan ders kodu ya da eşdeğeri yoksa None}. Eşlenen plan dışı ders,
+    bütün hesaplarda plan dersinin koduyla sayılır."""
     rules = rules or load_rules()
-    courses = transcript["dersler"]
-    passed, ongoing = _latest_status(courses, set(_rule(rules, "gecer_notlar")["deger"]))
+    passing = set(_rule(rules, "gecer_notlar")["deger"])
+    matches, unmatched = _match_unplanned(transcript["dersler"], plan, *_latest_status(transcript["dersler"], passing),
+                                          confirmations or {})
+    target_of = {m["kod"]: m["plan_kod"] for m in matches}
+    courses = [{**c, "kod": target_of.get(c["kod"], c["kod"])} for c in transcript["dersler"]]
+    passed, ongoing = _latest_status(courses, passing)
     passed_ects = sum(c["akts"] for c in passed)
 
     passed_codes = {c["kod"] for c in passed}
@@ -75,6 +154,8 @@ def evaluate(transcript, plan, rules=None):
         "devam_edenler_gecilirse_akts": passed_ects + sum(c["akts"] for c in ongoing),
         "eksik_zorunlu": missing,
         "siniflandirma": _classify(courses, plan),
+        "eslesmeler": matches,
+        "eslesmeyen": unmatched,
         "secmeli": _electives(passed, passed + ongoing, plan, adsd_required),
         "gno": transcript.get("obs_ozet", {}).get("gno"),
         "kayit_yili": transcript.get("kayit_yili"),
@@ -288,6 +369,8 @@ def report_text(report, plan):
             state += " (isteğe bağlı)"
         courses = y["devam_edenler_gecilirse_dersler"] or ["-"]
         lines.append(f"  - {y['yariyil']}. yarıyıl  {y['ad']} ({y['akts']} AKTS): {state}  [{', '.join(courses)}]")
+    lines.append(f"Plan derslerine eşlenen plan dışı dersler ({len(report['eslesmeler'])}):")
+    lines += [f"  - {m['ad']} ({m['kod']}) -> {m['plan_ad']}: {m['yontem']}" for m in report["eslesmeler"]]
     outside = [c for c in report["siniflandirma"] if c["sinif"] == "planda_yok"]
     lines.append(f"Planda olmayan dersler ({len(outside)}):")
     lines += [f"  - {c['ad']} ({c['kod']})" for c in outside]
@@ -322,9 +405,20 @@ def summary_text(report, plan):
         f"zorunlu dersler {compulsory['devam_edenler_gecilirse']} / {compulsory['gereken']}; seçmeli "
         f"{s['devam_edenler_gecilirse_akts']} / {s['gereken_akts']} AKTS ({s['devam_edenler_gecilirse_acik_akts']} AKTS "
         f"açık); mezuniyet şartları {met[report['devam_edenler_gecilirse_tum_sartlar_karsilandi']]}.",
-        "",
-        "KURALLAR (şu an → bu dönem geçilirse)",
     ]
+    # Eşlenemeyen dersler senaryoların hemen altında: özetin sonundayken agent kullanıcıya sormuyordu.
+    asked = [c for c in report["eslesmeyen"] if not c["teyit_edildi"]]
+    if report["eslesmeyen"]:
+        lines += ["", "EŞLENEMEYEN PLAN DIŞI DERSLER (Erasmus, intibak; AKTS'leri toplama sayıldı, plandaki "
+                      "karşılıkları bilinmiyor)"]
+        for c in report["eslesmeyen"]:
+            note = "; kullanıcı plandaki bir derse karşılık gelmediğini teyit etti" if c["teyit_edildi"] else ""
+            lines.append(f"- {c['ad']} ({c['akts']} AKTS, {UNMATCHED_STATUS_TEXT[c['durum']]}{note})")
+    if asked:
+        names = ", ".join(c["ad"] for c in asked)
+        lines.append(f"Cevabın sonunda kullanıcıya şunu sor: \"{names} öğretim planındaki hangi derse sayıldı?\" "
+                     "Cevabını confirm_equivalence ile kaydet.")
+    lines += ["", "KURALLAR (şu an → bu dönem geçilirse)"]
     for r in report["kurallar"]:
         sources = "; ".join(f"{k['belge']}, {k['madde']}" for k in r["kaynak"])
         lines.append(f"- {r['aciklama']} gereken {r['gereken']}, şu an {r['mevcut']}, "
@@ -337,6 +431,11 @@ def summary_text(report, plan):
         if not y["doldu"]:
             then = "bu dönem geçilirse doluyor" if y["devam_edenler_gecilirse_doldu"] else "bu dönem geçilse de açık"
             lines.append(f"- {y['ad']} ({y['yariyil']}. yarıyıl, {y['akts']} AKTS): {then}")
+    if report["eslesmeler"]:
+        lines += ["", "PLAN DIŞI DERSLERİN EŞLEMESİ (Erasmus, intibak; kesin eşdeğerlik intibak komisyonu "
+                      "kararına bağlıdır, cevapta bunu belirt)"]
+        how = {"otomatik": "ders adının çevirisine göre otomatik eşlendi", "teyit": "kullanıcı teyit etti"}
+        lines += [f"- {m['ad']} ({m['akts']} AKTS) → {m['plan_ad']}: {how[m['yontem']]}" for m in report["eslesmeler"]]
     return "\n".join(lines)
 
 

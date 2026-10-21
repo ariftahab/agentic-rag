@@ -341,5 +341,117 @@ def test_llm_summary_lists_missing_courses_with_their_status():
 
 def test_llm_summary_leaves_out_course_classification():
     report = graduation.evaluate(SAMPLE, PLAN)
-    assert "Yapay Zeka" in str(report["siniflandirma"])
-    assert "Yapay Zeka" not in graduation.summary_text(report, PLAN)
+    assert "Matematik I" in str(report["siniflandirma"])         # geçilmiş zorunlu ders
+    assert "Matematik I" not in graduation.summary_text(report, PLAN)
+
+
+# --- Plan dışı derslerin eşlenmesi (Erasmus, intibak) -----------------------------------------
+# Adlar gerçek transkriptteki Erasmus dersleri ve öğretim planındaki İngilizce adlardır; eşik bunlarla seçildi.
+MATCH_PLAN = {
+    **PLAN,
+    "zorunlu_dersler": [
+        {"kod": "OS1", "ad": "İşletim Sistemleri I", "ad_en": "Operating Systems I", "yariyil": 5, "kredi": 4, "akts": 5},
+        {"kod": "VTY", "ad": "Veritabanı Yönetim Sistemleri", "ad_en": "Database Management Systems", "yariyil": 6,
+         "kredi": 4, "akts": 6},
+        {"kod": "GOM", "ad": "Gömülü Sistemler", "ad_en": "Embedded Systems", "yariyil": 6, "kredi": 4, "akts": 5},
+        {"kod": "MIK", "ad": "Mikroişlemciler", "ad_en": "Microprocessors", "yariyil": 5, "kredi": 4, "akts": 5},
+        {"kod": "AG", "ad": "Veri İletişimi ve Bilgisayar Ağları", "ad_en": "Data Communication and Computer Networks",
+         "yariyil": 8, "kredi": 4, "akts": 5},
+    ],
+    "secmeli_yuvalar": [
+        {"ad": "Seçmeli V", "kod": "S5", "yariyil": 5, "akts": 4, "tur": "bolum",
+         "havuz": [{"kod": "OS2", "ad": "İşletim Sistemleri II", "ad_en": "Operating Systems II", "akts": 4},
+                   {"kod": "YZ", "ad": "Yapay Zeka", "ad_en": "Artificial Intelligence", "akts": 4}]},
+    ],
+}
+
+
+def erasmus(code, name, ects, grade, term="Güz"):
+    return {**course(2025, term, code, name, ects, grade), "erasmus": True}
+
+
+ERASMUS_SAMPLE = transcript(
+    erasmus("E1", "Operating Systems", 5, "DC"),
+    erasmus("E2", "Microcomputer Systems", 5, "AA"),
+    erasmus("E3", "Database Systems", 6, "CB", "Bahar"),
+    erasmus("E4", "Computer Networks", 5, "FF", "Bahar"),
+    erasmus("E5", "Embedded Computer Systems", 5, "DC", "Bahar"),
+)
+
+
+def matched(report):
+    return {m["ad"]: (m["plan_ad"], m["yontem"]) for m in report["eslesmeler"]}
+
+
+def test_erasmus_courses_with_similar_english_names_are_matched_automatically():
+    report = graduation.evaluate(ERASMUS_SAMPLE, MATCH_PLAN)
+    assert matched(report) == {
+        "Operating Systems": ("İşletim Sistemleri I", "otomatik"),      # compulsory wins the tie with II
+        "Database Systems": ("Veritabanı Yönetim Sistemleri", "otomatik"),
+        "Computer Networks": ("Veri İletişimi ve Bilgisayar Ağları", "otomatik"),
+        "Embedded Computer Systems": ("Gömülü Sistemler", "otomatik"),
+    }
+
+
+def test_matched_courses_count_as_the_plan_course():
+    missing = {c["ad"]: c["durum"] for c in graduation.evaluate(ERASMUS_SAMPLE, MATCH_PLAN)["eksik_zorunlu"]}
+    assert missing == {"Mikroişlemciler": "alinmadi", "Veri İletişimi ve Bilgisayar Ağları": "basarisiz"}
+
+
+def test_unmatched_course_is_listed_and_still_counts_towards_total_ects():
+    report = graduation.evaluate(ERASMUS_SAMPLE, MATCH_PLAN)
+    assert [(c["ad"], c["durum"]) for c in report["eslesmeyen"]] == [("Microcomputer Systems", "gecti")]
+    assert report["gecilen_akts"] == 5 + 5 + 6 + 5                     # FF olan Computer Networks hariç
+
+
+def test_confirmed_equivalence_completes_the_plan_course():
+    report = graduation.evaluate(ERASMUS_SAMPLE, MATCH_PLAN, confirmations={"E2": "MIK"})
+    assert matched(report)["Microcomputer Systems"] == ("Mikroişlemciler", "teyit")
+    assert "Mikroişlemciler" not in [c["ad"] for c in report["eksik_zorunlu"]]
+    assert report["eslesmeyen"] == []
+
+
+def test_confirmed_no_equivalent_is_not_matched_again():
+    report = graduation.evaluate(ERASMUS_SAMPLE, MATCH_PLAN, confirmations={"E1": None})
+    assert "Operating Systems" not in matched(report)
+    assert [(c["ad"], c["teyit_edildi"]) for c in report["eslesmeyen"]] == [
+        ("Operating Systems", True), ("Microcomputer Systems", False)]
+
+
+def test_matched_elective_fills_its_slot():
+    report = graduation.evaluate(transcript(erasmus("E9", "Artificial Intelligence", 4, "BB")), MATCH_PLAN)
+    assert matched(report) == {"Artificial Intelligence": ("Yapay Zeka", "otomatik")}
+    assert report["secmeli"]["gecilen_akts"] == 4
+
+
+def test_plan_course_already_passed_is_not_a_match_target():
+    report = graduation.evaluate(transcript(course(2024, "Güz", "OS1", "İşletim Sistemleri I", 5, "BB"),
+                                            erasmus("E1", "Operating Systems", 5, "DC")), MATCH_PLAN)
+    assert matched(report) == {"Operating Systems": ("İşletim Sistemleri II", "otomatik")}
+
+
+def test_tie_between_two_compulsory_courses_is_left_to_the_user():
+    plan = {**MATCH_PLAN, "zorunlu_dersler": MATCH_PLAN["zorunlu_dersler"] + [
+        {"kod": "OS3", "ad": "İşletim Sistemleri III", "ad_en": "Operating Systems III", "yariyil": 7, "kredi": 4,
+         "akts": 5}]}
+    report = graduation.evaluate(transcript(erasmus("E1", "Operating Systems", 5, "DC")), plan)
+    assert [c["ad"] for c in report["eslesmeyen"]] == ["Operating Systems"]
+
+
+def test_llm_summary_shows_matches_and_unmatched_courses():
+    text = graduation.summary_text(graduation.evaluate(ERASMUS_SAMPLE, MATCH_PLAN), MATCH_PLAN)
+    assert "Operating Systems (5 AKTS) → İşletim Sistemleri I" in text
+    assert "intibak komisyonu" in text
+    assert "- Microcomputer Systems (5 AKTS, geçti)" in text
+
+
+def test_llm_summary_asks_about_unconfirmed_courses_right_after_the_scenarios():
+    lines = graduation.summary_text(graduation.evaluate(ERASMUS_SAMPLE, MATCH_PLAN), MATCH_PLAN).splitlines()
+    ask = next(i for i, line in enumerate(lines) if "hangi derse sayıldı" in line)
+    assert "Microcomputer Systems" in lines[ask]
+    assert ask < lines.index("KURALLAR (şu an → bu dönem geçilirse)")
+
+
+def test_llm_summary_does_not_ask_again_after_a_no_equivalent_confirmation():
+    report = graduation.evaluate(ERASMUS_SAMPLE, MATCH_PLAN, confirmations={"E2": None})
+    assert "hangi derse sayıldı" not in graduation.summary_text(report, MATCH_PLAN)
