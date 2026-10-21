@@ -124,3 +124,23 @@ def test_confirm_equivalence_with_unknown_plan_course_is_not_recorded():
     content = confirm({"transcript_course": "Microcomputer Systems", "plan_course": "Kuantum Fiziği"}, confirmations)
     assert confirmations == {}
     assert "Kuantum Fiziği" in content and "bulunamadı" in content
+
+
+def schedule_reply(args, transcript):
+    llm = ScriptedChatModel([
+        AIMessage("", tool_calls=[{"name": "get_course_schedule", "args": args, "id": "1"}]),
+        AIMessage("nihai cevap"),
+    ])
+    AdvisorAgent(retriever=None, llm=llm, plan=PLAN).ask("Ders programım?", transcript=transcript)
+    return next(m for m in llm.received[-1] if isinstance(m, ToolMessage)).content
+
+
+def test_course_schedule_without_transcript_or_filter_asks_for_class():
+    assert "kaçıncı sınıf" in schedule_reply({"gun": "2026-10-22"}, None)
+
+
+def test_course_schedule_uses_this_terms_courses_from_the_transcript():
+    transcript = {**SAMPLE, "dersler": [_course(2026, "Güz", "1906004232018", "Bilişim Hukuku", 4, None)]}
+    content = schedule_reply({"gun": "2026-10-22"}, transcript)
+    assert "- 12:30-15:15 Bilişim Hukuku (Seç VII), 4. sınıf, 326" in content
+    assert "bütün şubeler" in content

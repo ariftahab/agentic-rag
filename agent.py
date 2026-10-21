@@ -20,6 +20,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 import config
 import graduation
 import ingest
+import schedule
 from rag import Retriever, _format_context, _to_messages, token_usage
 
 MAX_TURNS = 5  # bir soru için en fazla LLM çağrısı (tool turları + nihai cevap)
@@ -82,7 +83,7 @@ def _same_name(a, b):
     return graduation.name_similarity(a, b) == 1.0
 
 
-def make_tools(retriever, plan, transcript, confirmations):
+def make_tools(retriever, plan, transcript, confirmations, today):
     """Bu çağrıya (oturuma) bağlı tool'lar. `transcript` ve `confirmations` closure'da durur; LLM'in görebileceği
     argümanlar değildir. confirm_equivalence `confirmations` sözlüğünü yerinde günceller (çağıran taraf saklar)."""
 
@@ -127,7 +128,36 @@ def make_tools(retriever, plan, transcript, confirmations):
         saved = f"{course['ad']} → {target['ad']}" if target else f"{course['ad']}: plandaki bir derse karşılık gelmiyor"
         return f"Kaydedildi ({saved}). Güncel analiz:\n\n" + analyze_transcript()
 
-    return [StructuredTool.from_function(f) for f in (search_regulations, analyze_transcript, confirm_equivalence)]
+    def get_course_schedule(gun: str = "bugün", sinif: int = 0, dersler: list[str] | None = None) -> str:
+        """Bilgisayar Mühendisliği bu dönemki haftalık ders programından bir günün derslerini saat, şube ve derslikle
+        döndürür; resmi tatili, hafta sonunu ve ders dönemi dışını belirtir. Sınıf ve ders verilmezse transkriptteki
+        bu dönemin dersleri ("benim derslerim") kullanılır.
+
+        Args:
+            gun: "bugün", "yarın", bir gün adı (ör. "perşembe") ya da YYYY-AA-GG tarihi.
+            sinif: Sınıf (1-4); bilinmiyorsa 0.
+            dersler: Ders adları (ör. ["Yapay Zeka"]); bilinmiyorsa boş.
+        """
+        try:
+            day = schedule.resolve_day(gun, today)
+        except ValueError as e:
+            return str(e)
+        codes = None
+        if not sinif and not dersler:
+            if transcript is None:
+                return ("Transkript yüklü değil ve sınıf ya da ders verilmedi. Kullanıcıya kaçıncı sınıf olduğunu ya da "
+                        "hangi dersleri aldığını sor.")
+            codes = schedule.current_course_codes(transcript)
+        data = schedule.load_schedule()
+        text = schedule.schedule_text(schedule.lookup(data, day, grade=sinif or None, courses=dersler, codes=codes),
+                                      data)
+        if codes is not None:
+            text += ("\nDersler transkriptteki bu dönemin derslerinden alındı; öğrencinin şubesi bilinmediği için "
+                     "bütün şubeler listelendi.")
+        return text
+
+    tools = (search_regulations, analyze_transcript, confirm_equivalence, get_course_schedule)
+    return [StructuredTool.from_function(f) for f in tools]
 
 
 class AdvisorAgent:
@@ -156,10 +186,11 @@ class AdvisorAgent:
 
         Dönüş: {"answer", "tool_calls": [{"name", "args"}], "turns", "usage"}.
         """
-        tools = make_tools(self.retriever, self.plan, transcript, {} if confirmations is None else confirmations)
+        today = date.today()
+        tools = make_tools(self.retriever, self.plan, transcript, {} if confirmations is None else confirmations, today)
         by_name = {t.name: t for t in tools}
         llm = self.llm.bind_tools(tools)
-        system = self.system.format(no_answer=config.NO_ANSWER, today=date.today().strftime("%d.%m.%Y"))
+        system = self.system.format(no_answer=config.NO_ANSWER, today=today.strftime("%d.%m.%Y"))
         messages = [SystemMessage(system), *_to_messages(history), HumanMessage(question)]
 
         calls, usage = [], []
