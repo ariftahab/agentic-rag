@@ -15,7 +15,7 @@ TERM_RE = re.compile(r"(\d{4}) Yılı (Güz|Bahar|Yaz) Dönemi")
 CREDIT_ECTS_RE = re.compile(r"^\s*(\d+)\s*\|\s*(\d+)\s*$")
 TERM_COLUMNS = 5  # bir dönemin tablo genişliği
 SEMESTER_LAYOUT_RE = re.compile(r"\d+\s*\.\s*Yarıyıl")
-ASK_FOR_HISTORICAL = "Lütfen OBS'den tarihsel transkripti yükleyin."
+ASK_FOR_HISTORICAL = "Lütfen UBYS'den tarihsel transkripti yükleyin."
 
 
 class TranscriptFormatError(ValueError):

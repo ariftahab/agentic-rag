@@ -87,7 +87,7 @@ async function uploadTranscript(file) {
   }
   const data = await res.json().catch(() => null);
   if (!res.ok) throw new Error((data && typeof data.detail === "string" && data.detail) ||
-    "Lütfen OBS'den tarihsel transkripti yükleyin.");
+    "Lütfen UBYS'den tarihsel transkripti yükleyin.");
   return data;
 }
 

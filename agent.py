@@ -77,7 +77,7 @@ Kurallar:
 AGENT_PROMPTS = {"agent_v1": _AGENT_V1_SYSTEM}
 AGENT_PROMPT_VERSION = "agent_v1"
 
-NO_TRANSCRIPT = ("Bu oturumda yüklenmiş bir transkript yok. Kullanıcıdan OBS'den indirdiği tarihsel transkripti "
+NO_TRANSCRIPT = ("Bu oturumda yüklenmiş bir transkript yok. Kullanıcıdan UBYS'den indirdiği tarihsel transkripti "
                  "yüklemesini iste.")
 TURN_LIMIT_ANSWER = "Bu soruyu belirlenen adım sayısı içinde cevaplayamadım. Soruyu daha dar sorabilir misiniz?"
 
