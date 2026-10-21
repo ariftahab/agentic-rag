@@ -1,0 +1,806 @@
+{
+  "kaynak": "BAİBÜ Bilgisayar Mühendisliği Bölümü 2026-2027 Güz Dönemi Ders Programı (data/2026_27_Güz_Lisans_v2.pdf)",
+  "donem": "2026-2027 Güz",
+  "ders_baslangic": "2026-09-21",
+  "ders_bitis": "2026-12-25",
+  "takvim_kaynak": "BAİBÜ 2026-2027 Eğitim-Öğretim Yılı Akademik Takvimi (data/akademik-takvim-2026-2027.pdf)",
+  "tatiller": [
+    {
+      "tarih": "2026-10-28",
+      "baslangic": "13:00",
+      "aciklama": "Cumhuriyet Bayramı arifesi (13.00'ten sonra)",
+      "kaynak": "2429 sayılı Ulusal Bayram ve Genel Tatiller Hakkında Kanun, Madde 1"
+    },
+    {
+      "tarih": "2026-10-29",
+      "aciklama": "Cumhuriyet Bayramı",
+      "kaynak": "2429 sayılı Ulusal Bayram ve Genel Tatiller Hakkında Kanun, Madde 1"
+    }
+  ],
+  "derslikler": {
+    "A.L.": "Sistem Ağları Laboratuvarı",
+    "B.L.": "Bilgisayar (Yazılım) Laboratuvarı",
+    "D.L.": "Donanım Laboratuvarı"
+  },
+  "dersler": [
+    {
+      "gun": "Pazartesi",
+      "sinif": 1,
+      "ders": "Bilgisayar Mühendisliğine Giriş",
+      "kod": "1906001012015",
+      "sube": "A",
+      "yuva": null,
+      "derslik": "B.L.",
+      "saatler": [
+        "08:30-09:15",
+        "09:30-10:15"
+      ]
+    },
+    {
+      "gun": "Pazartesi",
+      "sinif": 3,
+      "ders": "Algoritma Analizi",
+      "kod": "1906003032015",
+      "sube": "A",
+      "yuva": null,
+      "derslik": "327",
+      "saatler": [
+        "08:30-09:15",
+        "09:30-10:15",
+        "10:30-11:15"
+      ]
+    },
+    {
+      "gun": "Pazartesi",
+      "sinif": 4,
+      "ders": "Bitirme Projesi I",
+      "kod": "1906004012015",
+      "sube": "A",
+      "yuva": null,
+      "derslik": "",
+      "saatler": [
+        "08:30-09:15",
+        "09:30-10:15",
+        "10:30-11:15",
+        "11:30-12:15"
+      ]
+    },
+    {
+      "gun": "Pazartesi",
+      "sinif": 2,
+      "ders": "Ayrık Matematik",
+      "kod": "1906002032015",
+      "sube": null,
+      "yuva": null,
+      "derslik": "227",
+      "saatler": [
+        "09:30-10:15",
+        "10:30-11:15",
+        "11:30-12:15"
+      ]
+    },
+    {
+      "gun": "Pazartesi",
+      "sinif": 3,
+      "ders": "Algoritma Analizi",
+      "kod": "1906003032015",
+      "sube": "A",
+      "yuva": null,
+      "derslik": "B.L.",
+      "saatler": [
+        "11:30-12:15",
+        "12:30-13:15"
+      ]
+    },
+    {
+      "gun": "Pazartesi",
+      "sinif": 2,
+      "ders": "Kablosuz Algılayıcı Ağlar",
+      "kod": "1906002172023",
+      "sube": null,
+      "yuva": "Seç III",
+      "derslik": "326",
+      "saatler": [
+        "12:30-13:15",
+        "13:30-14:15",
+        "14:30-15:15"
+      ]
+    },
+    {
+      "gun": "Pazartesi",
+      "sinif": 1,
+      "ders": "Matematik I",
+      "kod": "1906001072015",
+      "sube": null,
+      "yuva": null,
+      "derslik": "227",
+      "saatler": [
+        "13:30-14:15",
+        "14:30-15:15",
+        "15:30-16:15",
+        "16:30-17:15",
+        "17:30-18:15"
+      ]
+    },
+    {
+      "gun": "Pazartesi",
+      "sinif": 3,
+      "ders": "Algoritma Analizi",
+      "kod": "1906003032015",
+      "sube": "B",
+      "yuva": null,
+      "derslik": "327",
+      "saatler": [
+        "13:30-14:15",
+        "14:30-15:15",
+        "15:30-16:15"
+      ]
+    },
+    {
+      "gun": "Pazartesi",
+      "sinif": 2,
+      "ders": "Web Programlama",
+      "kod": "1906002192023",
+      "sube": null,
+      "yuva": "Seç III",
+      "derslik": "A.L.",
+      "saatler": [
+        "15:30-16:15",
+        "16:30-17:15",
+        "17:30-18:15"
+      ]
+    },
+    {
+      "gun": "Pazartesi",
+      "sinif": 4,
+      "ders": "Sensor Ağları",
+      "kod": "1906004212018",
+      "sube": null,
+      "yuva": "Seç VII",
+      "derslik": "326",
+      "saatler": [
+        "15:30-16:15",
+        "16:30-17:15",
+        "17:30-18:15"
+      ]
+    },
+    {
+      "gun": "Pazartesi",
+      "sinif": 3,
+      "ders": "Algoritma Analizi",
+      "kod": "1906003032015",
+      "sube": "B",
+      "yuva": null,
+      "derslik": "B.L.",
+      "saatler": [
+        "16:30-17:15",
+        "17:30-18:15"
+      ]
+    },
+    {
+      "gun": "Salı",
+      "sinif": 1,
+      "ders": "Kimya",
+      "kod": "1906001052015",
+      "sube": "A",
+      "yuva": null,
+      "derslik": "327",
+      "saatler": [
+        "08:30-09:15",
+        "09:30-10:15",
+        "10:30-11:15",
+        "11:30-12:15",
+        "12:30-13:15"
+      ]
+    },
+    {
+      "gun": "Salı",
+      "sinif": 2,
+      "ders": "Nesne Tabanlı Programlama",
+      "kod": "1906002012015",
+      "sube": "A",
+      "yuva": null,
+      "derslik": "B.L.",
+      "saatler": [
+        "08:30-09:15",
+        "09:30-10:15",
+        "10:30-11:15",
+        "11:30-12:15",
+        "12:30-13:15"
+      ]
+    },
+    {
+      "gun": "Salı",
+      "sinif": 3,
+      "ders": "İşletim Sistemleri I",
+      "kod": "1906003052015",
+      "sube": "A",
+      "yuva": null,
+      "derslik": "326",
+      "saatler": [
+        "08:30-09:15",
+        "09:30-10:15",
+        "10:30-11:15",
+        "11:30-12:15",
+        "12:30-13:15"
+      ]
+    },
+    {
+      "gun": "Salı",
+      "sinif": 4,
+      "ders": "Nesnelerin İnterneti",
+      "kod": "1906004252018",
+      "sube": null,
+      "yuva": "Seç VII",
+      "derslik": "227",
+      "saatler": [
+        "09:30-10:15",
+        "10:30-11:15",
+        "11:30-12:15"
+      ]
+    },
+    {
+      "gun": "Salı",
+      "sinif": 1,
+      "ders": "Kimya",
+      "kod": "1906001052015",
+      "sube": "B",
+      "yuva": null,
+      "derslik": "227",
+      "saatler": [
+        "13:30-14:15",
+        "14:30-15:15",
+        "15:30-16:15",
+        "16:30-17:15",
+        "17:30-18:15"
+      ]
+    },
+    {
+      "gun": "Salı",
+      "sinif": 2,
+      "ders": "Nesne Tabanlı Programlama",
+      "kod": "1906002012015",
+      "sube": "B",
+      "yuva": null,
+      "derslik": "B.L.",
+      "saatler": [
+        "13:30-14:15",
+        "14:30-15:15",
+        "15:30-16:15",
+        "16:30-17:15",
+        "17:30-18:15"
+      ]
+    },
+    {
+      "gun": "Salı",
+      "sinif": 3,
+      "ders": "Mikroişlemciler",
+      "kod": "1906003012015",
+      "sube": "A",
+      "yuva": null,
+      "derslik": "327",
+      "saatler": [
+        "13:30-14:15",
+        "14:30-15:15",
+        "15:30-16:15"
+      ]
+    },
+    {
+      "gun": "Salı",
+      "sinif": 3,
+      "ders": "İşletim Sistemleri I",
+      "kod": "1906003052015",
+      "sube": "B",
+      "yuva": null,
+      "derslik": "326",
+      "saatler": [
+        "13:30-14:15",
+        "14:30-15:15",
+        "15:30-16:15",
+        "16:30-17:15",
+        "17:30-18:15"
+      ]
+    },
+    {
+      "gun": "Salı",
+      "sinif": 4,
+      "ders": "Bitirme Projesi I",
+      "kod": "1906004012015",
+      "sube": "B",
+      "yuva": null,
+      "derslik": "",
+      "saatler": [
+        "13:30-14:15",
+        "14:30-15:15",
+        "15:30-16:15",
+        "16:30-17:15"
+      ]
+    },
+    {
+      "gun": "Salı",
+      "sinif": 3,
+      "ders": "Mikroişlemciler",
+      "kod": "1906003012015",
+      "sube": "A",
+      "yuva": null,
+      "derslik": "D.L.",
+      "saatler": [
+        "16:30-17:15",
+        "17:30-18:15"
+      ]
+    },
+    {
+      "gun": "Çarşamba",
+      "sinif": 1,
+      "ders": "Bilgisayar Mühendisliğine Giriş",
+      "kod": "1906001012015",
+      "sube": "B",
+      "yuva": null,
+      "derslik": "B.L.",
+      "saatler": [
+        "08:30-09:15",
+        "09:30-10:15"
+      ]
+    },
+    {
+      "gun": "Çarşamba",
+      "sinif": 2,
+      "ders": "Diferansiyel Denklemler",
+      "kod": "1906002092015",
+      "sube": null,
+      "yuva": null,
+      "derslik": "326",
+      "saatler": [
+        "08:30-09:15",
+        "09:30-10:15",
+        "10:30-11:15",
+        "11:30-12:15"
+      ]
+    },
+    {
+      "gun": "Çarşamba",
+      "sinif": 4,
+      "ders": "Bitirme Projesi I",
+      "kod": "1906004012015",
+      "sube": "C",
+      "yuva": null,
+      "derslik": "",
+      "saatler": [
+        "08:30-09:15",
+        "09:30-10:15",
+        "10:30-11:15",
+        "11:30-12:15"
+      ]
+    },
+    {
+      "gun": "Çarşamba",
+      "sinif": 3,
+      "ders": "Paralel Hesaplama",
+      "kod": "1906003152015",
+      "sube": null,
+      "yuva": "Seç V",
+      "derslik": "A.L.",
+      "saatler": [
+        "09:30-10:15",
+        "10:30-11:15",
+        "11:30-12:15"
+      ]
+    },
+    {
+      "gun": "Çarşamba",
+      "sinif": 3,
+      "ders": "Doğal Dil İşleme",
+      "kod": "1906003132015",
+      "sube": null,
+      "yuva": "Seç V",
+      "derslik": "B.L.",
+      "saatler": [
+        "10:30-11:15",
+        "11:30-12:15"
+      ]
+    },
+    {
+      "gun": "Çarşamba",
+      "sinif": 1,
+      "ders": "Kariyer Planlama",
+      "kod": "1906001172019",
+      "sube": null,
+      "yuva": null,
+      "derslik": "123",
+      "saatler": [
+        "11:30-12:15"
+      ]
+    },
+    {
+      "gun": "Çarşamba",
+      "sinif": 1,
+      "ders": "Atatürk İlkeleri ve Inkilap Tarihi I",
+      "kod": "1906001092015",
+      "sube": null,
+      "yuva": null,
+      "derslik": "U.E.",
+      "saatler": [
+        "12:30-13:15",
+        "13:30-14:15"
+      ]
+    },
+    {
+      "gun": "Çarşamba",
+      "sinif": 3,
+      "ders": "Doğal Dil İşleme",
+      "kod": "1906003132015",
+      "sube": null,
+      "yuva": "Seç V",
+      "derslik": "327",
+      "saatler": [
+        "12:30-13:15"
+      ]
+    },
+    {
+      "gun": "Çarşamba",
+      "sinif": 4,
+      "ders": "Yapay Sinir Ağları",
+      "kod": "1906004172015",
+      "sube": null,
+      "yuva": "Seç VII",
+      "derslik": "",
+      "saatler": [
+        "12:30-13:15",
+        "13:30-14:15",
+        "14:30-15:15"
+      ]
+    },
+    {
+      "gun": "Çarşamba",
+      "sinif": 2,
+      "ders": "Elektrik Devreleri",
+      "kod": "1906002112015",
+      "sube": "B",
+      "yuva": null,
+      "derslik": "D.L.",
+      "saatler": [
+        "13:30-14:15",
+        "14:30-15:15"
+      ]
+    },
+    {
+      "gun": "Çarşamba",
+      "sinif": 3,
+      "ders": "Makine Öğrenmesine Giriş",
+      "kod": "1906003212026",
+      "sube": "A",
+      "yuva": "Seç V",
+      "derslik": "227",
+      "saatler": [
+        "13:30-14:15",
+        "14:30-15:15",
+        "15:30-16:15"
+      ]
+    },
+    {
+      "gun": "Çarşamba",
+      "sinif": 1,
+      "ders": "Mühendislik Etiği",
+      "kod": "1906001152016",
+      "sube": null,
+      "yuva": null,
+      "derslik": "123",
+      "saatler": [
+        "14:30-15:15",
+        "15:30-16:15",
+        "16:30-17:15"
+      ]
+    },
+    {
+      "gun": "Çarşamba",
+      "sinif": 2,
+      "ders": "Programlama Dilleri Temelleri",
+      "kod": "1906002132015",
+      "sube": null,
+      "yuva": "Seç III",
+      "derslik": "B.L.",
+      "saatler": [
+        "15:30-16:15",
+        "16:30-17:15",
+        "17:30-18:15"
+      ]
+    },
+    {
+      "gun": "Çarşamba",
+      "sinif": 2,
+      "ders": "Elektrik Devreleri",
+      "kod": "1906002112015",
+      "sube": "B",
+      "yuva": null,
+      "derslik": "326",
+      "saatler": [
+        "15:30-16:15",
+        "16:30-17:15",
+        "17:30-18:15"
+      ]
+    },
+    {
+      "gun": "Çarşamba",
+      "sinif": 4,
+      "ders": "Yapay Zeka",
+      "kod": "1906004112015",
+      "sube": null,
+      "yuva": "Seç VII",
+      "derslik": "327",
+      "saatler": [
+        "15:30-16:15",
+        "16:30-17:15",
+        "17:30-18:15"
+      ]
+    },
+    {
+      "gun": "Perşembe",
+      "sinif": 1,
+      "ders": "Fizik I",
+      "kod": "1906001032015",
+      "sube": null,
+      "yuva": null,
+      "derslik": "227",
+      "saatler": [
+        "08:30-09:15",
+        "09:30-10:15",
+        "10:30-11:15",
+        "11:30-12:15",
+        "12:30-13:15"
+      ]
+    },
+    {
+      "gun": "Perşembe",
+      "sinif": 2,
+      "ders": "Elektrik Devreleri",
+      "kod": "1906002112015",
+      "sube": "A",
+      "yuva": null,
+      "derslik": "D.L.",
+      "saatler": [
+        "08:30-09:15",
+        "09:30-10:15"
+      ]
+    },
+    {
+      "gun": "Perşembe",
+      "sinif": 3,
+      "ders": "Bilgisayar Mimarisi I",
+      "kod": "1906003072015",
+      "sube": "B",
+      "yuva": null,
+      "derslik": "326",
+      "saatler": [
+        "09:30-10:15",
+        "10:30-11:15",
+        "11:30-12:15"
+      ]
+    },
+    {
+      "gun": "Perşembe",
+      "sinif": 4,
+      "ders": "İleri Veri Tabanı Yönetim Sistemleri",
+      "kod": "1906004052015",
+      "sube": null,
+      "yuva": "Seç VII",
+      "derslik": "",
+      "saatler": [
+        "09:30-10:15",
+        "10:30-11:15",
+        "11:30-12:15"
+      ]
+    },
+    {
+      "gun": "Perşembe",
+      "sinif": 2,
+      "ders": "Elektrik Devreleri",
+      "kod": "1906002112015",
+      "sube": "A",
+      "yuva": null,
+      "derslik": "327",
+      "saatler": [
+        "10:30-11:15",
+        "11:30-12:15",
+        "12:30-13:15"
+      ]
+    },
+    {
+      "gun": "Perşembe",
+      "sinif": 4,
+      "ders": "Bilişim Hukuku",
+      "kod": "1906004232018",
+      "sube": null,
+      "yuva": "Seç VII",
+      "derslik": "326",
+      "saatler": [
+        "12:30-13:15",
+        "13:30-14:15",
+        "14:30-15:15"
+      ]
+    },
+    {
+      "gun": "Perşembe",
+      "sinif": 1,
+      "ders": "Türk Dili I",
+      "kod": "1906001112015",
+      "sube": null,
+      "yuva": null,
+      "derslik": "U.E.",
+      "saatler": [
+        "13:30-14:15",
+        "14:30-15:15"
+      ]
+    },
+    {
+      "gun": "Perşembe",
+      "sinif": 2,
+      "ders": "Mesleki İngilizce",
+      "kod": "1906002072015",
+      "sube": null,
+      "yuva": null,
+      "derslik": "123",
+      "saatler": [
+        "13:30-14:15",
+        "14:30-15:15",
+        "15:30-16:15"
+      ]
+    },
+    {
+      "gun": "Perşembe",
+      "sinif": 3,
+      "ders": "Bilgisayar Mimarisi I",
+      "kod": "1906003072015",
+      "sube": "A",
+      "yuva": null,
+      "derslik": "327",
+      "saatler": [
+        "13:30-14:15",
+        "14:30-15:15",
+        "15:30-16:15"
+      ]
+    },
+    {
+      "gun": "Perşembe",
+      "sinif": 3,
+      "ders": "Mikroişlemciler",
+      "kod": "1906003012015",
+      "sube": "B",
+      "yuva": null,
+      "derslik": "227",
+      "saatler": [
+        "13:30-14:15",
+        "14:30-15:15",
+        "15:30-16:15"
+      ]
+    },
+    {
+      "gun": "Perşembe",
+      "sinif": 4,
+      "ders": "Veri Madenciliği",
+      "kod": "1906004132015",
+      "sube": null,
+      "yuva": "Seç VII",
+      "derslik": "",
+      "saatler": [
+        "15:30-16:15",
+        "16:30-17:15",
+        "17:30-18:15"
+      ]
+    },
+    {
+      "gun": "Perşembe",
+      "sinif": 3,
+      "ders": "Mikroişlemciler",
+      "kod": "1906003012015",
+      "sube": "B",
+      "yuva": null,
+      "derslik": "D.L.",
+      "saatler": [
+        "16:30-17:15",
+        "17:30-18:15"
+      ]
+    },
+    {
+      "gun": "Cuma",
+      "sinif": 1,
+      "ders": "Yabancı Dil I",
+      "kod": "1906001132015",
+      "sube": null,
+      "yuva": null,
+      "derslik": "123",
+      "saatler": [
+        "08:30-09:15",
+        "09:30-10:15"
+      ]
+    },
+    {
+      "gun": "Cuma",
+      "sinif": 2,
+      "ders": "Veri Yapıları",
+      "kod": "1906002052015",
+      "sube": "A",
+      "yuva": null,
+      "derslik": "B.L.",
+      "saatler": [
+        "08:30-09:15",
+        "09:30-10:15",
+        "10:30-11:15",
+        "11:30-12:15",
+        "12:30-13:15"
+      ]
+    },
+    {
+      "gun": "Cuma",
+      "sinif": 4,
+      "ders": "Bitirme Projesi I",
+      "kod": "1906004012015",
+      "sube": "D",
+      "yuva": null,
+      "derslik": "",
+      "saatler": [
+        "08:30-09:15",
+        "09:30-10:15",
+        "10:30-11:15",
+        "11:30-12:15"
+      ]
+    },
+    {
+      "gun": "Cuma",
+      "sinif": 2,
+      "ders": "Mühendislik Ekonomisi",
+      "kod": "1906002152015",
+      "sube": null,
+      "yuva": "Seç III",
+      "derslik": "326",
+      "saatler": [
+        "09:30-10:15",
+        "10:30-11:15",
+        "11:30-12:15"
+      ]
+    },
+    {
+      "gun": "Cuma",
+      "sinif": 3,
+      "ders": "Veri Yönetişimi",
+      "kod": "1906003192025",
+      "sube": null,
+      "yuva": "Seç V",
+      "derslik": "U.E.",
+      "saatler": [
+        "09:30-10:15",
+        "10:30-11:15",
+        "11:30-12:15"
+      ]
+    },
+    {
+      "gun": "Cuma",
+      "sinif": 2,
+      "ders": "Veri Yapıları",
+      "kod": "1906002052015",
+      "sube": "B",
+      "yuva": null,
+      "derslik": "B.L.",
+      "saatler": [
+        "13:30-14:15",
+        "14:30-15:15",
+        "15:30-16:15",
+        "16:30-17:15",
+        "17:30-18:15"
+      ]
+    },
+    {
+      "gun": "Cuma",
+      "sinif": 3,
+      "ders": "Makine Öğrenmesine Giriş",
+      "kod": "1906003212026",
+      "sube": "B",
+      "yuva": "Seç V",
+      "derslik": "326",
+      "saatler": [
+        "13:30-14:15",
+        "14:30-15:15",
+        "15:30-16:15"
+      ]
+    }
+  ]
+}
