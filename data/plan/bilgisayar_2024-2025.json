@@ -1,0 +1,287 @@
+{
+  "bolum": "Bilgisayar Mühendisliği",
+  "katalog_yili": "2024-2025",
+  "kaynak": "BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf)",
+  "zorunlu_dersler": [
+    {
+      "kod": "1906001012015",
+      "ad": "Bilgisayar Mühendisliğine Giriş",
+      "yariyil": 1,
+      "kredi": 2,
+      "akts": 2
+    },
+    {
+      "kod": "1906001032015",
+      "ad": "Fizik I",
+      "yariyil": 1,
+      "kredi": 4,
+      "akts": 6
+    },
+    {
+      "kod": "1906001052015",
+      "ad": "Kimya",
+      "yariyil": 1,
+      "kredi": 4,
+      "akts": 6
+    },
+    {
+      "kod": "1906001072015",
+      "ad": "Matematik I",
+      "yariyil": 1,
+      "kredi": 4,
+      "akts": 6
+    },
+    {
+      "kod": "1906001092015",
+      "ad": "Atatürk İlkeleri ve Inkilap Tarihi I",
+      "yariyil": 1,
+      "kredi": 2,
+      "akts": 2
+    },
+    {
+      "kod": "1906001112015",
+      "ad": "Türk Dili I",
+      "yariyil": 1,
+      "kredi": 2,
+      "akts": 2
+    },
+    {
+      "kod": "1906001132015",
+      "ad": "Yabancı Dil I",
+      "yariyil": 1,
+      "kredi": 2,
+      "akts": 2
+    },
+    {
+      "kod": "1906001172019",
+      "ad": "Kariyer Planlama",
+      "yariyil": 1,
+      "kredi": 1,
+      "akts": 2
+    },
+    {
+      "kod": "1906001022015",
+      "ad": "C Programlama",
+      "yariyil": 2,
+      "kredi": 3,
+      "akts": 4
+    },
+    {
+      "kod": "1906001042015",
+      "ad": "Fizik II",
+      "yariyil": 2,
+      "kredi": 4,
+      "akts": 6
+    },
+    {
+      "kod": "1906001062015",
+      "ad": "Lineer Cebir",
+      "yariyil": 2,
+      "kredi": 3,
+      "akts": 4
+    },
+    {
+      "kod": "1906001082015",
+      "ad": "Matematik II",
+      "yariyil": 2,
+      "kredi": 4,
+      "akts": 6
+    },
+    {
+      "kod": "1906001102015",
+      "ad": "Atatürk İlkeleri ve Inkilap Tarihi II",
+      "yariyil": 2,
+      "kredi": 2,
+      "akts": 2
+    },
+    {
+      "kod": "1906001122015",
+      "ad": "Türk Dili II",
+      "yariyil": 2,
+      "kredi": 2,
+      "akts": 2
+    },
+    {
+      "kod": "1906001142015",
+      "ad": "Yabancı Dil II",
+      "yariyil": 2,
+      "kredi": 2,
+      "akts": 2
+    },
+    {
+      "kod": "1906002012015",
+      "ad": "Nesne Tabanlı Programlama",
+      "yariyil": 3,
+      "kredi": 4,
+      "akts": 6
+    },
+    {
+      "kod": "1906002032015",
+      "ad": "Ayrık Matematik",
+      "yariyil": 3,
+      "kredi": 3,
+      "akts": 3
+    },
+    {
+      "kod": "1906002052015",
+      "ad": "Veri Yapıları",
+      "yariyil": 3,
+      "kredi": 4,
+      "akts": 4
+    },
+    {
+      "kod": "1906002072015",
+      "ad": "Mesleki İngilizce",
+      "yariyil": 3,
+      "kredi": 3,
+      "akts": 3
+    },
+    {
+      "kod": "1906002092015",
+      "ad": "Diferansiyel Denklemler",
+      "yariyil": 3,
+      "kredi": 4,
+      "akts": 5
+    },
+    {
+      "kod": "1906002112015",
+      "ad": "Elektrik Devreleri",
+      "yariyil": 3,
+      "kredi": 4,
+      "akts": 5
+    },
+    {
+      "kod": "1906002022015",
+      "ad": "Simulasyon Sistemleri",
+      "yariyil": 4,
+      "kredi": 4,
+      "akts": 7
+    },
+    {
+      "kod": "1906002042015",
+      "ad": "Otomata Teorisi",
+      "yariyil": 4,
+      "kredi": 3,
+      "akts": 7
+    },
+    {
+      "kod": "1906002062015",
+      "ad": "Olasılık ve İstatistik",
+      "yariyil": 4,
+      "kredi": 3,
+      "akts": 4
+    },
+    {
+      "kod": "1906002082015",
+      "ad": "Sayısal Elektronik",
+      "yariyil": 4,
+      "kredi": 4,
+      "akts": 4
+    },
+    {
+      "kod": "1906002102015",
+      "ad": "Proje Planlama ve Yönetimi",
+      "yariyil": 4,
+      "kredi": 3,
+      "akts": 4
+    },
+    {
+      "kod": "1906003012015",
+      "ad": "Mikroişlemciler",
+      "yariyil": 5,
+      "kredi": 4,
+      "akts": 5
+    },
+    {
+      "kod": "1906003032015",
+      "ad": "Algoritma Analizi",
+      "yariyil": 5,
+      "kredi": 4,
+      "akts": 6
+    },
+    {
+      "kod": "1906003052015",
+      "ad": "İşletim Sistemleri I",
+      "yariyil": 5,
+      "kredi": 4,
+      "akts": 5
+    },
+    {
+      "kod": "1906003072015",
+      "ad": "Bilgisayar Mimarisi I",
+      "yariyil": 5,
+      "kredi": 3,
+      "akts": 5
+    },
+    {
+      "kod": "1906003092015",
+      "ad": "Staj I",
+      "yariyil": 5,
+      "kredi": 0,
+      "akts": 5
+    },
+    {
+      "kod": "1906003022015",
+      "ad": "Veritabanı Yönetim Sistemleri",
+      "yariyil": 6,
+      "kredi": 4,
+      "akts": 6
+    },
+    {
+      "kod": "1906003042015",
+      "ad": "Sistem Programlama",
+      "yariyil": 6,
+      "kredi": 4,
+      "akts": 6
+    },
+    {
+      "kod": "1906003062015",
+      "ad": "Gömülü Sistemler",
+      "yariyil": 6,
+      "kredi": 4,
+      "akts": 5
+    },
+    {
+      "kod": "1906003082015",
+      "ad": "Yazılım Mühendisliği",
+      "yariyil": 6,
+      "kredi": 4,
+      "akts": 5
+    },
+    {
+      "kod": "1906003102015",
+      "ad": "Sinyaller ve Sistemler",
+      "yariyil": 6,
+      "kredi": 3,
+      "akts": 4
+    },
+    {
+      "kod": "1906004012015",
+      "ad": "Bitirme Projesi I",
+      "yariyil": 7,
+      "kredi": 3,
+      "akts": 5
+    },
+    {
+      "kod": "1906004032015",
+      "ad": "Staj II",
+      "yariyil": 7,
+      "kredi": 0,
+      "akts": 5
+    },
+    {
+      "kod": "1906004022015",
+      "ad": "Veri İletişimi ve Bilgisayar Ağları",
+      "yariyil": 8,
+      "kredi": 4,
+      "akts": 5
+    },
+    {
+      "kod": "1906004042015",
+      "ad": "Bitirme Projesi II",
+      "yariyil": 8,
+      "kredi": 3,
+      "akts": 5
+    }
+  ]
+}

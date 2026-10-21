@@ -16,6 +16,7 @@ load_dotenv()
 
 ROOT = Path(__file__).parent
 DATA_DIR = ROOT / "data"
+PLAN_PATH = DATA_DIR / "plan" / "bilgisayar_2024-2025.json"  # öğretim planı (mezuniyet hesabı)
 INDEX_ROOT = ROOT / "vectorstore"  # her yapılandırma kendi alt klasöründe
 EXPERIMENTS_DIR = ROOT / "experiments"
 
