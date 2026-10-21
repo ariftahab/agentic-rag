@@ -1,0 +1,74 @@
+{
+  "aciklama": "Mezuniyet hesabında uygulanan yönetmelik ve yönerge kuralları; her kural kaynağını (belge + madde/fıkra) taşır.",
+  "kurallar": [
+    {
+      "id": "toplam_akts",
+      "aciklama": "Lisans programlarında mezuniyet için en az 240 AKTS tamamlanır; öğretim planının toplamı daha büyükse bağlayıcı olan plandır.",
+      "deger": 240,
+      "kaynak": [
+        {"belge": "BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği", "madde": "Madde 22, fıkra 1"}
+      ]
+    },
+    {
+      "id": "zorunlu_dersler",
+      "aciklama": "Öğrenci kayıtlı olduğu bölümün öğretim planındaki bütün zorunlu dersleri (stajlar dahil) başarır.",
+      "kaynak": [
+        {"belge": "BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği", "madde": "Madde 20, fıkra 2"},
+        {"belge": "BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği", "madde": "Madde 35, fıkra 1, bent a"}
+      ]
+    },
+    {
+      "id": "secmeli_akts",
+      "aciklama": "Öğretim planının seçmeli dersler için öngördüğü AKTS, zorunlu derslerden ayrı olarak tamamlanır; seçmeliler AKTS toplamıyla sayılır.",
+      "kaynak": [
+        {"belge": "BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği", "madde": "Madde 35, fıkra 1, bent a"}
+      ]
+    },
+    {
+      "id": "fazla_basarisiz_secmeli",
+      "aciklama": "Zorunlu ve seçmeli yükümlülükler tamamlandığında fazladan alınıp başarısız olunan seçmeli dersler mezuniyete engel olmaz; değerlendirme dışı bırakılır.",
+      "kaynak": [
+        {"belge": "BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği", "madde": "Madde 35, fıkra 2"}
+      ]
+    },
+    {
+      "id": "gecer_notlar",
+      "aciklama": "Bir ders DD ve üstü harf notuyla (AA, BA, BB, CB, CC, DC, DD) ya da not ortalamasına katılmayan derslerde B (başarılı) notuyla geçilir; FD, FF, E, DZ ve BZ başarısızdır.",
+      "deger": ["AA", "BA", "BB", "CB", "CC", "DC", "DD", "B"],
+      "kaynak": [
+        {"belge": "BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği", "madde": "Madde 27, fıkra 1"},
+        {"belge": "BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği", "madde": "Madde 31, fıkra 1"}
+      ]
+    },
+    {
+      "id": "ders_tekrari",
+      "aciklama": "Tekrarlanan bir derste önceki not dikkate alınmaz, son alınan not geçerlidir.",
+      "kaynak": [
+        {"belge": "BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği", "madde": "Madde 32, fıkra 4"},
+        {"belge": "BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği", "madde": "Madde 28, fıkra 3"}
+      ]
+    },
+    {
+      "id": "gno_alt_siniri",
+      "aciklama": "Mezuniyet için genel ağırlıklı not ortalaması (GNO) en az 2,00 olur.",
+      "deger": 2.0,
+      "kaynak": [
+        {"belge": "BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği", "madde": "Madde 35, fıkra 1, bent b"}
+      ]
+    },
+    {
+      "id": "alan_disi_secmeli",
+      "aciklama": "Öğrenci eğitim süresi boyunca öğretim planındaki Alan Dışı Seçmeli Ders yuvasından en az bir ders alır.",
+      "zorunlu_ilk_kayit_yili": 2024,
+      "kaynak": [
+        {"belge": "BAİBÜ Alan Dışı Seçmeli Ders Yönergesi", "madde": "Madde 7, fıkra 3"}
+      ],
+      "istisna": {
+        "aciklama": "2023-2024 eğitim-öğretim yılı ve öncesinde kaydolan öğrenciler için Alan Dışı Seçmeli Derslere kayıtlanmak isteğe bağlıdır.",
+        "kaynak": [
+          {"belge": "BAİBÜ Alan Dışı Seçmeli Ders Yönergesi", "madde": "Geçici Madde 1, fıkra 1"}
+        ]
+      }
+    }
+  ]
+}

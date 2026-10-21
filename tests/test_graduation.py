@@ -23,10 +23,10 @@ def course(year, term, code, name, ects, grade):
             "not": grade, "erasmus": False}
 
 
-def transcript(*courses):
-    return {"bolum": "Bilgisayar Mühendisliği", "egitim_duzeyi": "Lisans", "kayit_yili": 2023,
+def transcript(*courses, enrolled=2023, gpa=3.0):
+    return {"bolum": "Bilgisayar Mühendisliği", "egitim_duzeyi": "Lisans", "kayit_yili": enrolled,
             "kayit_donemi": "Güz", "dersler": list(courses),
-            "obs_ozet": {"birikimli_alinan_akts": 0, "birikimli_tamamlanan_akts": 0, "gno": 3.0}}
+            "obs_ozet": {"birikimli_alinan_akts": 0, "birikimli_tamamlanan_akts": 0, "gno": gpa}}
 
 
 SAMPLE = transcript(
@@ -232,3 +232,95 @@ def test_course_in_two_pools_is_kept_for_the_slot_that_needs_it():
         ("Seçmeli VI", ["Python ile Derin Öğrenme"]),
         ("Seçmeli VII", ["Siber Güvenlik"]),
     ]
+
+
+# --- Yönetmelik ve kayıt yılı kuralları -------------------------------------------------------
+RULES_PLAN = {
+    **ELECTIVE_PLAN,
+    "secmeli_yuvalar": ELECTIVE_PLAN["secmeli_yuvalar"] + [
+        {"ad": "Alan Dışı Seçmeli Ders", "kod": "A6", "yariyil": 6, "akts": 2, "tur": "alan_disi",
+         "havuz": [{"kod": "ADS1", "ad": "Diksiyon ve Hitabet", "akts": 2}]},
+    ],
+}
+
+
+def rule(report, rule_id):
+    return next(r for r in report["kurallar"] if r["id"] == rule_id)
+
+
+def test_every_rule_result_carries_a_source():
+    report = graduation.evaluate(ELECTIVE_SAMPLE, RULES_PLAN)
+    assert {r["id"] for r in report["kurallar"]} == {
+        "toplam_akts", "zorunlu_dersler", "secmeli_akts", "alan_disi_secmeli", "gno_alt_siniri"}
+    for r in report["kurallar"]:
+        assert r["kaynak"] and all(k["belge"] and k["madde"] for k in r["kaynak"]), r["id"]
+
+
+def test_out_of_field_elective_is_optional_for_2023_enrollees():
+    r = rule(graduation.evaluate(transcript(course(2023, "Güz", "Z1", "Matematik I", 6, "CC"), enrolled=2023),
+                                 RULES_PLAN), "alan_disi_secmeli")
+    assert (r["zorunlu"], r["karsilandi"]) == (False, True)
+    assert r["kaynak"][0]["madde"] == "Geçici Madde 1, fıkra 1"
+
+
+def test_out_of_field_elective_is_missing_for_2025_enrollees():
+    r = rule(graduation.evaluate(transcript(course(2025, "Güz", "Z1", "Matematik I", 6, "CC"), enrolled=2025),
+                                 RULES_PLAN), "alan_disi_secmeli")
+    assert (r["zorunlu"], r["karsilandi"], r["devam_edenler_gecilirse_karsilandi"]) == (True, False, False)
+
+
+def test_out_of_field_elective_taken_this_term_completes_it_if_passed():
+    r = rule(graduation.evaluate(transcript(
+        course(2025, "Güz", "Z1", "Matematik I", 6, "CC"),
+        course(2026, "Güz", "ADS1", "Diksiyon ve Hitabet", 2, None),
+        enrolled=2025), RULES_PLAN), "alan_disi_secmeli")
+    assert (r["karsilandi"], r["devam_edenler_gecilirse_karsilandi"]) == (False, True)
+
+
+def test_gpa_below_two_fails_the_gpa_rule():
+    report = graduation.evaluate(transcript(course(2023, "Güz", "Z1", "Matematik I", 6, "DD"), gpa=1.95),
+                                 RULES_PLAN)
+    r = rule(report, "gno_alt_siniri")
+    assert (r["gereken"], r["mevcut"], r["karsilandi"]) == (2.0, 1.95, False)
+
+
+def test_gpa_of_two_meets_the_gpa_rule():
+    r = rule(graduation.evaluate(transcript(course(2023, "Güz", "Z1", "Matematik I", 6, "DD"), gpa=2.0),
+                                 RULES_PLAN), "gno_alt_siniri")
+    assert r["karsilandi"] is True
+
+
+BIG_PLAN = {**RULES_PLAN, "zorunlu_dersler": [{"kod": "Z1", "ad": "Matematik I", "yariyil": 1, "kredi": 4, "akts": 230}]}
+
+
+def test_total_ects_uses_240_or_the_larger_plan_total_depending_on_enrollment_year():
+    # Küçük plan: yönetmelikteki 240 bağlayıcı. Büyük plan: 230 zorunlu + 20 seçmeli + 2 Alan Dışı = 252;
+    # 2023 girişliye Alan Dışı Seçmeli zorunlu değil, 250.
+    assert rule(graduation.evaluate(ELECTIVE_SAMPLE, RULES_PLAN), "toplam_akts")["gereken"] == 240
+    first = course(2025, "Güz", "Z1", "Matematik I", 230, "AA")
+    assert rule(graduation.evaluate(transcript(first, enrolled=2025), BIG_PLAN), "toplam_akts")["gereken"] == 252
+    assert rule(graduation.evaluate(transcript(first, enrolled=2023), BIG_PLAN), "toplam_akts")["gereken"] == 250
+
+
+def test_all_requirements_met_only_when_every_rule_is_met():
+    done = transcript(
+        course(2023, "Güz", "Z1", "Matematik I", 230, "AA"),
+        course(2023, "Güz", "ETK", "Mühendislik Etiği", 4, "CC"),
+        course(2023, "Bahar", "GIR", "Girişimcilik", 4, "AA"),
+        course(2024, "Bahar", "PDO", "Python ile Derin Öğrenme", 4, "CB"),
+        course(2025, "Güz", "YZ", "Yapay Zeka", 4, "BB"),
+        course(2026, "Güz", "YSA", "Yapay Sinir Ağları", 4, None),
+        enrolled=2023, gpa=3.1)
+    report = graduation.evaluate(done, BIG_PLAN)
+    assert report["tum_sartlar_karsilandi"] is False
+    assert report["devam_edenler_gecilirse_tum_sartlar_karsilandi"] is True
+
+
+def test_requirements_summary_without_a_transcript():
+    summary = graduation.graduation_requirements(RULES_PLAN)
+    assert (summary["plan_toplam_akts"], summary["zorunlu_akts"], summary["secmeli_akts"]) == (48, 26, 20)  # 6+6+4+5+5 zorunlu, 4+4+4+8 seçmeli, 2 Alan Dışı
+    ids = [r["id"] for r in summary["kurallar"]]
+    assert {"toplam_akts", "gno_alt_siniri", "gecer_notlar", "fazla_basarisiz_secmeli",
+            "alan_disi_secmeli", "alan_disi_secmeli_istisna"} <= set(ids)
+    assert all(r["kaynak"] for r in summary["kurallar"])
+    assert next(r for r in summary["kurallar"] if r["id"] == "toplam_akts")["deger"] == 240
