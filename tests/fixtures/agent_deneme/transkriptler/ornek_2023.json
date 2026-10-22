@@ -1,0 +1,13 @@
+{
+ "bolum": "Bilgisayar Mühendisliği",
+ "egitim_duzeyi": "Lisans",
+ "kayit_yili": 2023,
+ "kayit_donemi": "Güz",
+ "dersler": [
+  {"yil": 2023, "donem": "Güz", "kod": "1906001032015", "ad": "Fizik I", "kredi": 4, "akts": 6, "not": "CC", "erasmus": false},
+  {"yil": 2023, "donem": "Güz", "kod": "1906001052015", "ad": "Kimya", "kredi": 4, "akts": 6, "not": "FF", "erasmus": false},
+  {"yil": 2023, "donem": "Güz", "kod": "1906001072015", "ad": "Matematik I", "kredi": 4, "akts": 6, "not": "AA", "erasmus": false},
+  {"yil": 2026, "donem": "Güz", "kod": "1906001012015", "ad": "Bilgisayar Mühendisliğine Giriş", "kredi": 2, "akts": 2, "not": null, "erasmus": false}
+ ],
+ "obs_ozet": {"birikimli_alinan_akts": 18, "birikimli_tamamlanan_akts": 12, "gno": 2.75}
+}

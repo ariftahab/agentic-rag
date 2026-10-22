@@ -1,0 +1,37 @@
+{
+ "surum": "deneme",
+ "aciklama": "Yalnız testler için küçük deneme seti (gerçek soru seti değil). Transkript sahte, kişisel bilgi yok; beklenen sayılar elle hesaplandı: geçilen 6 (Fizik I, CC) + 6 (Matematik I, AA) = 12 AKTS, Kimya FF; bu dönemki 2 AKTS'lik ders geçilirse 14 AKTS; GNO transkriptteki değer.",
+ "sorular": [
+  {
+   "id": "D01",
+   "grup": "mevzuat",
+   "soru": "Staj başvurusu nasıl yapılır?",
+   "beklenen_tool_lar": [{"name": "search_regulations"}],
+   "beklenen": ["staj"]
+  },
+  {
+   "id": "D02",
+   "grup": "transkript",
+   "soru": "Mezun olmak için neyim eksik?",
+   "transkript": "ornek_2023",
+   "beklenen_tool_lar": [{"name": "analyze_transcript"}],
+   "beklenen_sayilar": {"gecilen_akts": 12, "devam_edenler_gecilirse_akts": 14, "gno": 2.75}
+  },
+  {
+   "id": "D03",
+   "grup": "program",
+   "soru": "Perşembe günü 4. sınıfın hangi dersleri var?",
+   "beklenen_tool_lar": [{"name": "get_course_schedule", "args": {"gun": "perşembe", "sinif": 4}}]
+  },
+  {
+   "id": "D04",
+   "grup": "transkript",
+   "soru": "Peki bu dönemki ders geçilirse kaç AKTS olur?",
+   "gecmis": [{"role": "user", "content": "Mezun olmak için neyim eksik?"},
+              {"role": "assistant", "content": "Şu an 12 AKTS geçilmiş."}],
+   "transkript": "ornek_2023",
+   "beklenen_tool_lar": [{"name": "analyze_transcript"}],
+   "beklenen_sayilar": {"devam_edenler_gecilirse_akts": 14}
+  }
+ ]
+}

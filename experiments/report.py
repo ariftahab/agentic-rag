@@ -15,7 +15,7 @@ LOG_FILE = config.EXPERIMENTS_DIR / "experiment_log.md"
 
 # Setup tablosunda gösterilen hyperparameter'lar (kısa ad -> RagConfig alanı)
 SETUP_COLUMNS = [
-    ("corpus", "corpus"), ("device", "device"), ("parser", "pdf_parser"), ("chunking", "chunking"), ("chunk_size", "chunk_size"),
+    ("mod", "mod"), ("corpus", "corpus"), ("device", "device"), ("parser", "pdf_parser"), ("chunking", "chunking"), ("chunk_size", "chunk_size"),
     ("overlap", "chunk_overlap"), ("embedding", "embedding_model"), ("normalize", "normalize_embeddings"),
     ("retrieval", "retrieval"), ("reranker", "reranker_model"), ("final_k", "final_k"), ("prompt", "prompt_version"),
     ("llm", "llm_model"),
@@ -25,7 +25,51 @@ SHORT_VALUES = {
     "BAAI/bge-reranker-v2-m3": "bge-reranker", None: "–", True: "✓", False: "✗",
     "gemini-2.5-flash": "2.5-flash", "gemini-3.1-flash-lite": "3.1-flash-lite", "gemini-3.5-flash-lite": "3.5-flash-lite",
 }
-METRIC_NAMES = {"mrr@10": "MRR@10", "context_chars": "context chars", "answer_acc": "answer acc."}
+METRIC_NAMES = {"mrr@10": "MRR@10", "context_chars": "context chars", "answer_acc": "answer acc.",
+                "tool_secimi_dogrulugu": "tool seçimi", "tool_adi_dogrulugu": "tool adı", "hesap_dogrulugu": "hesap"}
+# Agent tablosu: başlık -> llm.metrics anahtarı
+AGENT_COLUMNS = [("Answer acc.", "answer_acc"), ("Tool seçimi", "tool_secimi_dogrulugu"),
+                 ("Tool adı", "tool_adi_dogrulugu"), ("Hesap (cevap)", "hesap_dogrulugu"),
+                 ("Hesap (tool)", "arac_hesap_dogrulugu"), ("Ort. tool çağrısı", "ort_tool_cagrisi"),
+                 ("Ort. tur", "ort_tur")]
+
+
+def _is_agent(res):
+    return res.get("retrieval") is None and bool(res.get("llm"))
+
+
+def _dataset_line(name):
+    dataset, _ = ev.load_dataset(name)
+    questions = dataset["sorular"]
+    if any("beklenen_tool_lar" in q for q in questions):  # agent soru seti
+        n_tool = sum(1 for q in questions if "beklenen_tool_lar" in q)
+        n_calc = sum(1 for q in questions if "beklenen_sayilar" in q)
+        return (f"`eval/{name}.json` v{dataset['surum']} ({len(questions)} soru: {n_tool} tool beklentili, "
+                f"{n_calc} hesaplı)")
+    n_ret = sum(1 for q in questions if ev.answerable(q))
+    return (f"`eval/{name}.json` v{dataset['surum']} ({n_ret} cevaplı + "
+            f"{len(questions) - n_ret} cevapsız/kapsam dışı)")
+
+
+def _agent_lines(configs, results):
+    agent_results = {e: r for e, r in results.items() if e in configs and _is_agent(r)}
+    if not agent_results:
+        return []
+    lines = [
+        "Tool seçimi: beklenen tool'lar doğru argümanlarla çağrıldı, beklenmeyen tool yok. Tool adı: aynısı, "
+        "argümanlara bakmadan. Hesap (cevap): elle hesaplanan AKTS/GNO cevapta tam olarak geçiyor. Hesap (tool): "
+        "aynı sayılar deterministik modülün sonucuyla aynı (LLM'den bağımsız). Answer acc. anlamca ayrıca okunur.",
+        "",
+        "| Exp | Set | " + " | ".join(c for c, _ in AGENT_COLUMNS) + " | n | Tamamlandı |",
+        "|---|---|" + "---|" * len(AGENT_COLUMNS) + "---|---|",
+    ]
+    for exp_id, res in agent_results.items():
+        m = res["llm"]["metrics"]
+        cells = [(_num(m[k], 2) if k.startswith("ort_") else _num(m[k])) if m.get(k) is not None else "–"
+                 for _, k in AGENT_COLUMNS]
+        done = "✓" if res["llm"].get("tamamlandi", True) else "✗ (kota)"
+        lines.append(f"| {exp_id} | {res['dataset']['surum']} | " + " | ".join(cells) + f" | {m['n']} | {done} |")
+    return lines
 
 
 def _load(folder):
@@ -71,12 +115,8 @@ def _verdict(res, exp):
 
 def build():
     configs, results = _load("configs"), _load("results")
-    dataset_lines = []
-    for name in sorted({c.get("veri_seti", ev.DEFAULT_DATASET) for c in configs.values()}):
-        dataset, _ = ev.load_dataset(name)
-        n_ret = sum(1 for q in dataset["sorular"] if ev.answerable(q))
-        dataset_lines.append(f"`eval/{name}.json` v{dataset['surum']} ({n_ret} cevaplı + "
-                             f"{len(dataset['sorular']) - n_ret} cevapsız/kapsam dışı)")
+    dataset_lines = [_dataset_line(name) for name in sorted({c.get("veri_seti", ev.DEFAULT_DATASET)
+                                                             for c in configs.values()})]
     constant = {k: v for k, v in next(iter(configs.values()))["params"].items()
                 if all(c["params"][k] == v for c in configs.values())}
 
@@ -123,6 +163,10 @@ def build():
         if not res:
             lines.append(f"| {exp_id} | {exp['baslik']} | | | | | | | | {verdict} | |")
             continue
+        if _is_agent(res):  # retrieval değerlendirmesi yok; metrikler agent tablosunda
+            lines.append(f"| {exp_id} | {exp['baslik']} | {res['dataset']['surum']} | – | – | – | – | – | – | "
+                         f"{verdict} | {hyp} |")
+            continue
         m = res["retrieval"]["metrics"]
         latency = f"{m['latency_ms'] / 1000:.1f} s" if m["latency_ms"] >= 1000 else f"{m['latency_ms']:.0f} ms"
         lines.append(
@@ -130,8 +174,12 @@ def build():
             f"{_num(m['hit@5'])} | "
             f"{_num(m['context_hit'])} | {m['context_chars']:.0f} | {latency} | {verdict} | {hyp} |")
     lines += ["", "Hyp.: ✓ doğrulandı · ✗ doğrulanmadı · ~ yön doğru ama anlamlı değil"]
+    agent = _agent_lines(configs, results)
+    if agent:  # Results'ın alt bölümü: RAG deneylerinin bölüm numaraları değişmesin
+        lines += ["", "### Agent", "", *agent]
 
-    staged = {e: r["retrieval"]["asamalar"] for e, r in results.items() if r["retrieval"].get("asamalar")}
+    staged = {e: r["retrieval"]["asamalar"] for e, r in results.items()
+              if r.get("retrieval") and r["retrieval"].get("asamalar")}
     if staged:
         lines += [
             "",
@@ -148,7 +196,8 @@ def build():
                                        "final_mrr@10")]
             lines.append(f"| {exp_id} | " + " | ".join(_num(c) if c is not None else "–" for c in cells) + " |")
 
-    grouped = {e: r["retrieval"]["alt_kirilimlar"] for e, r in results.items() if r["retrieval"].get("alt_kirilimlar")}
+    grouped = {e: r["retrieval"]["alt_kirilimlar"] for e, r in results.items()
+               if r.get("retrieval") and r["retrieval"].get("alt_kirilimlar")}
     if grouped:
         cols = [("Eski sorular", "set:eski"), ("Yeni sorular", "set:yeni"), ("Belge dili", "stil:belge"),
                 ("Öğrenci dili", "stil:ogrenci"), ("Fakülteye özel", "kategori:fakulteye_ozel"),

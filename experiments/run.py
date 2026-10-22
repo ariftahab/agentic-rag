@@ -8,6 +8,9 @@
 
 Her deney experiments/configs/EXP-*.json dosyasıyla tanımlanır. Sonuç experiments/results/EXP-*.json'a
 yazılır ve experiments/experiment_log.md yeniden üretilir.
+
+params.mod = "agent" olan deneyler retrieval değerlendirmesi yerine agent'ı koşar (yalnız --llm ile): her soru
+AdvisorAgent'a sorulur, çağrılan tool'lar ve argümanları sonuca yazılır, tool seçimi ve hesap doğruluğu ölçülür.
 """
 import argparse
 import json
@@ -57,7 +60,11 @@ def check_experiment(exp):
         raise SystemExit(f"{exp['id']}: bilinmeyen birincil metrik {exp['birincil_metrik']}")
     if exp["beklenen_yon"] not in ("artis", "azalis", "degisim_yok"):
         raise SystemExit(f"{exp['id']}: beklenen_yon artis | azalis | degisim_yok olmalı")
-    config.RagConfig.from_dict(exp["params"])  # parametre doğrulaması
+    cfg = config.RagConfig.from_dict(exp["params"])  # parametre doğrulaması
+    if cfg.mod == "agent":
+        from agent import AGENT_PROMPTS
+        if cfg.prompt_version not in AGENT_PROMPTS:
+            raise SystemExit(f"{exp['id']}: agent modunda prompt_version {sorted(AGENT_PROMPTS)} anahtarlarından biri olmalı")
     if not ev.dataset_path(dataset_name(exp)).exists():
         raise SystemExit(f"{exp['id']}: soru seti bulunamadı: {ev.dataset_path(dataset_name(exp))}")
     diff = param_diff(exp)
@@ -243,6 +250,175 @@ def answer_rows(bot, items, wait):
     return rows, True
 
 
+def make_agent(exp_id, cfg):
+    """Deneyin agent'ı: config'teki retrieval hattı (search_regulations), LLM modeli ve agent prompt'u.
+
+    Model agent.AGENT_LLM_MODEL sabitinden değil config'ten alınır; böylece kullanılan model sonuçta kayıtlıdır.
+    Dönüş: (agent, index manifest'i)."""
+    from langchain_google_genai import ChatGoogleGenerativeAI
+    import graduation
+    import ingest
+    from agent import REQUEST_TIMEOUT_S, AdvisorAgent
+    from rag import Retriever
+    ensure_index(exp_id, cfg)
+    store, chunks, manifest = ingest.load_index(cfg)
+    llm = ChatGoogleGenerativeAI(model=cfg.llm_model, temperature=cfg.llm_temperature, max_retries=2,
+                                 timeout=REQUEST_TIMEOUT_S)
+    agent = AdvisorAgent(Retriever(cfg, store, chunks), llm, graduation.load_plan(), prompt_version=cfg.prompt_version)
+    return agent, manifest
+
+
+def agent_rows(agent, items, wait, plan, transcripts_dir=None):
+    """Her soruyu agent'a sorar; cevap, tool çağrıları (ad + argümanlar), tur sayısı ve agent metrikleri.
+
+    Soru alanları: 'gecmis' (takip sorusu), 'transkript' (fixture adı; oturumdaki transkript), 'teyitler'
+    (oturumun eşdeğerlik teyitleri, her soruda yeni kopya), 'beklenen_tool_lar', 'beklenen_sayilar', 'beklenen'.
+    Bir metriğin alanı soruda yoksa o metriğin değeri satıra yazılmaz (ortalamaya girmez).
+    agent_ms: ask() çağrısının tamamı (LLM turları + tool'ların çalışması), sorular arası bekleme hariç.
+    """
+    import graduation
+    transcripts = {}
+    rows = []
+    for n, item in enumerate(items):
+        transcript = None
+        if item.get("transkript"):
+            name = item["transkript"]
+            if name not in transcripts:
+                transcripts[name] = ev.load_transcript(name, transcripts_dir)
+            transcript = transcripts[name]
+        started = time.perf_counter()
+        try:
+            out = agent.ask(item["soru"], item.get("gecmis"), transcript=transcript,
+                            confirmations=dict(item.get("teyitler") or {}))
+            row = {"id": item["id"], "answer": out["answer"], "tool_calls": out["tool_calls"], "turns": out["turns"],
+                   "agent_ms": round((time.perf_counter() - started) * 1000, 1)}
+            if out.get("usage"):
+                row["tokens"] = out["usage"]
+        except Exception as e:  # kota dolarsa kalan soruları boşuna deneme
+            print(f"  Agent hatası ({item['id']}): {type(e).__name__}: {str(e)[:200]}")
+            if "ResourceExhausted" in type(e).__name__ or "429" in str(e):
+                print("  Kota dolu; agent değerlendirmesi yarıda kesildi.")
+                return rows, False
+            row = {"id": item["id"], "answer": f"<hata: {type(e).__name__}>", "tool_calls": [], "turns": None,
+                   "agent_ms": None}
+        if "beklenen" in item or item.get("cevapsiz"):
+            row["answer_ok"] = int(answer_ok(item, row["answer"]))
+        if "beklenen_tool_lar" in item:
+            row.update(ev.tool_selection(item["beklenen_tool_lar"], row["tool_calls"]))
+        if "beklenen_sayilar" in item:
+            reference = graduation.evaluate(transcript, plan, confirmations=dict(item.get("teyitler") or {}))
+            calc = ev.calculation(item["beklenen_sayilar"], row["answer"], reference)
+            row.update(hesap_dogru=calc["hesap_dogru"], sayilar=calc["sayilar"])
+            if calc["arac_hesap_dogru"] is not None:
+                row["arac_hesap_dogru"] = calc["arac_hesap_dogru"]
+        rows.append(row)
+        marks = [f"{label} {'OK' if row[key] else 'YANLIŞ'}" for key, label in
+                 (("tool_dogru", "tool"), ("hesap_dogru", "hesap"), ("answer_ok", "cevap")) if key in row]
+        print(f"  {item['id']} " + (", ".join(marks) or "değerlendirme alanı yok"))
+        if n + 1 < len(items):
+            time.sleep(wait)
+    return rows, True
+
+
+# Agent özet metrikleri: ad -> soru başına anahtar (yalnız anahtarı olan sorular üzerinden ortalama)
+AGENT_METRICS = (("answer_acc", "answer_ok", "answer_n"), ("tool_secimi_dogrulugu", "tool_dogru", "tool_secimi_n"),
+                 ("tool_adi_dogrulugu", "tool_adi_dogru", None), ("hesap_dogrulugu", "hesap_dogru", "hesap_n"),
+                 ("arac_hesap_dogrulugu", "arac_hesap_dogru", "arac_hesap_n"))
+
+
+def agent_metrics(rows):
+    out = {"n": len(rows)}
+    for metric, key, count in AGENT_METRICS:
+        values = [r[key] for r in rows if key in r]
+        if values:
+            out[metric] = round(statistics.mean(values), 4)
+            if count:
+                out[count] = len(values)
+    if rows:
+        out["ort_tool_cagrisi"] = round(statistics.mean(len(r["tool_calls"]) for r in rows), 2)
+    turns = [r["turns"] for r in rows if r["turns"] is not None]
+    if turns:
+        out["ort_tur"] = round(statistics.mean(turns), 2)
+    timed = [r["agent_ms"] for r in rows if r["agent_ms"] is not None]
+    if timed:
+        out.update(agent_ms=round(statistics.mean(timed), 1), agent_ms_median=round(statistics.median(timed), 1))
+    used = [r["tokens"] for r in rows if r.get("tokens")]
+    if used:
+        out.update({f"token_{k}": round(statistics.mean(t[k] for t in used), 1) for k in ("input", "output", "reasoning")})
+    return out
+
+
+def agent_subset_metrics(rows, items):
+    """Soru grupları ('grup', 'kategori') için agent metrikleri; küçük gruplarda ortalama gürültülüdür."""
+    meta = {q["id"]: q for q in items}
+    groups = {}
+    for r in rows:
+        for key in ("grup", "kategori"):
+            if key in meta[r["id"]]:
+                groups.setdefault(f"{key}:{meta[r['id']][key]}", []).append(r)
+    out = {}
+    for name, members in sorted(groups.items()):
+        out[name] = {"n": len(members)}
+        for metric, key, _ in AGENT_METRICS:
+            values = [r[key] for r in members if key in r]
+            if values:
+                out[name][metric] = round(statistics.mean(values), 4)
+    return out
+
+
+def run_agent(exp_id, exp, cfg, diff, dataset, dataset_hash, wait):
+    """Agent modundaki deneyin koşusu ve sonuç dosyası (retrieval değerlendirmesi yok: 'retrieval' None).
+
+    Sonuçta agent satırları 'llm' altında durur; böylece answer_acc ve agent metrikleri üst deneyle aynı yoldan
+    (compare) karşılaştırılır. Transkript fixture'larının, öğretim planının ve kuralların hash'i de kaydedilir:
+    bunlar değişirse aynı soru seti farklı doğru cevaplar demektir.
+    """
+    import graduation
+    from agent import MAX_TURNS
+    agent, manifest = make_agent(exp_id, cfg)
+    items = dataset["sorular"]
+    names = sorted({q["transkript"] for q in items if q.get("transkript")})
+    started = time.perf_counter()
+    rows, complete = agent_rows(agent, items, wait, graduation.load_plan(), ev.TRANSCRIPTS_DIR)
+    agent_s = time.perf_counter() - started
+
+    env = ev.environment(cfg)
+    if env["git_dirty"]:
+        print("  UYARI: çalışma dizininde commit edilmemiş değişiklik var; sonuç tam tekrar üretilemeyebilir.")
+    result = {
+        "id": exp_id,
+        "calisma_zamani": datetime.now().isoformat(timespec="seconds"),
+        "dataset": {"dosya": f"eval/{dataset_name(exp)}.json", "surum": dataset["surum"], "hash": dataset_hash,
+                    "n_agent": len(items), "n_toplam": len(dataset["sorular"]),
+                    "transkriptler": {n: ev.file_hash(ev.transcript_path(n)) for n in names}},
+        "params": exp["params"],
+        "degisen_parametreler": diff,
+        "index": manifest,
+        "environment": env,
+        "agent": {"prompt_version": cfg.prompt_version, "max_tur": MAX_TURNS,
+                  # Agent bugünün tarihini prompt'a ve ders programı tool'una verir ("yarın" sorularında cevap değişir).
+                  "bugun": datetime.now().date().isoformat(),
+                  "plan_hash": ev.file_hash(config.PLAN_PATH), "kurallar_hash": ev.file_hash(graduation.RULES_PATH)},
+        "retrieval": None,
+        "llm": {"tamamlandi": complete, "metrics": agent_metrics(rows), "per_question": rows,
+                "alt_kirilimlar": agent_subset_metrics(rows, items)},
+        # agent: bütün soruların ask() süresi + sorular arası --bekle beklemeleri (index yükleme hariç)
+        "sure": {"agent_sn": round(agent_s, 1)},
+    }
+    result["sure"]["toplam_sn"] = result["sure"]["agent_sn"]
+    parent = load_result(exp["ust_deney"]) if exp["ust_deney"] else None
+    result["karsilastirma"] = compare(exp, result, parent) if parent else None
+
+    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    (RESULTS_DIR / f"{exp_id}.json").write_text(json.dumps(result, ensure_ascii=False, indent=1), encoding="utf-8")
+    m = result["llm"]["metrics"]
+    print("  " + " ".join(f"{k}={m[k]:.3f}" for k in ("tool_secimi_dogrulugu", "tool_adi_dogrulugu", "hesap_dogrulugu",
+                                                      "arac_hesap_dogrulugu", "answer_acc") if k in m))
+    if result["karsilastirma"] and "karar" in result["karsilastirma"]:
+        k = result["karsilastirma"]["karar"]
+        print(f"  Karar ({k['metrik']}): {k['sonuc']} | Hipotez: {k['hipotez']}")
+
+
 def _normalize_answer(text):
     return re.sub(r"\b0(\d)", r"\1", ev.tr_lower(text))  # "05 Ocak" == "5 Ocak"
 
@@ -300,7 +476,9 @@ def per_question_value(row, metric, key):
 
 def compare(exp, result, parent):
     """Üst deneyle aynı sorular üzerinde eşleştirilmiş karşılaştırma."""
-    same_data = parent["dataset"]["hash"] == result["dataset"]["hash"]
+    # Transkript senaryolarında fixture'lar da veri setinin parçası (RAG sonuçlarında alan yok: ikisi de None).
+    same_data = (parent["dataset"]["hash"] == result["dataset"]["hash"]
+                 and parent["dataset"].get("transkriptler") == result["dataset"].get("transkriptler"))
     out = {"ust_deney": exp["ust_deney"], "ayni_veri_seti": same_data, "metrikler": {}}
     if not same_data:
         out["uyari"] = "Üst deney farklı bir veri seti sürümüyle koşulmuş; karşılaştırma geçersiz."
@@ -332,6 +510,8 @@ def compare(exp, result, parent):
     else:
         out["karar"] = {"metrik": primary, "beklenen_yon": exp["beklenen_yon"],
                         "sonuc": "Ölçülmedi", "hipotez": "Beklemede (birincil metrik bu koşuda ölçülmedi)"}
+    if not parent.get("retrieval") or not result.get("retrieval"):  # agent koşusunda retrieval değerlendirmesi yok
+        return out
     # Sıralaması değişen sorular (tezde hata analizi için)
     before_rank = {r["id"]: r["rank"] for r in parent["retrieval"]["per_question"]}
     out["degisen_sorular"] = [
@@ -406,6 +586,11 @@ def run(exp_id, use_llm, wait, rerun, datasets):
     print(f"\n=== {exp_id}: {exp['baslik']}")
     for k, (old, new) in diff.items():
         print(f"    {k}: {old} -> {new}")
+    if cfg.mod == "agent":
+        if not use_llm:  # agent'ın ölçülecek her şeyi LLM çağrısı gerektirir; --all koşusu bu yüzden durmaz
+            print(f"  {exp_id}: agent modu yalnız --llm ile koşulur (soru başına birkaç LLM çağrısı); atlandı.")
+            return
+        return run_agent(exp_id, exp, cfg, diff, dataset, dataset_hash, wait)
 
     from rag import RagBot, Retriever
     import ingest

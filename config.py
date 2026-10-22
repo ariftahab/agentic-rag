@@ -55,7 +55,8 @@ def corpus_paths(name):
 
 # Sonradan eklenen parametreler. Eski config dosyaları değiştirilmediği için bu alanlar onlarda yoktur;
 # eksikse buradaki değer kullanılır (eski deneyler bu değerle koşulmuştu).
-PARAM_DEFAULTS = {"corpus": "v1", "device": "cpu", "reranker_dtype": "fp32", "fixed_answers": None, "citation_style": "madde"}
+PARAM_DEFAULTS = {"corpus": "v1", "device": "cpu", "reranker_dtype": "fp32", "fixed_answers": None, "citation_style": "madde",
+                  "mod": "rag"}
 
 
 def full_params(params):
@@ -94,9 +95,10 @@ class RagConfig:
                                   # (yönetmelik yürürlükten kalktı; başka belgelerdeki eski atıflar yanlış cevap üretiyordu)
     citation_style: str           # "madde": [Belge, Madde N] | "fikra": [Belge, Madde N/F]
     # Üretim
+    mod: str                   # "rag": RagBot (retrieval + tek LLM çağrısı) | "agent": AdvisorAgent (LLM tool seçer)
     llm_model: str
     llm_temperature: float
-    prompt_version: str        # rag.PROMPTS anahtarı
+    prompt_version: str        # rag.PROMPTS anahtarı (mod=rag) | agent.AGENT_PROMPTS anahtarı (mod=agent)
 
     # İndeksi (parçaları ve embedding'leri) etkileyen parametreler
     INDEX_FIELDS = ("corpus", "device", "pdf_parser", "chunking", "chunk_size", "chunk_overlap",
@@ -111,6 +113,8 @@ class RagConfig:
         if unknown or missing:
             raise ValueError(f"Geçersiz parametreler. Bilinmeyen: {sorted(unknown)}, eksik: {sorted(missing)}")
         cfg = cls(**params)
+        if cfg.mod not in ("rag", "agent"):
+            raise ValueError(f"Bilinmeyen mod: {cfg.mod} (seçenekler: rag, agent)")
         if cfg.device not in ("cpu", "cuda"):
             raise ValueError(f"Bilinmeyen device: {cfg.device}")
         if cfg.corpus not in CORPORA:

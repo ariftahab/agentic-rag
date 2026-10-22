@@ -12,6 +12,15 @@ Metrik tanımları (hepsi soru başına hesaplanıp ortalaması alınır):
   birlestirme  : birden fazla belgede aynı olan değer cevapta tam bir kez geçiyor mu (0/1; set 4.2 'birlestirme')
   fikra_atif   : cevaptaki madde atıflarından fıkra numarası taşıyanların oranı
   fikra_dogru  : fıkralı atıflardan kanıt cümlesini gerçekten o fıkrada bulunanların oranı (değerlendirilebilenler)
+
+Agent metrikleri (params.mod = "agent"; yalnız ilgili alanı tanımlı sorular üzerinden ortalama):
+  tool_dogru      : beklenen her tool doğru argümanlarla çağrıldı ve beklenmeyen bir tool çağrılmadı (0/1);
+                    ortalaması tool_secimi_dogrulugu ('beklenen_tool_lar'), bkz. tool_selection
+  tool_adi_dogru  : aynısı, argümanlara bakmadan (0/1); ortalaması tool_adi_dogrulugu. İkisinin farkı argüman hatası.
+  hesap_dogru     : beklenen her sayı (AKTS, GNO) cevap metninde tam olarak geçiyor (0/1); ortalaması
+                    hesap_dogrulugu ('beklenen_sayilar', transkript senaryoları), bkz. calculation
+  arac_hesap_dogru: elle hesaplanan sayılar deterministik modülün (graduation.evaluate) sonucuyla aynı (0/1);
+                    LLM'den bağımsız kontrol, ortalaması arac_hesap_dogrulugu
 """
 import hashlib
 import importlib.metadata
@@ -37,6 +46,7 @@ METRIC_DIRECTION = {
     "rerank_input_recall": +1,
     "cevap_uzunlugu": -1, "netlestirme_uzunlugu": -1, "birlestirme_isabeti": +1,
     "fikra_atif_orani": +1, "fikra_dogrulugu": +1,
+    "tool_secimi_dogrulugu": +1, "tool_adi_dogrulugu": +1, "hesap_dogrulugu": +1,
 }
 PER_QUESTION_KEY = {  # özet metrik -> soru başına değer anahtarı
     "mrr@10": "rr", "hit@1": "hit@1", "hit@3": "hit@3", "hit@5": "hit@5", "hit@10": "hit@10",
@@ -46,11 +56,13 @@ PER_QUESTION_KEY = {  # özet metrik -> soru başına değer anahtarı
     # Cevaptan türetilen metrikler (yalnız --llm); uzunluklar eski sonuçlarda da cevap metninden hesaplanır.
     "cevap_uzunlugu": None, "netlestirme_uzunlugu": None, "birlestirme_isabeti": "birlestirme",
     "fikra_atif_orani": "fikra_atif", "fikra_dogrulugu": "fikra_dogru",
+    # Agent metrikleri (yalnız mod=agent; RAG sonuçlarında bu alanlar yok, karşılaştırmaya girmez).
+    "tool_secimi_dogrulugu": "tool_dogru", "tool_adi_dogrulugu": "tool_adi_dogru", "hesap_dogrulugu": "hesap_dogru",
 }
 LLM_METRICS = {"answer_acc", "cevap_uzunlugu", "netlestirme_uzunlugu", "birlestirme_isabeti", "fikra_atif_orani",
-               "fikra_dogrulugu"}
+               "fikra_dogrulugu", "tool_secimi_dogrulugu", "tool_adi_dogrulugu", "hesap_dogrulugu"}
 BINARY_METRICS = {"hit@1", "hit@3", "hit@5", "hit@10", "context_hit", "answer_acc", "rerank_input_recall",
-                  "birlestirme_isabeti"}
+                  "birlestirme_isabeti", "tool_secimi_dogrulugu", "tool_adi_dogrulugu", "hesap_dogrulugu"}
 NO_CHANGE_EPS = 1e-9
 
 
@@ -67,6 +79,25 @@ def load_dataset(name=DEFAULT_DATASET):
     raw = dataset_path(name).read_bytes()
     data = json.loads(raw.decode("utf-8"))
     return data, hashlib.sha256(raw).hexdigest()[:16]
+
+
+def file_hash(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()[:16]
+
+
+# Transkript senaryolarının fixture'ları: sorudaki 'transkript' alanı dosya adıdır (eval/transkriptler/<ad>.json).
+# Biçim transcript.parse_transcript çıktısıyla aynı; kişisel bilgi alanı (ad, numara, TC) olamaz.
+TRANSCRIPTS_DIR = config.ROOT / "eval" / "transkriptler"
+TRANSCRIPT_KEYS = {"bolum", "egitim_duzeyi", "kayit_yili", "kayit_donemi", "dersler", "obs_ozet"}
+COURSE_KEYS = {"yil", "donem", "kod", "ad", "kredi", "akts", "not", "erasmus"}
+
+
+def transcript_path(name, folder=None):
+    return Path(folder or TRANSCRIPTS_DIR) / f"{name}.json"
+
+
+def load_transcript(name, folder=None):
+    return json.loads(transcript_path(name, folder).read_text(encoding="utf-8"))
 
 
 def norm(text):
@@ -122,7 +153,7 @@ def validate_dataset(data):
     for path in paths:
         for parser in ("pypdf", "pdfplumber"):
             texts[(path.name, parser)] = norm(" ".join(ingest.read_pages(path, parser))) if path.exists() else ""
-    problems = []
+    problems = validate_agent_items(data, TRANSCRIPTS_DIR)
     for item in data["sorular"]:
         if not answerable(item):
             continue
@@ -133,6 +164,121 @@ def validate_dataset(data):
                         if norm(part) not in texts.get((belge, parser), ""):
                             problems.append(f"{item['id']}: '{part}' {belge} ({parser}) metninde bulunamadı")
     return problems
+
+
+def _transcript_problem(name, folder):
+    """Fixture yoksa ya da parser çıktısında olmayan (kişisel bilgi olabilecek) bir alan taşıyorsa sorun metni."""
+    path = transcript_path(name, folder)
+    if not path.exists():
+        return f"transkript fixture'ı bulunamadı: {path}"
+    data = json.loads(path.read_text(encoding="utf-8"))
+    extra = set(data) - TRANSCRIPT_KEYS
+    extra |= {k for c in data.get("dersler", []) for k in set(c) - COURSE_KEYS}
+    if extra or not data.get("dersler"):
+        return f"transkript fixture'ı ({name}) parser biçiminde değil; fazla alanlar: {sorted(extra)}"
+    return None
+
+
+def validate_agent_items(data, transcripts_dir=None):
+    """Agent alanlarının biçimi: 'beklenen_tool_lar' [{"name", "args"?}], 'transkript' (var olan fixture),
+    'beklenen_sayilar' ({ad: sayı}, transkript senaryosu gerektirir). Her soru için en fazla bir sorun yazılır."""
+    problems, checked = [], {}
+    for item in data["sorular"]:
+        problem = None
+        expected = item.get("beklenen_tool_lar")
+        numbers = item.get("beklenen_sayilar")
+        if expected is not None and not (isinstance(expected, list) and all(
+                isinstance(e, dict) and isinstance(e.get("name"), str) and isinstance(e.get("args", {}), dict)
+                for e in expected)):
+            problem = "'beklenen_tool_lar' [{\"name\": ..., \"args\": {...}}] listesi olmalı"
+        elif item.get("transkript"):
+            name = item["transkript"]
+            if name not in checked:
+                checked[name] = _transcript_problem(name, transcripts_dir)
+            problem = checked[name]
+        elif numbers is not None:
+            problem = "'beklenen_sayilar' için 'transkript' fixture'ı gerekli"
+        if problem is None and numbers is not None and not (isinstance(numbers, dict) and numbers and all(
+                isinstance(v, (int, float)) and not isinstance(v, bool) for v in numbers.values())):
+            problem = "'beklenen_sayilar' {ad: sayı} sözlüğü olmalı"
+        if problem:
+            problems.append(f"{item['id']}: {problem}")
+    return problems
+
+
+# --- Agent: tool seçimi ve hesap doğruluğu ---
+
+NUMBER = re.compile(r"(?<![\d.,])\d+(?:[.,]\d+)?")
+
+
+def _norm_value(value):
+    """Argüman karşılaştırması için: metin Türkçe küçük harf ve tek boşluk, sayısal metin sayı, liste sırasız."""
+    if isinstance(value, bool) or value is None:
+        return value
+    if isinstance(value, (int, float)):
+        return float(value)
+    if isinstance(value, str):
+        text = " ".join(tr_lower(value).split())
+        return float(text.replace(",", ".")) if NUMBER.fullmatch(text) else text
+    if isinstance(value, (list, tuple)):
+        return sorted((_norm_value(v) for v in value), key=repr)
+    if isinstance(value, dict):
+        return {k: _norm_value(v) for k, v in value.items()}
+    return value
+
+
+def args_match(expected, actual):
+    """Beklenen argümanlar gerçek argümanların alt kümesi mi (yazılmayan argüman serbest)."""
+    return all(k in actual and _norm_value(actual[k]) == _norm_value(v) for k, v in expected.items())
+
+
+def tool_selection(expected, calls):
+    """Sorunun beklenen tool çağrılarıyla agent'ın çağrılarını karşılaştırır.
+
+    expected: [{"name", "args"?}], calls: [{"name", "args"}] (sonuç dosyasındaki 'tool_calls').
+    Beklenen her çağrı, adı aynı ve argümanları beklenenleri içeren en az bir çağrıyla karşılanmalı; sıra önemsiz,
+    beklenen bir tool'un tekrar çağrılması serbest (ör. iki arama). Beklenenler dışında bir tool çağrılırsa seçim
+    yanlış sayılır: gereksiz tool hem latency hem yanlış bilgi riski. Boş liste "tool çağırmamalı" demektir.
+    """
+    names = {e["name"] for e in expected}
+    missing = [e["name"] for e in expected
+               if not any(c["name"] == e["name"] and args_match(e.get("args", {}), c["args"]) for c in calls)]
+    missing_names = [e["name"] for e in expected if not any(c["name"] == e["name"] for c in calls)]
+    extra = list(dict.fromkeys(c["name"] for c in calls if c["name"] not in names))
+    return {"tool_dogru": int(not missing and not extra), "tool_adi_dogru": int(not missing_names and not extra),
+            "eksik_tool_lar": missing, "fazla_tool_lar": extra}
+
+
+def numbers_in_text(text):
+    """Metindeki sayılar (ondalık ayırıcı virgül ya da nokta): "2,47" ve "2.47" -> 2.47."""
+    return [float(m.replace(",", ".")) for m in NUMBER.findall(text)]
+
+
+def _same_number(a, b):
+    return a is not None and b is not None and abs(float(a) - float(b)) < NO_CHANGE_EPS
+
+
+def calculation(expected, answer, reference=None):
+    """Hesap doğruluğu: elle hesaplanmış sayılar kullanıcının gördüğü cevapta tam olarak geçiyor mu?
+
+    Neden cevap metni: hesap deterministik koddadır ve kendi testleri vardır; agent'ın bozabileceği şey sayının
+    kullanıcıya ulaşmasıdır (tool'u hiç çağırmamak, yanlış senaryonun sayısını aktarmak, sayıyı kendisi
+    "hesaplamak"). Bu yüzden ölçülen, cevaptaki sayıdır. Eşleşme tam eşitliktir (yuvarlama kabul edilmez;
+    "2,50" ile 2.5 aynı sayıdır). Sınır: sayının cevapta geçmesi, doğru etiketle geçtiğini garanti etmez (ör. 14
+    başka bir bağlamda yazılmış olabilir); bu yüzden anlamca kontrol cevap okunarak yapılır.
+
+    reference: deterministik modülün aynı fixture için sonucu (graduation.evaluate raporu). Verilirse beklenen
+    sayıların modülün sonucuyla aynı olup olmadığı ayrıca yazılır (arac_hesap_dogru). Böylece yanlış bir cevabın
+    kaynağı ayrılır: modül de farklıysa elle hesap ya da kod hatası, modül doğruysa LLM'in aktarma hatası.
+    Raporda karşılığı olmayan sayılar (ör. what-if sonucu) bu kontrole girmez; hiçbiri yoksa None.
+    """
+    found = numbers_in_text(answer)
+    numbers = {k: {"beklenen": v, "cevapta": any(_same_number(x, v) for x in found)} for k, v in expected.items()}
+    judged = [k for k in expected if reference and k in reference]
+    for k in judged:
+        numbers[k]["aracta"] = reference[k]
+    return {"hesap_dogru": int(all(n["cevapta"] for n in numbers.values())), "sayilar": numbers,
+            "arac_hesap_dogru": int(all(_same_number(reference[k], expected[k]) for k in judged)) if judged else None}
 
 
 # --- Cevap biçimi: birleştirme ve fıkralı atıf ---
