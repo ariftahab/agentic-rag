@@ -85,3 +85,13 @@ def test_endless_pause_turn_stops_after_the_limit():
 def test_failed_code_reports_stderr():
     client = FakeClient([response(code_call("python x.py"), code_result("", 1, "NameError"), text("Hata aldım."))])
     assert codeact.CodeRunner(client).run("görev", {})["outputs"] == ["Hata (çıkış kodu 1): NameError"]
+
+
+def test_task_message_describes_each_file_so_haiku_skips_exploring():
+    client = FakeClient([response(text("ok"))])
+    data = '{"donem": "2026-2027 Güz", "dersler": [{"gun": "Pazartesi", "sinif": 1}, {"gun": "Salı", "sinif": 2}]}'
+    codeact.CodeRunner(client).run("görev", {"ders_programi.json": data})
+    message = client.requests[0]["messages"][0]["content"][0]["text"]
+    assert "$INPUT_DIR/ders_programi.json" in message
+    assert '"donem": "2026-2027 Güz"' in message                       # kısa değerler olduğu gibi
+    assert "dersler: 2 kayıtlı liste" in message and '{"gun": "Pazartesi", "sinif": 1}' in message  # ilk kayıt örnek
