@@ -648,7 +648,8 @@ def test_plan_course_without_english_name_is_not_matched_by_its_empty_name():
 
 
 def test_erasmus_courses_against_the_real_plan():
-    report = graduation.evaluate(ERASMUS_SAMPLE, graduation.load_plan())
+    # Yalnız ad benzerliği katmanı (eşdeğerlik tablosu ayrı testte).
+    report = graduation.evaluate(ERASMUS_SAMPLE, graduation.load_plan(), equivalences=[])
     assert matched(report) == {
         "Operating Systems": ("İşletim Sistemleri I", "otomatik"),
         "Database Systems": ("Veritabanı Yönetim Sistemleri", "otomatik"),
@@ -871,3 +872,21 @@ def test_summary_can_state_the_enrollment_year_and_out_of_field_status(enrolled,
     assert text.splitlines()[1] == (f"Kayıt yılı: {enrolled}-{enrolled + 1} "
                                     f"(Alan Dışı Seçmeli Ders bu öğrenci için {status}).")
     assert "Kayıt yılı" not in graduation.summary_text(report, RULES_PLAN)  # varsayılan özet değişmez
+
+
+def test_equivalence_table_matches_a_known_erasmus_course_with_its_source():
+    # Benzerlikle eşlenmeyen ders ("Microcomputer Systems" ~ "Microprocessors": 0) bölümün tablosundan eşlenir.
+    plan = graduation.load_plan()
+    erasmus = {**course(2025, "Güz", "E9", "Microcomputer Systems", 5, "AA"), "erasmus": True}
+    report = graduation.evaluate(transcript(erasmus), plan)
+    [m] = report["eslesmeler"]
+    assert (m["plan_ad"], m["yontem"]) == ("Mikroişlemciler", "tablo") and m["kaynak"]
+    assert report["eslesmeyen"] == []
+    assert "eşdeğerlik tablosu" in graduation.summary_text(report, plan)
+
+
+def test_user_confirmation_overrides_the_equivalence_table():
+    plan = graduation.load_plan()
+    erasmus = {**course(2025, "Güz", "E9", "Microcomputer Systems", 5, "AA"), "erasmus": True}
+    report = graduation.evaluate(transcript(erasmus), plan, confirmations={"E9": None})
+    assert report["eslesmeler"] == [] and report["eslesmeyen"][0]["teyit_edildi"] is True

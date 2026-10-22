@@ -15,6 +15,9 @@ import config
 # Yönetmelik ve yönerge kuralları (geçer notlar, 240 AKTS, GNO, Alan Dışı Seçmeli Ders...);
 # her kural kaynağını (belge + madde/fıkra) veri olarak taşır.
 RULES_PATH = config.DATA_DIR / "plan" / "yonetmelik_kurallari.json"
+# Ad benzerliğiyle eşlenemeyen plan dışı derslerin kesinleşmiş karşılıkları (ör. "Microcomputer Systems" →
+# Mikroişlemciler): teyit her oturumda kaybolduğu için agent aynı dersi tekrar tekrar soruyordu.
+EQUIVALENCES_PATH = config.DATA_DIR / "plan" / "esdegerlikler.json"
 # Bir akademik yıl içindeki sıra; yıl akademik yılın başlangıcı olduğu için (yıl, sıra) kronolojiktir.
 TERM_ORDER = {"Güz": 0, "Bahar": 1, "Yaz": 2}
 STATUS_TEXT = {"alinmadi": "alınmadı", "basarisiz": "başarısız", "devam_ediyor": "bu dönem alınıyor"}
@@ -87,8 +90,9 @@ def _best_match(name, candidates):
     return (top[0], best) if len(top) == 1 else (None, best)
 
 
-def _match_unplanned(courses, plan, passed, ongoing, confirmations):
-    """Plan dışı dersleri plan derslerine eşler: önce kullanıcı teyidi, sonra İngilizce/Türkçe ad benzerliği.
+def _match_unplanned(courses, plan, passed, ongoing, confirmations, equivalences):
+    """Plan dışı dersleri plan derslerine eşler: önce kullanıcı teyidi, sonra eşdeğerlik tablosu (ad birebir aynı),
+    sonra İngilizce/Türkçe ad benzerliği.
 
     Dönüş: (eşlemeler, eşlenemeyenler). Hedef adayları, transkriptte kendi koduyla geçilmiş plan dersleri dışındaki
     plan dersleridir."""
@@ -109,6 +113,13 @@ def _match_unplanned(courses, plan, passed, ongoing, confirmations):
                 continue
             matches.append({**base, "plan_kod": target["kod"], "plan_ad": target["ad"], "yontem": "teyit"})
             continue
+        known = next((e for e in equivalences
+                      if name_similarity(e["ad"], c["ad"]) == 1.0 and e["plan_kod"] in by_code), None)
+        if known is not None:
+            target = by_code[known["plan_kod"]]
+            matches.append({**base, "plan_kod": target["kod"], "plan_ad": target["ad"], "yontem": "tablo",
+                            "kaynak": known["kaynak"]})
+            continue
         target, score = _best_match(c["ad"], candidates)
         if target is None:
             unmatched.append({**base, "teyit_edildi": False})
@@ -118,16 +129,17 @@ def _match_unplanned(courses, plan, passed, ongoing, confirmations):
     return matches, unmatched
 
 
-def evaluate(transcript, plan, rules=None, confirmations=None):
+def evaluate(transcript, plan, rules=None, confirmations=None, equivalences=None):
     """Transkripti plan ve kurallarla karşılaştırır; iki senaryo: şu an ve bu dönemin dersleri geçilirse.
 
     `rules` verilmezse yönetmelik kuralları `RULES_PATH`'ten okunur. `confirmations` kullanıcının teyit ettiği
     eşlemelerdir: {plan dışı ders kodu: plan ders kodu ya da eşdeğeri yoksa None}. Eşlenen plan dışı ders,
-    bütün hesaplarda plan dersinin koduyla sayılır."""
+    bütün hesaplarda plan dersinin koduyla sayılır. `equivalences` verilmezse EQUIVALENCES_PATH'ten okunur."""
     rules = rules or load_rules()
+    equivalences = load_equivalences() if equivalences is None else equivalences
     passing = set(_rule(rules, "gecer_notlar")["deger"])
     matches, unmatched = _match_unplanned(transcript["dersler"], plan, *_latest_status(transcript["dersler"], passing),
-                                          confirmations or {})
+                                          confirmations or {}, equivalences)
     target_of = {m["kod"]: m["plan_kod"] for m in matches}
     courses = [{**c, "kod": target_of.get(c["kod"], c["kod"])} for c in transcript["dersler"]]
     passed, ongoing = _latest_status(courses, passing)
@@ -443,6 +455,10 @@ def load_rules(path=RULES_PATH):
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def load_equivalences(path=EQUIVALENCES_PATH):
+    return json.loads(path.read_text(encoding="utf-8"))["esdegerlikler"] if path.exists() else []
+
+
 def report_text(report, plan):
     lines = [
         f"Öğretim planı: {plan['kaynak']}",
@@ -564,8 +580,11 @@ def summary_text(report, plan, enrollment=False):
     if report["eslesmeler"]:
         lines += ["", "PLAN DIŞI DERSLERİN EŞLEMESİ (Erasmus, intibak; kesin eşdeğerlik intibak komisyonu "
                       "kararına bağlıdır, cevapta bunu belirt)"]
-        how = {"otomatik": "ders adının çevirisine göre otomatik eşlendi", "teyit": "kullanıcı teyit etti"}
-        lines += [f"- {m['ad']} ({m['akts']} AKTS) → {m['plan_ad']}: {how[m['yontem']]}" for m in report["eslesmeler"]]
+        how = {"otomatik": "ders adının çevirisine göre otomatik eşlendi", "teyit": "kullanıcı teyit etti",
+               "tablo": "bölümün eşdeğerlik tablosundan"}
+        lines += [f"- {m['ad']} ({m['akts']} AKTS) → {m['plan_ad']}: {how[m['yontem']]}"
+                  + (f" (eşdeğerlik tablosu: {m['kaynak']})" if m["yontem"] == "tablo" else "")
+                  for m in report["eslesmeler"]]
     return "\n".join(lines)
 
 

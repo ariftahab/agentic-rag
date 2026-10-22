@@ -1,0 +1,11 @@
+{
+ "aciklama": "Plan dışı derslerin (Erasmus, intibak) öğretim planındaki kesinleşmiş karşılıkları. Ad benzerliğiyle eşlenemeyen dersler için; eşleme ders adının birebir aynı olmasına bakar. Kullanıcı teyidi tablodan önce gelir.",
+ "esdegerlikler": [
+  {
+   "ad": "Microcomputer Systems",
+   "plan_kod": "1906003012015",
+   "plan_ad": "Mikroişlemciler",
+   "kaynak": "kullanıcı beyanı (2026-10-22); intibak komisyonu kararıyla teyit edilmeli"
+  }
+ ]
+}
