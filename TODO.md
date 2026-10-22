@@ -1,16 +1,18 @@
 # TODO
 
 Yalnız açık işler, sırasıyla. Yapılanların sonuçları config `notlar` alanlarında, `experiments/experiment_log.md`'de;
-tarihçe git'te. Agentic yolun işleri GitHub issue'larında (spec #1; açık ticket'lar #14-#17).
+tarihçe git'te. Agentic yolun işleri GitHub issue'larında (spec #1; açık ticket'lar #15, #19).
 
 ## Kaldığımız yer (2026-10-22 akşam)
 
-Durum: agent varsayılanı `agent_v4` (EXP-003); deneyler EXP-002 (agent baseline) ve EXP-003 koşuldu, tool metriği
-ikiye ayrıldı (gerekli tool, yan etkisiz). Spec #1 hikâye hikâye kontrol edildi; boşluklar:
+Durum: agent varsayılanı `agent_v4`; en yeni sürüm `agent_v7` (v6 + anlık tool, Claude Haiku). Bugün kapananlar:
+#13 (web transkriptsiz agent'a), #14 (mezuniyet şartları tool'u, EXP-004), #16/#17 (agent kaynakları, atıf linkleri,
+👍/👎, admin), #18 (anlık tool). Eşdeğerlik tablosu eklendi (Microcomputer Systems → Mikroişlemciler).
 
-- **Sonraki iş, sırayla:** #14 `get_graduation_requirements` tool'u (prompt değişikliği; önce alt küme teşhisi) →
-  #15 model karşılaştırması deneyi (onayla) → #16 agent cevaplarında kaynak, 👍/👎 ve /admin → #17 tıklanabilir atıflar.
-  #13 kapandı (2026-10-22): web sohbeti transkriptsiz de agent'a gidiyor.
+- **Sonraki iş (2026-10-23), #19:** anlık tool en önemli yetenek (kullanıcı kararı) → önce **sorular_v2** (v1 + anlık
+  tool soruları, gereksiz tetiklenme soruları, eskimiş beklentilerin düzeltilmesi), run.py'de agent_v7 + CodeRunner ve
+  anlık tool metrikleri; sonra onayla sırayla `gemini-3.5-flash-lite` + agent_v7, ardından `gemini-3.1-flash-lite` +
+  agent_v7 (tek fark model). #15 bu deneylerle kapanır. Kota: 3.5 için günlük kalan sınırlı, tam koşu ~95-100 istek.
 - **#14 teşhis 1 (2026-10-22, agent_v5 = v4 + "genel mezuniyet şartlarında get_graduation_requirements", commit'siz):**
   "Bilgisayar Mühendisliğinden mezun olabilmek için hangi şartlar gerekiyor?" düzeldi (tek tool çağrısı; 244 AKTS,
   zorunlu/seçmeli, yuva kuralı, GNO 2,00, geçer notlar, ADSD ve 2023 istisnası, hepsi kaynaklı; staj ayrıca yazılmadı).
