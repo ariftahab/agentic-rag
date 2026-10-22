@@ -219,3 +219,5 @@ my_notes/
 
 # Gerçek transkriptler (kişisel veri) repoya girmez; yalnız yerel parser testleri kullanır
 tests/private/
+# Paket yükseltmesinde eski ortamın yedeği
+venv-old/
