@@ -1,0 +1,1664 @@
+{
+ "id": "EXP-003",
+ "calisma_zamani": "2026-10-22T13:23:39",
+ "dataset": {
+  "dosya": "eval/sorular_v1.json",
+  "surum": "v1",
+  "hash": "d4281b4a3fe29c88",
+  "n_agent": 45,
+  "n_toplam": 45,
+  "transkriptler": {
+   "birinci_sinif_2026": "3a3a85551575ca4d",
+   "erasmus_2023": "acbffeee8b759e2a",
+   "ucuncu_sinif_2024": "a7271b8b8dec57bf",
+   "uzatma_2021": "6d3461af217442d9"
+  }
+ },
+ "params": {
+  "mod": "agent",
+  "corpus": "v1",
+  "device": "cuda",
+  "pdf_parser": "pdfplumber",
+  "chunking": "structural_v2",
+  "chunk_size": 1500,
+  "chunk_overlap": 150,
+  "embedding_model": "BAAI/bge-m3",
+  "normalize_embeddings": true,
+  "retrieval": "hybrid",
+  "vector_k": 30,
+  "bm25_k": 30,
+  "rrf_k": 60,
+  "reranker_model": "BAAI/bge-reranker-v2-m3",
+  "reranker_max_length": 512,
+  "rerank_candidates": 30,
+  "final_k": 5,
+  "llm_model": "gemini-3.5-flash-lite",
+  "llm_temperature": 0.3,
+  "prompt_version": "agent_v4",
+  "reranker_dtype": "fp16",
+  "fixed_answers": "summer_v1"
+ },
+ "degisen_parametreler": {
+  "prompt_version": [
+   "agent_v3",
+   "agent_v4"
+  ]
+ },
+ "index": {
+  "fingerprint": "8b0b767916784604",
+  "index_params": {
+   "corpus": "v1",
+   "device": "cuda",
+   "pdf_parser": "pdfplumber",
+   "chunking": "structural_v2",
+   "chunk_size": 1500,
+   "chunk_overlap": 150,
+   "embedding_model": "BAAI/bge-m3",
+   "normalize_embeddings": true
+  },
+  "chunks": 685,
+  "avg_chunk_chars": 874.8,
+  "build_seconds": 64.6,
+  "cache_hit": 0,
+  "cache_miss": 24,
+  "created": "2026-10-22T12:07:06"
+ },
+ "environment": {
+  "git_commit": "3a1451e679cd6ff0b3452a4c89835aded60a0206",
+  "git_dirty": false,
+  "python": "3.11.9",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "cpu": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+  "cpu_count": 20,
+  "torch_device": "cuda",
+  "torch_version": "2.11.0+cu128",
+  "gpu": "NVIDIA GeForce RTX 4050 Laptop GPU",
+  "packages": {
+   "torch": "2.11.0+cu128",
+   "sentence-transformers": "6.2.0",
+   "transformers": "5.20.2",
+   "faiss-cpu": "1.15.1",
+   "rank-bm25": "0.2.2",
+   "pdfplumber": "0.11.10",
+   "pypdf": "6.21.2",
+   "langchain-core": "1.6.13",
+   "langchain-community": "0.4.2",
+   "langchain-text-splitters": "1.1.3",
+   "langchain-huggingface": "1.2.3",
+   "langchain-google-genai": "4.4.2",
+   "scipy": "1.17.1"
+  },
+  "model_revisions": {
+   "embedding": "5617a9f61b028005a4858fdac845db406aefb181",
+   "reranker": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e"
+  }
+ },
+ "agent": {
+  "prompt_version": "agent_v4",
+  "max_tur": 5,
+  "bugun": "2026-10-22",
+  "plan_hash": "99c3ab7d0be68100",
+  "kurallar_hash": "6d2e988f951d32a4"
+ },
+ "retrieval": null,
+ "llm": {
+  "tamamlandi": true,
+  "metrics": {
+   "n": 45,
+   "answer_acc": 0.7805,
+   "answer_n": 41,
+   "tool_secimi_dogrulugu": 0.7143,
+   "tool_secimi_n": 42,
+   "tool_adi_dogrulugu": 0.7143,
+   "hesap_dogrulugu": 0.7273,
+   "hesap_n": 11,
+   "arac_hesap_dogrulugu": 1,
+   "arac_hesap_n": 5,
+   "ort_tool_cagrisi": 1.13,
+   "ort_tur": 2.11,
+   "agent_ms": 2291.1,
+   "agent_ms_median": 2218.1,
+   "token_input": 5571.6,
+   "token_output": 218.4,
+   "token_reasoning": 0
+  },
+  "per_question": [
+   {
+    "id": "M01",
+    "answer": "Mühendislik Fakültesi bölümlerinde zorunlu staj süresi toplam 40 (kırk) iş günüdür [Mühendislik Fakültesi Staj Yönergesi, Madde 10].",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "zorunlu staj kaç iş günü"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 2638.4,
+    "tokens": {
+     "input": 5839,
+     "output": 74,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": []
+   },
+   {
+    "id": "M02",
+    "answer": "Staj raporu, stajı takip eden eğitim döneminin başından itibaren en geç 15 gün içinde Bölüm Staj Komisyonuna imza karşılığı elden teslim edilmelidir [mühendislik fakültesi staj yönergesi, Madde 19].",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "staj raporu teslim süresi ne zaman"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 2197.4,
+    "tokens": {
+     "input": 5928,
+     "output": 84,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": []
+   },
+   {
+    "id": "M03",
+    "answer": "Öğrenciler, mazeretleri ilgili yönetim kurulu kararı ile kabul edildiği takdirde, derslerin başladığı ilk üç hafta sonuna kadar ders kaydı ve ders kaydına ders ekleme veya ders silme işlemi yapabilirler; bu tarihten sonra hiçbir işlem yapılamaz [önlisans lisans eğitim öğretim, Madde 10, s. 2]. Mazeretinizin kabulü için ilgili birime başvurmanız gerekmektedir.",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "ders ekleme silme mazeret geç kayıt akademik takvim"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 2342.2,
+    "tokens": {
+     "input": 6164,
+     "output": 127,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": []
+   },
+   {
+    "id": "M04",
+    "answer": "Devamsızlıktan (DZ/NA) kalınan derste devam koşulu yerine getirilmediği için o dersin bütünleme sınavına girilemez [önlisans lisans eğitim öğretim, Madde 29 (7)].",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "devamsızlıktan kalınan ders bütünleme sınavı"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 2143.3,
+    "tokens": {
+     "input": 5588,
+     "output": 77,
+     "reasoning": 0
+    },
+    "answer_ok": 0,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": []
+   },
+   {
+    "id": "M05",
+    "answer": "Bir dersin ara sınavına mazereti nedeniyle giremeyen öğrenci, mazeretinin bitiminden itibaren **3 iş günü** içerisinde sağlık raporunun asıl sureti ile birlikte bölüm başkanlığına yazılı başvuruda bulunmalıdır [önlisans lisans eğitim öğretim, Madde 29, s. 7; öğrenci sağlık işleri ve sağlık raporları, Madde 8, s. 2].",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "mazeret sınavı başvuru süresi kaç gün"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 2073.7,
+    "tokens": {
+     "input": 5349,
+     "output": 116,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": []
+   },
+   {
+    "id": "M06",
+    "answer": "Teorik derslerde devam zorunluluğu en az **%70**'tir [önlisans lisans eğitim öğretim, Madde 24, s. 6; lisansüstü eğitim yönetmeliği, Madde 38, s. 21]. Sağlık raporu süreleri de devamsızlık sürelerine dahildir [önlisans lisans eğitim öğretim, Madde 24, s. 6].",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "teorik dersler devam zorunluluğu yüzde kaç"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 2218.1,
+    "tokens": {
+     "input": 4658,
+     "output": 127,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": []
+   },
+   {
+    "id": "M07",
+    "answer": "Kurumlar arası yatay geçiş için öğrencinin, kayıtlı olduğu programda bitirmiş olduğu dönemlere ait genel not ortalamasının 100 üzerinden en az 60 olması şarttır [BAİBÜ Yatay Geçiş Yönergesi, Madde 8, s. 3; kurumlar arası kredi transferi, Madde 11, s. 5]. \n\nBu başarı şartını sağlayamayan ancak merkezi yerleştirme puanı geçiş yapmak istediği diploma programının taban puanına eşit veya yüksek olan adaylar da başvuru yapabilmektedir [BAİBÜ Yatay Geçiş Yönergesi, Madde 8, s. 3; kurumlar arası kredi transferi, Madde 11, s. 5].",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "kurumlar arası yatay geçiş not ortalaması şartı"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 2118.3,
+    "tokens": {
+     "input": 5389,
+     "output": 196,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": []
+   },
+   {
+    "id": "M08",
+    "answer": "Lisansüstü öğrencilerinin her dönemde alabileceği ders yükü, uzmanlık alan dersi ve tez çalışması hariç azami 30 AKTS’dir [lisansüstü eğitim öğretim, Madde 12].",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "lisansüstü bir dönemde en fazla kaç AKTS ders alabilir"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 2048.8,
+    "tokens": {
+     "input": 5631,
+     "output": 82,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": []
+   },
+   {
+    "id": "M09",
+    "answer": "Çift anadal programına başvurabilmek için aranan not ortalaması ve başarı şartları şunlardır:\n\n* Başvuru anında anadal diploma programındaki genel not ortalamasının 100 üzerinden en az **70** olması gerekir [kurumlar arası kredi transferi, Madde 17, s. 8; çift anadal program yönergesi, Madde 6, s. 2].\n* Anadal diploma programının ilgili sınıfında başarı sıralaması itibarıyla en üst **%20**'sinde yer alan öğrenciler başvuru yapabilir [kurumlar arası kredi transferi, Madde 17, s. 8; çift anadal program yönergesi, Madde 6, s. 2].\n* Genel not ortalaması en az 70 olduğu halde başarı sıralaması olarak en üst %20’lik dilimde bulunmayan öğrencilerin ise, başvurdukları diploma programının ilgili yıldaki merkezi yerleştirme taban puanından az olmamak üzere puana sahip olmaları durumunda da başvuru hakkı bulunmaktadır [kurumlar arası kredi transferi, Madde 17, s. 8; çift anadal program yönergesi, Madde 6, s. 2].\n* Ayrıca başvuru yapabilmek için öğrencinin başvurduğu döneme kadar anadal lisans programında alması gereken tüm dersleri başarıyla tamamlamış olması şartı aranır [kurumlar arası kredi transferi, Madde 17, s. 8; çift anadal program yönergesi, Madde 6, s. 2].",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "çift anadal programına başvuru not ortalaması şartı"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 2653.3,
+    "tokens": {
+     "input": 5802,
+     "output": 385,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": []
+   },
+   {
+    "id": "M10",
+    "answer": "2023-2024 eğitim-öğretim yılı ve öncesinde üniversiteye kaydolan öğrencilerin, Alan Dışı Seçmeli Ders (ADSD) kapsamında açılan derslere kayıtlanmaları isteğe bağlıdır [alan dışı seçmeli ders yönergesi, Madde 11, Geçici Madde 1].",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "2023 2024 Alan Dışı Seçmeli Ders zorunlu mu Bilgisayar Mühendisliği"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 1883.9,
+    "tokens": {
+     "input": 5430,
+     "output": 115,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": []
+   },
+   {
+    "id": "B01",
+    "answer": "Bilgisayar Mühendisliği programından mezun olabilmek için sağlanması gereken temel şartlar şunlardır:\n\n* **AKTS Şartı:** Lisans programındaki toplam en az 240 AKTS kredisinin başarıyla tamamlanması zorunludur [önlisans lisans eğitim öğretim, Madde 22].\n* **Staj Şartı:** Stajların başarıyla tamamlanması gerekmektedir; stajlar toplamda 5 AKTS kredisinden az, 10 AKTS kredisinden fazla olamaz ve stajlara devam zorunludur [mühendislik fakültesi staj yönergesi, Madde 10].",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "Bilgisayar Mühendisliği mezuniyet şartları AKTS staj"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 2516.9,
+    "tokens": {
+     "input": 5363,
+     "output": 180,
+     "reasoning": 0
+    },
+    "answer_ok": 0,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": []
+   },
+   {
+    "id": "B02",
+    "answer": "Genel not ortalamasına, tekrar edilen derslerden alınan en son not katılır [lisansüstü eğitim yönetmeliği, Madde 38]. \n\nZorunlu bir dersten kalındığında bütünlemede de geçilemezse, dersin tekrar alınması gereken dönem ve koşullar için ilgili akademik takvim ve bölüm danışmanlığı ile görüşülmesi gerekir; bu konuda mevzuatta ayrıntılı bir süre kısıtı metni bulunmamaktadır.",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "dersten kalma bütünleme devam zorunluluğu tekrar alma not ortalaması BAİBÜ"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 2347.8,
+    "tokens": {
+     "input": 5658,
+     "output": 137,
+     "reasoning": 0
+    },
+    "answer_ok": 0,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": []
+   },
+   {
+    "id": "B03",
+    "answer": "Staj dersinin yazılı veya klasik anlamda bir bütünleme sınavı bulunmamaktadır [mühendislik fakültesi staj yönergesi, Madde 13]. Stajlar, Bölüm Staj Komisyonu tarafından mesleki bilgi, beceri, staj raporu ve mülakat sonuçları dikkate alınarak başarılı veya başarısız olarak değerlendirilir [mühendislik fakültesi staj yönergesi, Madde 13].\n\nStajınızda başarısız olmanız durumunda:\n- Stajını tamamlamayan veya stajında başarısız olan öğrenciler, stajını takip eden ilk staj döneminde stajı tekrar etmek zorundadır [mühendislik fakültesi staj yönergesi, Madde 13].\n- Tekrar edilen stajda da başarısız olunması veya mezuniyet için gerekli staj süresinin tamamlanamaması hâlinde mezuniyet gerçekleşmez [mühendislik fakültesi staj yönergesi, Madde 13].\n- Staj uygulamasından başarısız olup dersi tekrar alan öğrencilerin sigorta ücretleri kendileri tarafından karşılanır [mühendislik fakültesi staj yönergesi, Madde 12].",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "staj bütünleme sınavı başarısız olma staj tekrarı"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 2632.9,
+    "tokens": {
+     "input": 5542,
+     "output": 302,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": []
+   },
+   {
+    "id": "C01",
+    "answer": "Bu konuda bilgim yok. İlgili birime başvurmanız önerilir.",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "Erasmus hibesi aylık kaç avro"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 1809.6,
+    "tokens": {
+     "input": 5923,
+     "output": 41,
+     "reasoning": 0
+    },
+    "answer_ok": 1
+   },
+   {
+    "id": "C02",
+    "answer": "Bu konuda bilgim yok.",
+    "tool_calls": [],
+    "turns": 1,
+    "agent_ms": 745.5,
+    "tokens": {
+     "input": 1803,
+     "output": 6,
+     "reasoning": 0
+    },
+    "answer_ok": 1
+   },
+   {
+    "id": "C03",
+    "answer": "Bu konuda bilgim yok. İlgili birime başvurabilirsiniz.",
+    "tool_calls": [],
+    "turns": 1,
+    "agent_ms": 881.2,
+    "tokens": {
+     "input": 1796,
+     "output": 14,
+     "reasoning": 0
+    },
+    "answer_ok": 1
+   },
+   {
+    "id": "T01",
+    "answer": "* Şu an toplam **0 AKTS**'niz bulunmaktadır [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf), yarıyıl toplamları].\n* Bu dönem aldığınız bütün dersleri başarıyla geçmeniz durumunda toplam **32 AKTS**'ye ulaşacaksınız [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf), yarıyıl toplamları].",
+    "tool_calls": [
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 2292.3,
+    "tokens": {
+     "input": 5857,
+     "output": 144,
+     "reasoning": 0
+    },
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "hesap_dogru": 1,
+    "sayilar": {
+     "gecilen_akts": {
+      "beklenen": 0,
+      "cevapta": true,
+      "aracta": 0
+     },
+     "devam_edenler_gecilirse_akts": {
+      "beklenen": 32,
+      "cevapta": true,
+      "aracta": 32
+     }
+    },
+    "arac_hesap_dogru": 1
+   },
+   {
+    "id": "T02",
+    "answer": "Mezuniyet durumunuzun özeti:\n\n* **AKTS:** Toplam 244 AKTS'den şu an **117** AKTS tamamlanmış olup, bu dönem alınan dersler başarıyla geçilirse **152** AKTS'ye ulaşılacaktır [BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 22, fıkra 1; BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf), yarıyıl toplamları].\n* **GNO:** 3.08 (Gereken: en az 2.00, şart sağlanıyor) [BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 35, fıkra 1, bent b].\n* **Zorunlu Dersler:** 40 zorunlu dersten şu an **25**'i tamamlanmıştır; bu dönemin dersleri geçilirse bu sayı **31** olacaktır [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf), yarıyıl tablolarındaki zorunlu dersler; BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 20, fıkra 2; BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 35, fıkra 1, bent a].\n* **Seçmeli Dersler ve Alan Dışı:** 64 seçmeli AKTS'den şu an **16**'sı tamamlanmıştır (bu dönem geçilirse **20** olacaktır) [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf), seçmeli ders yuvaları ve havuzları; BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 35, fıkra 1, bent a; BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 35, fıkra 2]. Alan Dışı Seçmeli Ders yuvasından henüz ders alınmamıştır [BAİBÜ Alan Dışı Seçmeli Ders Yönergesi, Madde 7, fıkra 3; BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf), Alan Dışı Seçmeli Ders yuvası].\n\n**Eksik Zorunlu Dersler:**\n* Veritabanı Yönetim Sistemleri, Sistem Programlama, Gömülü Sistemler, Yazılım Mühendisliği, Sinyaller ve Sistemler, Bitirme Projesi I, Staj II, Veri İletişimi ve Bilgisayar Ağları, Bitirme Projesi II [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf), ilgili yarıyıl tabloları].\n\n**Açık Seçmeli Yuvaları:**\n* Seçmeli VI, Alan Dışı Seçmeli Ders, Seçmeli VII ve Seçmeli VIII yuvaları açıktır [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf), seçmeli ders yuvaları].",
+    "tool_calls": [
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 3139.2,
+    "tokens": {
+     "input": 5161,
+     "output": 846,
+     "reasoning": 0
+    },
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "hesap_dogru": 1,
+    "sayilar": {
+     "gecilen_akts": {
+      "beklenen": 117,
+      "cevapta": true,
+      "aracta": 117
+     },
+     "devam_edenler_gecilirse_akts": {
+      "beklenen": 152,
+      "cevapta": true,
+      "aracta": 152
+     },
+     "gno": {
+      "beklenen": 3.08,
+      "cevapta": true,
+      "aracta": 3.08
+     }
+    },
+    "arac_hesap_dogru": 1
+   },
+   {
+    "id": "T03",
+    "answer": "Transkript analizine göre mezuniyet durumunuz ve AKTS dağılımınız şu şekildedir:\n\n* **Şu anki durum:** 176 / 242 AKTS tamamlanmıştır. Zorunlu derslerden 34 / 40 AKTS, seçmeli derslerden ise 24 / 64 AKTS tamamlanmış olup 40 AKTS'lik seçmeli alanı açıktır. Genel ağırlıklı not ortalamanız (GNO) 3.5'tir. Bu durumda mezuniyet şartları karşılanmamaktadır [BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 22, fıkra 1; BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf)].\n* **Bu dönem alınan dersler başarıyla geçilirse:** 206 / 242 AKTS'ye ulaşılacaktır. Zorunlu dersler 36 / 40, seçmeli dersler 44 / 64 AKTS olacaktır ve 20 AKTS'lik seçmeli alanı açık kalacaktır. Bu durumda da mezuniyet şartları henüz tamamlanmamış olacaktır [BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 22, fıkra 1].\n\nTranskriptinizde intibak/Erasmus kapsamında yer alan ve öğretim planındaki karşılığı henüz belirtilmemiş olan **\"Microcontroller Programming\" (5 AKTS)** dersi bulunmaktadır. Bu ders öğretim planındaki hangi derse sayıldı?",
+    "tool_calls": [
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 3051.6,
+    "tokens": {
+     "input": 5120,
+     "output": 382,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "hesap_dogru": 1,
+    "sayilar": {
+     "gecilen_akts": {
+      "beklenen": 176,
+      "cevapta": true,
+      "aracta": 176
+     },
+     "devam_edenler_gecilirse_akts": {
+      "beklenen": 206,
+      "cevapta": true,
+      "aracta": 206
+     },
+     "gno": {
+      "beklenen": 3.5,
+      "cevapta": true,
+      "aracta": 3.5
+     }
+    },
+    "arac_hesap_dogru": 1
+   },
+   {
+    "id": "T04",
+    "answer": "Bu dönem Algoritma Analizi dersi geçilirse mezuniyet şartları karşılanamamaktadır. \n\nTranskript analizine göre durum şu şekildedir:\n- **AKTS:** Toplam 237 / 242 AKTS'ye ulaşılmaktadır (gereken: 242).\n- **Zorunlu Dersler:** 39 / 40 zorunlu ders tamamlanmış olacaktır (gereken: 40, eksik kalan zorunlu ders: Staj II).\n- **Seçmeli Dersler:** 60 / 64 AKTS (4 AKTS açık) [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf), seçmeli ders yuvaları ve havuzları].\n- **GNO:** Genel ağırlıklı not ortalaması 1.97'dir (mezuniyet için gereken minimum GNO: 2.00) [BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 35, fıkra 1, bent b].",
+    "tool_calls": [
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 2347.3,
+    "tokens": {
+     "input": 4651,
+     "output": 273,
+     "reasoning": 0
+    },
+    "answer_ok": 0,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "hesap_dogru": 0,
+    "sayilar": {
+     "gecilen_akts": {
+      "beklenen": 231,
+      "cevapta": false,
+      "aracta": 231
+     },
+     "devam_edenler_gecilirse_akts": {
+      "beklenen": 237,
+      "cevapta": true,
+      "aracta": 237
+     },
+     "gno": {
+      "beklenen": 1.97,
+      "cevapta": true,
+      "aracta": 1.97
+     }
+    },
+    "arac_hesap_dogru": 1
+   },
+   {
+    "id": "T05",
+    "answer": "Transkript analizine göre staj durumunuz:\n\n* **Staj I:** Tamamlanmış görünüyor.\n* **Staj II:** 7. yarıyıl zorunlu dersi olarak **alınmadı** (5 AKTS, eksik zorunlu dersler arasında yer almaktadır) [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf)].\n\nMühendislik Fakültesi Staj Yönergesi Madde 10'a göre zorunlu staj süresi toplam 40 iş günüdür ve stajlar her biri en az 20 iş günü olan iki ayrı dönemde yapılır [Mühendislik Fakültesi Staj Yönergesi, Madde 10]. Staj II eksikliğinizi tamamlamak ve başvuru/değerlendirme süreçleriyle ilgili kesin bilgi almak için **Bölüm Staj Komisyonunuza** ve danışman hocanıza başvurmanız gerekmektedir.",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "staj esasları stajlar nasıl tamamlanır staj defteri yaz staj süresi"
+      }
+     },
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     }
+    ],
+    "turns": 3,
+    "agent_ms": 3377.9,
+    "tokens": {
+     "input": 11365,
+     "output": 277,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [
+     "search_regulations"
+    ]
+   },
+   {
+    "id": "T06",
+    "answer": "Kayıtlı olduğunuz programın zorunlu ve seçmeli dersler için ayrı ayrı öngördüğü toplam kredi miktarını tamamlamanız zorunludur [önlisans lisans eğitim öğretim, Madde 35, s. 10]. Bir seçmeli gruptan (örneğin Seçmeli VII) fazla ders almış olmanız, öğretim planında ayrı bir havuz/yuvada yer alan Seçmeli VIII'deki eksikliği doğrudan kapatmaz; her seçmeli yuvasının kendi AKTS ve ders şartının ayrı ayrı sağlanması gerekir [önlisans lisans eğitim öğretim, Madde 35, s. 10]. \n\nFazladan alınan seçmeli derslerin başka bir seçmeli grubun yerine sayılması veya bu derslerin durumuyla ilgili resmi işlemler için danışman hocanıza başvurmanız gerekmektedir.",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "seçmeli derslerin birbirine sayılması fazladan seçmeli derslerin durumu"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 2584.6,
+    "tokens": {
+     "input": 5495,
+     "output": 217,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "eksik_tool_lar": [
+     "analyze_transcript"
+    ],
+    "fazla_tool_lar": [
+     "search_regulations"
+    ],
+    "hesap_dogru": 0,
+    "sayilar": {
+     "secmeli_gecilen_akts": {
+      "beklenen": 60,
+      "cevapta": false
+     },
+     "secmeli_acik_akts": {
+      "beklenen": 4,
+      "cevapta": false
+     }
+    }
+   },
+   {
+    "id": "T07",
+    "answer": "Lisans programından mezun olabilmek için genel ağırlıklı not ortalamasının (GNO) en az 2,00 olması zorunludur [önlisans lisans eğitim öğretim, Madde 35]. \n\nTranskriptinizdeki güncel genel not ortalamanız **1,97**'dir; bu durum mezuniyet için aranan 2,00 GNO şartını henüz karşılamamaktadır [analyze_transcript].\n\nBu konuda detaylı bilgi ve izleyebileceğiniz yollar için danışman hocanıza başvurmanız önerilir.",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "mezuniyet genel not ortalaması şartı"
+      }
+     },
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     }
+    ],
+    "turns": 3,
+    "agent_ms": 3107.4,
+    "tokens": {
+     "input": 10926,
+     "output": 162,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [
+     "search_regulations"
+    ],
+    "hesap_dogru": 1,
+    "sayilar": {
+     "gno": {
+      "beklenen": 1.97,
+      "cevapta": true,
+      "aracta": 1.97
+     }
+    },
+    "arac_hesap_dogru": 1
+   },
+   {
+    "id": "T08",
+    "answer": "Bu dönem aldığınız seçmeli dersler ve AKTS'leri [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf)] şunlardır:\n\n* **Yapay Zeka:** 4 AKTS (Seçmeli VII)\n* **Veri Madenciliği:** 4 AKTS (Seçmeli VII)\n* **Nesnelerin İnterneti:** 4 AKTS (Seçmeli VII)\n* **Bilişim Hukuku:** 4 AKTS (Seçmeli VII)\n* **Yapay Sinir Ağları:** 4 AKTS (Seçmeli VII)\n\n*Not: Transkriptinizde eşlenemeyen \"Microcontroller Programming\" (5 AKTS) adlı plan dışı bir ders bulunmaktadır [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf)].*",
+    "tool_calls": [
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 1958.0,
+    "tokens": {
+     "input": 5124,
+     "output": 237,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": []
+   },
+   {
+    "id": "T09",
+    "answer": "Transkript analizine göre, Erasmus kapsamında aldığınız **Software Engineering** dersi, ders adının çevirisine dayanarak otomatik olarak **Yazılım Mühendisliği** dersine eşlenmiştir. \n\nAncak kesin eşdeğerliğin intibak komisyonu kararına bağlı olduğunu belirtmek gerekir.",
+    "tool_calls": [
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 1444.4,
+    "tokens": {
+     "input": 5132,
+     "output": 76,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": []
+   },
+   {
+    "id": "T10",
+    "answer": "Transkriptteki öğrenci şu an **176 AKTS** tamamlamıştır; bu dönem alınan dersler başarıyla geçilirse bu sayı **206 AKTS** olacaktır [BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 22, fıkra 1; BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf), yarıyıl toplamları].\n\nMezuniyet durumu ve eksikler:\n* **Zorunlu Dersler:** 40 zorunlu dersten şu an 35'i tamamlanmıştır; bu dönem alınan derslerle 37 olacaktır. Eksik zorunlu dersler **Sistem Programlama**, **Veri İletişimi ve Bilgisayar Ağları** ve **Bitirme Projesi II**'dir (Bitirme Projesi I ve Staj II bu dönem alınıyor) [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf), yarıyıl tablolarındaki zorunlu dersler; BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 20, fıkra 2; BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 35, fıkra 1, bent a].\n* **Seçmeli AKTS:** 64 seçmeli AKTS şartından şu an 24 AKTS tamamlanmıştır; bu dönem alınan seçmeliler geçilirse 44 AKTS olacaktır [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf), seçmeli ders yuvaları ve havuzları; BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 35, fıkra 1, bent a; BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 35, fıkra 2].\n* **GNO:** 3.5 olup mezuniyet için gereken 2,00 şartını sağlamaktadır [BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 35, fıkra 1, bent b].\n* **Genel Durum:** Mevcut durumda mezuniyet şartları karşılanmamaktadır; tüm zorunlu derslerin, seçmeli AKTS'lerin (toplam 242 AKTS) tamamlanması gerekir [BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 22, fıkra 1; BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf), yarıyıl toplamları]. \n\n*Not (Erasmus/İntibak): Microcontroller Programming dersi kullanıcının bildirimiyle Gömülü Sistemler dersine sayılmıştır; kesin eşdeğerlik intibak komisyonu kararına bağlıdır.*",
+    "tool_calls": [
+     {
+      "name": "confirm_equivalence",
+      "args": {
+       "plan_course": "Gömülü Sistemler",
+       "transcript_course": "Microcontroller Programming"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 3684.7,
+    "tokens": {
+     "input": 5338,
+     "output": 779,
+     "reasoning": 0
+    },
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "hesap_dogru": 1,
+    "sayilar": {
+     "tamamlanan_zorunlu_ders": {
+      "beklenen": 35,
+      "cevapta": true
+     }
+    }
+   },
+   {
+    "id": "T11",
+    "answer": "Öğretim planındaki eksik zorunlu dersler şunlardır:\n\n* Sistem Programlama (6. yarıyıl, 6 AKTS) [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf)]\n* Veri İletişimi ve Bilgisayar Ağları (8. yarıyıl, 5 AKTS) [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf)]\n* Bitirme Projesi II (8. yarıyıl, 5 AKTS) [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf)]\n\n*(Bitirme Projesi I ve Staj II dersleri bu dönem alınmaktadır.)* [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf)]",
+    "tool_calls": [
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 2133.0,
+    "tokens": {
+     "input": 5251,
+     "output": 272,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": []
+   },
+   {
+    "id": "T12",
+    "answer": "Evet, öğretim planınızda yer alan **Alan Dışı Seçmeli Ders (ADSD)** yuvası için eğitim süresi boyunca en az bir adet ders alma zorunluluğunuz bulunmaktadır [BAİBÜ Alan Dışı Seçmeli Ders Yönergesi, Madde 7, fıkra 3]. \n\nTranskript analizinize göre, mevcut durumda Alan Dışı Seçmeli Ders yuvasına ait tamamlanmış veya bu dönem alınan bir dersiniz görünmemektedir; bu nedenle mezuniyet için bu dersi almanız gereklidir [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf), Alan Dışı Seçmeli Ders yuvası]. Ders seçimi ve planlaması için danışman hocanıza başvurmanız önerilir.",
+    "tool_calls": [
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     },
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "alan dışı seçmeli ders alma zorunluluğu"
+      }
+     }
+    ],
+    "turns": 3,
+    "agent_ms": 3034.2,
+    "tokens": {
+     "input": 10339,
+     "output": 225,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [
+     "search_regulations"
+    ]
+   },
+   {
+    "id": "T13",
+    "answer": "Kayıtlı olunan programın öğretim planında \"Alan Dışı Seçmeli Dersleri\" grubu altında belirtilen derslerden en az birine kayıt yaptırma ve eğitim süresi boyunca en az bir adet Alan Dışı Seçmeli Dersini başarıyla tamamlama zorunluluğu vardır [alan dışı seçmeli ders yönergesi, Madde 7, s. 3]. \n\nÖğrencinin transkriptindeki durumunun incelenmesi ve bu eksikliğin mezuniyete engel olup olmadığının netleştirilebilmesi için UBYS'den indirilen tarihsel transkriptin sisteme yüklenmesi gereklidir. \n\nDers seçimi ve mezuniyet durumuna ilişkin nihai karar için danışman hocaya başvurulması önerilir.",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "alan dışı seçmeli ders mezuniyet şartı"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 2448.4,
+    "tokens": {
+     "input": 5259,
+     "output": 194,
+     "reasoning": 0
+    },
+    "answer_ok": 0,
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "eksik_tool_lar": [
+     "analyze_transcript"
+    ],
+    "fazla_tool_lar": [
+     "search_regulations"
+    ]
+   },
+   {
+    "id": "T14",
+    "answer": "Transkriptiniz henüz yüklenmemiştir. Mezuniyet için kaç AKTS'nizin eksik olduğunu hesaplayabilmem için lütfen UBYS'den indirdiğiniz tarihsel transkriptinizi sisteme yükleyiniz.",
+    "tool_calls": [],
+    "turns": 1,
+    "agent_ms": 1143.0,
+    "tokens": {
+     "input": 1797,
+     "output": 49,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "eksik_tool_lar": [
+     "analyze_transcript"
+    ],
+    "fazla_tool_lar": []
+   },
+   {
+    "id": "W01",
+    "answer": "İleri Makine Öğrenmesi dersi 2026-2027 Güz döneminde açılmamaktadır [BAİBÜ Bilgisayar Mühendisliği Bölümü 2026-2027 Güz Dönemi Ders Programı (data/2026_27_Güz_Lisans_v2.pdf)]. Bu nedenle bu dönem bu dersi alarak Seçmeli VI şartını tamamlayamazsınız.",
+    "tool_calls": [
+     {
+      "name": "get_offered_electives",
+      "args": {
+       "yuva": "Seçmeli VI"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 1527.7,
+    "tokens": {
+     "input": 3834,
+     "output": 123,
+     "reasoning": 0
+    },
+    "answer_ok": 0,
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "eksik_tool_lar": [
+     "simulate_courses"
+    ],
+    "fazla_tool_lar": [
+     "get_offered_electives"
+    ],
+    "hesap_dogru": 0,
+    "sayilar": {
+     "kume1_akts": {
+      "beklenen": 156,
+      "cevapta": false
+     }
+    }
+   },
+   {
+    "id": "W02",
+    "answer": "Web Programlama ve Algoritma Analizi derslerini alman durumunda toplam AKTS'ne ek bir artış olmaz. \n\nMevcut duruma göre hesaplama:\n* **Web Programlama** dersi transkriptinde daha önceden geçilmiştir.\n* **Algoritma Analizi** dersi ise bu dönem halihazırda alınan dersler arasında yer almaktadır.\n\nBu nedenle bu dersleri tekrar seçmek toplam AKTS'ni değiştirmez. Güncel transkript analizine göre bu dönemin dersleri başarıyla tamamlandığında toplam AKTS'n 152 olacaktır [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf)]. \n\nDers seçimi ve planlamanla ilgili nihai karar için danışman hocana başvurabilirsin.",
+    "tool_calls": [
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     },
+     {
+      "name": "simulate_courses",
+      "args": {
+       "course_sets": [
+        [
+         "Web Programlama",
+         "Algoritma Analizi"
+        ]
+       ]
+      }
+     }
+    ],
+    "turns": 3,
+    "agent_ms": 2472.6,
+    "tokens": {
+     "input": 9842,
+     "output": 234,
+     "reasoning": 0
+    },
+    "answer_ok": 0,
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [
+     "analyze_transcript"
+    ],
+    "hesap_dogru": 1,
+    "sayilar": {
+     "kume1_akts": {
+      "beklenen": 152,
+      "cevapta": true
+     }
+    }
+   },
+   {
+    "id": "W03",
+    "answer": "\"Oyun Programlama\" dersi öğretim planında bulunamamaktadır. Öğretim planındaki seçmeli havuzunda yer alan doğru ders adını belirterek tekrar deneyebilir veya danışman hocanıza başvurabilirsiniz [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf), seçmeli ders yuvaları ve havuzları].",
+    "tool_calls": [
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     },
+     {
+      "name": "simulate_courses",
+      "args": {
+       "course_sets": [
+        [
+         "Oyun Programlama"
+        ]
+       ]
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 1836.5,
+    "tokens": {
+     "input": 5274,
+     "output": 132,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [
+     "analyze_transcript"
+    ]
+   },
+   {
+    "id": "W04",
+    "answer": "Belirttiğiniz ders kümelerinin simülasyon ve ders programı sonuçları şöyledir:\n\n*   **1. Küme (Görüntü İşleme, Bulut Bilişim, Bilgisayarlı Görme, Uzman Sistemler ve Veri Bilimine Giriş):** Seçmeli AKTS şartı tamamlanır (64/64 AKTS) [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf), seçmeli ders yuvaları ve havuzları; BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 35, fıkra 2]. Ancak genel mezuniyet AKTS'si (226/242) ve zorunlu dersler (Sistem Programlama, Gömülü Sistemler, Veri İletişimi ve Bilgisayar Ağları, Bitirme Projesi II) eksik olduğu için mezuniyet şartları karşılanmaz [BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 22, fıkra 1; BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 35, fıkra 1, bent a].\n*   **2. Küme (Görüntü İşleme ve Bulut Bilişim):** Seçmeli AKTS şartı tamamlanmaz (52/64 AKTS, 12 AKTS açık kalır) [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf), seçmeli ders yuvaları ve havuzları; BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 35, fıkra 2]. Ayrıca genel AKTS (214/242) ve zorunlu dersler eksiktir [BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 22, fıkra 1; BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 35, fıkra 1, bent a].\n\nAyrıca bahsettiğiniz derslerin tümü (Görüntü İşleme, Bulut Bilişim, Bilgisayarlı Görme, Uzman Sistemler ve Veri Bilimine Giriş) **2026-2027 Güz dönemi ders programında açılmamaktadır** [BAİBÜ Bilgisayar Mühendisliği Bölümü 2026-2027 Güz Dönemi Ders Programı (data/2026_27_Güz_Lisans_v2.pdf)]. \n\nDers seçimi ve tercih konusunda nihai karar için danışman hocanıza başvurmanız gerekmektedir.",
+    "tool_calls": [
+     {
+      "name": "get_offered_electives",
+      "args": {
+       "yuva": "Seçmeli VIII"
+      }
+     },
+     {
+      "name": "simulate_courses",
+      "args": {
+       "course_sets": [
+        [
+         "Görüntü İşleme",
+         "Bulut Bilişim",
+         "Bilgisayarlı Görme",
+         "Uzman Sistemler",
+         "Veri Bilimine Giriş"
+        ],
+        [
+         "Görüntü İşleme",
+         "Bulut Bilişim"
+        ]
+       ]
+      }
+     }
+    ],
+    "turns": 3,
+    "agent_ms": 3579.4,
+    "tokens": {
+     "input": 7747,
+     "output": 771,
+     "reasoning": 0
+    },
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [
+     "get_offered_electives"
+    ],
+    "hesap_dogru": 1,
+    "sayilar": {
+     "kume1_akts": {
+      "beklenen": 226,
+      "cevapta": true
+     },
+     "kume2_akts": {
+      "beklenen": 214,
+      "cevapta": true
+     }
+    }
+   },
+   {
+    "id": "W05",
+    "answer": "Veri Bilimine Giriş dersi alınması durumunda mezuniyet şartları sağlanmamaktadır:\n\n* **AKTS Durumu:** 241 / 242 AKTS [BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 22, fıkra 1; BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf), yarıyıl toplamları]\n* **Zorunlu Dersler:** 39 / 40 (Eksik zorunlu ders: Staj II) [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf); BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 20, fıkra 2; Madde 35, fıkra 1, bent a]\n* **Seçmeli Dersler:** 64 / 64 AKTS (Seçmeli şartı tamamlanmaktadır) [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf)]\n* **GNO:** 1,97 (Mezuniyet için gereken en az 2,00 şartının altındadır) [BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 35, fıkra 1, bent b]\n* **Ders Programı Durumu:** Veri Bilimine Giriş dersi 2026-2027 Güz dönemi ders programında açılmamaktadır [BAİBÜ Bilgisayar Mühendisliği Bölümü 2026-2027 Güz Dönemi Ders Programı (data/2026_27_Güz_Lisans_v2.pdf)].\n\nDers seçimleri ve akademik durumunuzla ilgili kesin karar için danışman hocanıza başvurmanız önerilir.",
+    "tool_calls": [
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     },
+     {
+      "name": "simulate_courses",
+      "args": {
+       "course_sets": [
+        [
+         "Veri Bilimine Giriş"
+        ]
+       ]
+      }
+     }
+    ],
+    "turns": 3,
+    "agent_ms": 3020.1,
+    "tokens": {
+     "input": 8350,
+     "output": 525,
+     "reasoning": 0
+    },
+    "answer_ok": 0,
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [
+     "analyze_transcript"
+    ],
+    "hesap_dogru": 1,
+    "sayilar": {
+     "kume1_akts": {
+      "beklenen": 241,
+      "cevapta": true
+     }
+    }
+   },
+   {
+    "id": "P01",
+    "answer": "Transkriptteki bu dönemin derslerine göre pazartesi günkü ders programı:\n\n* **08:30 - 10:15:** Bilgisayar Mühendisliğine Giriş (A şubesi) | 1. Sınıf | Bilgisayar (Yazılım) Laboratuvarı\n* **13:30 - 18:15:** Matematik I | 1. Sınıf | Derslik: 227\n\n*Kaynak: BAİBÜ Bilgisayar Mühendisliği Bölümü 2026-2027 Güz Dönemi Ders Programı*",
+    "tool_calls": [
+     {
+      "name": "get_course_schedule",
+      "args": {
+       "gun": "pazartesi",
+       "sinif": 0
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 1999.0,
+    "tokens": {
+     "input": 3805,
+     "output": 164,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": []
+   },
+   {
+    "id": "P02",
+    "answer": "2026-10-27 Salı günü Bilgisayar Mühendisliği 3. sınıf ders programı şu şekildedir:\n\n* **08:30 - 13:15:** İşletim Sistemleri I (A şubesi) – Derslik: 326\n* **13:30 - 16:15:** Mikroişlemciler (A şubesi) – Derslik: 327\n* **13:30 - 18:15:** İşletim Sistemleri I (B şubesi) – Derslik: 326\n* **16:30 - 18:15:** Mikroişlemciler (A şubesi) – Derslik: Donanım Laboratuvarı\n\nKaynak: BAİBÜ Bilgisayar Mühendisliği Bölümü 2026-2027 Güz Dönemi Ders Programı",
+    "tool_calls": [
+     {
+      "name": "get_course_schedule",
+      "args": {
+       "sinif": 3,
+       "gun": "salı"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 2190.7,
+    "tokens": {
+     "input": 3844,
+     "output": 232,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": []
+   },
+   {
+    "id": "P03",
+    "answer": "2026-10-23 Cuma günü 2. sınıf öğrencilerinin ders programı şu şekildedir:\n\n* **08:30 - 13:15:** Veri Yapıları (A şubesi) – Bilgisayar (Yazılım) Laboratuvarı [data/2026_27_Güz_Lisans_v2.pdf]\n* **09:30 - 12:15:** Mühendislik Ekonomisi (Seç III) – 326 [data/2026_27_Güz_Lisans_v2.pdf]\n* **13:30 - 18:15:** Veri Yapıları (B şubesi) – Bilgisayar (Yazılım) Laboratuvarı [data/2026_27_Güz_Lisans_v2.pdf]\n\nKaynak: BAİBÜ Bilgisayar Mühendisliği Bölümü 2026-2027 Güz Dönemi Ders Programı [data/2026_27_Güz_Lisans_v2.pdf]",
+    "tool_calls": [
+     {
+      "name": "get_course_schedule",
+      "args": {
+       "sinif": 2,
+       "gun": "cuma"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 2300.6,
+    "tokens": {
+     "input": 3820,
+     "output": 280,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": []
+   },
+   {
+    "id": "P04",
+    "answer": "Hangi sınıf olduğunuzu veya bu dönem aldığınız dersleri belirtirseniz pazartesi günkü ders programınızı kontrol edebilirim. Ayrıca kişisel ders programınız için UBYS'den indirilen tarihsel transkriptinizi yükleyebilirsiniz.",
+    "tool_calls": [
+     {
+      "name": "get_course_schedule",
+      "args": {
+       "gun": "pazartesi",
+       "dersler": null,
+       "sinif": 0
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 1525.2,
+    "tokens": {
+     "input": 3668,
+     "output": 83,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": []
+   },
+   {
+    "id": "P05",
+    "answer": "Yapay Zeka dersi Çarşamba günleri 15:30-18:15 saatleri arasında 327 numaralı derslikte yapılmaktadır [BAİBÜ Bilgisayar Mühendisliği Bölümü 2026-2027 Güz Dönemi Ders Programı].",
+    "tool_calls": [
+     {
+      "name": "get_course_schedule",
+      "args": {
+       "sinif": 0,
+       "gun": "bugün",
+       "dersler": [
+        "Yapay Zeka"
+       ]
+      }
+     },
+     {
+      "name": "get_course_schedule",
+      "args": {
+       "gun": "tüm günler",
+       "dersler": [
+        "Yapay Zeka"
+       ],
+       "sinif": 0
+      }
+     },
+     {
+      "name": "get_offered_electives",
+      "args": {}
+     }
+    ],
+    "turns": 4,
+    "agent_ms": 3398.6,
+    "tokens": {
+     "input": 9066,
+     "output": 153,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [
+     "get_course_schedule"
+    ]
+   },
+   {
+    "id": "S01",
+    "answer": "2026-2027 Güz dönemi Seçmeli III (3. yarıyıl, 4 AKTS) yuvası için bu dönem açılan dersler şunlardır:\n\n* **Programlama Dilleri Temelleri** (4 AKTS, 2. sınıf): Çarşamba 15:30-18:15 (Bilgisayar (Yazılım) Laboratuvarı)\n* **Mühendislik Ekonomisi** (4 AKTS, 2. sınıf): Cuma 09:30-12:15 (326)\n* **Kablosuz Algılayıcı Ağlar** (4 AKTS, 2. sınıf): Pazartesi 12:30-15:15 (326)\n* **Web Programlama** (4 AKTS, 2. sınıf): Pazartesi 15:30-18:15 (Sistem Ağları Laboratuvarı)\n\n*Kaynak: BAİBÜ Bilgisayar Mühendisliği Bölümü 2026-2027 Güz Dönemi Ders Programı (data/2026_27_Güz_Lisans_v2.pdf)*",
+    "tool_calls": [
+     {
+      "name": "get_offered_electives",
+      "args": {
+       "yuva": "Seçmeli III"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 1856.4,
+    "tokens": {
+     "input": 3890,
+     "output": 296,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": []
+   },
+   {
+    "id": "S02",
+    "answer": "2026-2027 Güz dönemi itibarıyla Seçmeli VIII yuvasında yer alan havuzdaki hiçbir ders bu dönem açılmamaktadır [BAİBÜ Bilgisayar Mühendisliği Bölümü 2026-2027 Güz Dönemi Ders Programı]. \n\nBu dönem açılmayan dersler: Uzman Sistemler, Python Programlama, Görüntü İşleme, Bulut Bilişim, Bilgisayarlı Görme, Biyoenformatik, Haberleşme Sistemleri, Bilgi ve Ağ Güvenliği, Biyomedikal Mühendisliğine Giriş, Kuantumsal Hesaplamanın Temelleri, Veri Bilimine Giriş [BAİBÜ Bilgisayar Mühendisliği Bölümü 2026-2027 Güz Dönemi Ders Programı].",
+    "tool_calls": [
+     {
+      "name": "get_offered_electives",
+      "args": {
+       "yuva": "Seçmeli VIII"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 1610.6,
+    "tokens": {
+     "input": 3829,
+     "output": 206,
+     "reasoning": 0
+    },
+    "answer_ok": 0,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": []
+   },
+   {
+    "id": "S03",
+    "answer": "Rektörlük ve alan dışı seçmelileri başka birimler açtığı için bu dersleri ilgili birimden teyit etmeniz gerekir [BAİBÜ Bilgisayar Mühendisliği Bölümü 2026-2027 Güz Dönemi Ders Programı]. Bölüm ders programında yer alan rektörlük seçmeli dersi bilgisi şöyledir:\n\n- **Mühendislik Etiği** (4 AKTS, 1. sınıf): Çarşamba 14:30-17:15 (123) [BAİBÜ Bilgisayar Mühendisliği Bölümü 2026-2027 Güz Dönemi Ders Programı]. \n\nDiğer havuz derslerinin açılıp açılmadığını ilgili birimden teyit etmelisiniz [BAİBÜ Bilgisayar Mühendisliği Bölümü 2026-2027 Güz Dönemi Ders Programı].",
+    "tool_calls": [
+     {
+      "name": "get_offered_electives",
+      "args": {
+       "yuva": "Rek. Seçmeli I"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 1869.3,
+    "tokens": {
+     "input": 3814,
+     "output": 239,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": []
+   },
+   {
+    "id": "F01",
+    "answer": "Bölüm Staj Komisyonunun onayı ile, her biri 20 iş gününden oluşan iki dönem staj birleştirilerek tek seferde aralıksız 40 iş günü olarak gerçekleştirilebilir [Mühendislik Fakültesi Staj Yönergesi, Madde 10].",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "staj tek seferde yapılabilir mi staj süresi bölünmesi"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 1843.8,
+    "tokens": {
+     "input": 5815,
+     "output": 94,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": []
+   },
+   {
+    "id": "F02",
+    "answer": "Genel not ortalaması 60 şartını sağlayamayan adaylar, merkezi yerleştirme puanı geçiş yapmak istediği diploma programının taban puanına eşit veya yüksek olması durumunda yatay geçiş başvurusunda bulunabilirler [Yatay Geçiş Yönergesi, Madde 8].",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "kurumlar arası yatay geçiş not ortalaması şartı istisna"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 3073.0,
+    "tokens": {
+     "input": 5447,
+     "output": 98,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": []
+   }
+  ],
+  "alt_kirilimlar": {
+   "grup:acilan_secmeli": {
+    "n": 3,
+    "answer_acc": 0.6667,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1
+   },
+   "grup:birlestirme": {
+    "n": 3,
+    "answer_acc": 0.3333,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1
+   },
+   "grup:cekimser": {
+    "n": 3,
+    "answer_acc": 1
+   },
+   "grup:ders_programi": {
+    "n": 5,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 0.8,
+    "tool_adi_dogrulugu": 0.8
+   },
+   "grup:mevzuat": {
+    "n": 10,
+    "answer_acc": 0.9,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1
+   },
+   "grup:takip": {
+    "n": 2,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1
+   },
+   "grup:transkript": {
+    "n": 14,
+    "answer_acc": 0.8182,
+    "tool_secimi_dogrulugu": 0.5714,
+    "tool_adi_dogrulugu": 0.5714,
+    "hesap_dogrulugu": 0.7143,
+    "arac_hesap_dogrulugu": 1
+   },
+   "grup:what_if": {
+    "n": 5,
+    "answer_acc": 0.25,
+    "tool_secimi_dogrulugu": 0,
+    "tool_adi_dogrulugu": 0,
+    "hesap_dogrulugu": 0.75
+   },
+   "kategori:acilan_secmeli": {
+    "n": 1,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1
+   },
+   "kategori:acilan_secmeli_acilmayan": {
+    "n": 1,
+    "answer_acc": 0,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1
+   },
+   "kategori:acilan_secmeli_rektorluk": {
+    "n": 1,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1
+   },
+   "kategori:alan_disi_kayit_yili": {
+    "n": 3,
+    "answer_acc": 0.6667,
+    "tool_secimi_dogrulugu": 0.3333,
+    "tool_adi_dogrulugu": 0.3333
+   },
+   "kategori:bu_donem_dersleri": {
+    "n": 1,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1
+   },
+   "kategori:cekimser_kalma": {
+    "n": 3,
+    "answer_acc": 1
+   },
+   "kategori:ders_programi_ders": {
+    "n": 1,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 0,
+    "tool_adi_dogrulugu": 0
+   },
+   "kategori:ders_programi_sinif": {
+    "n": 2,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1
+   },
+   "kategori:ders_programi_sinif_sor": {
+    "n": 1,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1
+   },
+   "kategori:ders_programi_transkript": {
+    "n": 1,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1
+   },
+   "kategori:eksik_zorunlu": {
+    "n": 1,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 0,
+    "tool_adi_dogrulugu": 0
+   },
+   "kategori:erasmus_eslesmeyen": {
+    "n": 1,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1,
+    "hesap_dogrulugu": 1,
+    "arac_hesap_dogrulugu": 1
+   },
+   "kategori:erasmus_otomatik": {
+    "n": 1,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1
+   },
+   "kategori:erasmus_teyit": {
+    "n": 2,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1,
+    "hesap_dogrulugu": 1
+   },
+   "kategori:gno_siniri": {
+    "n": 1,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 0,
+    "tool_adi_dogrulugu": 0,
+    "hesap_dogrulugu": 1,
+    "arac_hesap_dogrulugu": 1
+   },
+   "kategori:kural_birlestirme": {
+    "n": 3,
+    "answer_acc": 0.3333,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1
+   },
+   "kategori:mevzuat_bulma": {
+    "n": 9,
+    "answer_acc": 0.8889,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1
+   },
+   "kategori:secmeli_yuva": {
+    "n": 1,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 0,
+    "tool_adi_dogrulugu": 0,
+    "hesap_dogrulugu": 0
+   },
+   "kategori:takip_rewrite": {
+    "n": 2,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1
+   },
+   "kategori:transkript_hesap": {
+    "n": 3,
+    "answer_acc": 0,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1,
+    "hesap_dogrulugu": 0.6667,
+    "arac_hesap_dogrulugu": 1
+   },
+   "kategori:transkript_yok": {
+    "n": 1,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 0,
+    "tool_adi_dogrulugu": 0
+   },
+   "kategori:what_if_acilmayan": {
+    "n": 2,
+    "answer_acc": 0,
+    "tool_secimi_dogrulugu": 0,
+    "tool_adi_dogrulugu": 0,
+    "hesap_dogrulugu": 0.5
+   },
+   "kategori:what_if_bilinmeyen_ders": {
+    "n": 1,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 0,
+    "tool_adi_dogrulugu": 0
+   },
+   "kategori:what_if_etkisiz_ders": {
+    "n": 1,
+    "answer_acc": 0,
+    "tool_secimi_dogrulugu": 0,
+    "tool_adi_dogrulugu": 0,
+    "hesap_dogrulugu": 1
+   },
+   "kategori:what_if_karsilastirma": {
+    "n": 1,
+    "tool_secimi_dogrulugu": 0,
+    "tool_adi_dogrulugu": 0,
+    "hesap_dogrulugu": 1
+   }
+  }
+ },
+ "sure": {
+  "agent_sn": 763.2,
+  "toplam_sn": 763.2
+ },
+ "karsilastirma": {
+  "ust_deney": "EXP-002",
+  "ayni_veri_seti": true,
+  "metrikler": {
+   "answer_acc": {
+    "once": 0.7317,
+    "sonra": 0.7805,
+    "fark": 0.0488,
+    "test": "McNemar (kesin)",
+    "p": 0.6875,
+    "kotulesen": 2,
+    "iyilesen": 4
+   },
+   "cevap_uzunlugu": {
+    "once": 519.2222,
+    "sonra": 536.1333,
+    "fark": 16.9111,
+    "test": "Wilcoxon",
+    "p": 0.11506297317606488
+   },
+   "tool_secimi_dogrulugu": {
+    "once": 0.7381,
+    "sonra": 0.7143,
+    "fark": -0.0238,
+    "test": "McNemar (kesin)",
+    "p": 1.0,
+    "kotulesen": 2,
+    "iyilesen": 1
+   },
+   "tool_adi_dogrulugu": {
+    "once": 0.7381,
+    "sonra": 0.7143,
+    "fark": -0.0238,
+    "test": "McNemar (kesin)",
+    "p": 1.0,
+    "kotulesen": 2,
+    "iyilesen": 1
+   },
+   "hesap_dogrulugu": {
+    "once": 0.6364,
+    "sonra": 0.7273,
+    "fark": 0.0909,
+    "test": "McNemar (kesin)",
+    "p": 1.0,
+    "kotulesen": 0,
+    "iyilesen": 1
+   }
+  },
+  "karar": {
+   "metrik": "tool_secimi_dogrulugu",
+   "beklenen_yon": "artis",
+   "sonuc": "Sayısal kötüleşme (istatistiksel olarak anlamlı değil)",
+   "hipotez": "Doğrulanmadı"
+  }
+ }
+}
