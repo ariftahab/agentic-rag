@@ -1,4 +1,4 @@
-"""Transkript parser'ı: gerçek OBS transkriptleriyle, yalnız yerelde çalışır.
+"""Transkript parser'ı: gerçek UBYS transkriptleriyle, yalnız yerelde çalışır.
 
 Gerçek transkriptler ve onlardaki kişisel değerler tests/private/ altında durur ve git'e girmez:
 kisisel.json dosya adlarını ve çıktıda bulunmaması gereken değerleri (ad, numara, TC...) tutar.
@@ -35,7 +35,7 @@ def test_current_term_ungraded_courses_are_read():
 
 @needs_historical
 def test_no_course_row_is_skipped():
-    # OBS'nin son "Birikimli" satırındaki alınan AKTS, okunan bütün derslerin toplamına eşit olmalı.
+    # UBYS'nin son "Birikimli" satırındaki alınan AKTS, okunan bütün derslerin toplamına eşit olmalı.
     t = transcript.parse_transcript(HISTORICAL)
     assert t["obs_ozet"]["birikimli_alinan_akts"] == 192
     assert sum(c["akts"] for c in t["dersler"]) == 192

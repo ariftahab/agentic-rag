@@ -209,7 +209,7 @@ def ask(req: AskRequest, service: ChatService = Depends(get_service)):
                                          "content": {"application/pdf": {"schema": {"type": "string",
                                                                                     "format": "binary"}}}}})
 async def upload_transcript(request: Request, service: ChatService = Depends(get_service)):
-    """OBS tarihsel transkriptini (PDF, istek gövdesinin kendisi) okur; kişisel bilgisiz JSON döner.
+    """UBYS tarihsel transkriptini (PDF, istek gövdesinin kendisi) okur; kişisel bilgisiz JSON döner.
 
     Hiçbir şey diske ya da log'a yazılmaz. multipart/form-data yerine ham gövde: Starlette multipart'ta 1 MB'ı
     aşan dosyaları geçici dosyaya (diske) yazar; ham gövde ise yalnız bellekte okunur ve boyutu baştan sınırlanır.

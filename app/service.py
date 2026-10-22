@@ -34,7 +34,7 @@ from agent import AGENT_LLM_MODEL, REQUEST_TIMEOUT_S, AdvisorAgent
 from rag import RagBot, source_label
 
 LOG_DIR = config.ROOT / "logs"
-MAX_TRANSCRIPT_BYTES = 5 * 1024 * 1024  # OBS transkripti ~40 KB; sınır yalnız kötüye kullanıma karşı
+MAX_TRANSCRIPT_BYTES = 5 * 1024 * 1024  # UBYS transkripti ~40 KB; sınır yalnız kötüye kullanıma karşı
 
 # Elle değerlendirme etiketleri (API şemaları da aynı değerleri kullanır).
 ANSWER_LABELS = ("dogru", "kismen", "yanlis", "cevapsiz")  # cevapsiz: bilgi yokken doğru şekilde "bilgim yok" dedi

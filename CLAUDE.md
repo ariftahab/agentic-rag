@@ -105,7 +105,7 @@ bge-m3, hybrid (vector 30 + BM25 30, RRF) + bge-reranker fp16 (30 aday → 5 chu
 tek fakülte olduğu için çıkarıldı. Henüz soru seti yok (ilk set `sorular_v1`).
 **Agentic yol (2026-10-21, terminalde, production değil):** spec GitHub #1, ticket'lar #2-#12. Kullanıcılar danışman ve
 öğrenci; şimdilik yalnız Bilgisayar Mühendisliği. **Karar LLM'de, hesap kodda:** LLM tool seçer ve sonucu cümleye döker;
-AKTS, eşleme ve kurallar deterministik kodda. Girdi yalnız OBS **tarihsel transkripti** (yarıyıl düzenli transkript bu
+AKTS, eşleme ve kurallar deterministik kodda. Girdi yalnız UBYS **tarihsel transkripti** (yarıyıl düzenli transkript bu
 dönemin seçmelilerini göstermez, reddedilir). Kişisel veri (ad, numara, TC) LLM'e, diske ve git'e girmez; gerçek
 transkriptler `tests/private/` altında (ignore). Gemini 3.1-flash-lite 2026-10-21'de sık 503 (yoğunluk) verdi; agent
 doğrulaması `gemini-3.5-flash-lite` ile yapıldı (production modeli değişmedi).
@@ -121,12 +121,14 @@ olmak için kaç kredi lazım" gibi tool calling). Belge ne kadar az o kadar iyi
 - `rag.py` — `Retriever.rank()`/`search()`: vector | bm25 | hybrid (RRF) + reranker. `PROMPTS`: v1.
   `RagBot` (stateless): `ask(question, history)` → rewrite (geçmiş varsa) → sabit cevap kontrolü (`fixed_answer`) →
   retrieval → Gemini.
-- `transcript.py` — OBS tarihsel transkript parser'ı (kişisel bilgisiz dict; `TranscriptFormatError`).
+- `transcript.py` — UBYS tarihsel transkript parser'ı (kişisel bilgisiz dict; `TranscriptFormatError`).
 - `graduation.py` — mezuniyet değerlendirmesi (LLM'siz): `evaluate(transcript, plan)` iki senaryo (şu an / bu dönem
   geçilirse), eksik zorunlular, seçmeli yuvaları, kaynaklı kurallar; `graduation_requirements()`. Veri `data/plan/`
   (2024-2025 öğretim planı, yönetmelik kuralları). Komut: `python graduation.py <pdf>`.
 - `agent.py` — elle yazılmış agent döngüsü (`bind_tools`, LangGraph yok), tool'lar `search_regulations`,
-  `analyze_transcript`; prompt `agent_v1`. langchain-google-genai 3.0.1'in thought signature hatası için yama içerir.
+  `analyze_transcript`, `confirm_equivalence`, `simulate_courses` (what-if), `get_course_schedule`,
+  `get_offered_electives`; prompt `agent_v3` (v1, v2 korunur).
+- `schedule.py` — bu dönemin ders programı; günün dersleri ve yuva etiketlerinden açılan seçmeliler.
 - `chat.py` — CLI (`--agent --transkript <pdf>` agent yolu). `app/` — FastAPI (`api.py`), iş mantığı ve JSONL log'ları (`service.py`, `logs/`), vanilla JS frontend
   (`static/`: sohbet, belgeler, /admin değerlendirme), `main.py` (tek sunucu).
 - `experiments/` — `evaluation.py` (kanıt tabanlı ilgililik, MRR@10, Hit@k, bağlam isabeti, cevap doğruluğu, netleştirme ve
@@ -138,9 +140,10 @@ olmak için kaç kredi lazım" gibi tool calling). Belge ne kadar az o kadar iyi
 
 ## Notlar
 - LLM: Gemini (`langchain-google-genai`), `.env` içinde `GOOGLE_API_KEY`; kota için memory `gemini-free-quota`.
-- Donanım: RTX 4050 Laptop (6 GB), torch `2.9.0+cu128`; embedding ve reranker GPU'da.
+- Donanım: RTX 4050 Laptop (6 GB), torch `2.11.0+cu128`; embedding ve reranker GPU'da.
   Latency ölçerken GPU'yu kullanan başka uygulama (emülatör vb.) kapalı olmalı.
-- `langchain-core` 1.0.4'e sabit; yükseltme diğer langchain paketleriyle uyumu bozabilir.
+- Paket sürümleri `requirements.txt`'te sabit (2026-10-22 yükseltmesi). Index fingerprint'i kütüphane sürümlerini
+  içerir; yükseltme yeni index kurar ve deney olarak karşılaştırılır.
 
 ## Agent skills
 

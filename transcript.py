@@ -1,4 +1,4 @@
-"""OBS tarihsel transkriptini okur: dönem dönem dersler, notlar ve OBS özeti.
+"""UBYS tarihsel transkriptini okur: dönem dönem dersler, notlar ve UBYS özeti.
 
 Çıktıda kişisel bilgi (ad, soyad, öğrenci numarası, TC) bulunmaz; yalnız mezuniyet hesabının
 ihtiyaç duyduğu alanlar tutulur. Transkriptte bir dönem satırı beş sütundur (kod, ad,

@@ -3,7 +3,7 @@
 Kullanım:
     python chat.py                          # klasik RAG (RagBot, production yapılandırması)
     python chat.py --agent                  # agent (tool calling), transkriptsiz
-    python chat.py --transkript dosya.pdf   # agent, OBS tarihsel transkriptiyle
+    python chat.py --transkript dosya.pdf   # agent, UBYS tarihsel transkriptiyle
 """
 import argparse
 import os
@@ -24,7 +24,7 @@ def print_tool_call(name, args):
 def main():
     parser = argparse.ArgumentParser(description="BAİBÜ Mühendislik Fakültesi danışmanlık asistanı")
     parser.add_argument("--agent", action="store_true", help="tool calling yapan agent ile başlat")
-    parser.add_argument("--transkript", metavar="PDF", help="OBS tarihsel transkripti (agent ile başlatır)")
+    parser.add_argument("--transkript", metavar="PDF", help="UBYS tarihsel transkripti (agent ile başlatır)")
     args = parser.parse_args()
     use_agent = args.agent or args.transkript is not None
 
