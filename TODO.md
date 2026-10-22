@@ -11,6 +11,18 @@ ikiye ayrıldı (gerekli tool, yan etkisiz). Spec #1 hikâye hikâye kontrol edi
 - **Sonraki iş, sırayla:** #14 `get_graduation_requirements` tool'u (prompt değişikliği; önce alt küme teşhisi) →
   #15 model karşılaştırması deneyi (onayla) → #16 agent cevaplarında kaynak, 👍/👎 ve /admin → #17 tıklanabilir atıflar.
   #13 kapandı (2026-10-22): web sohbeti transkriptsiz de agent'a gidiyor.
+- **#14 teşhis 1 (2026-10-22, agent_v5 = v4 + "genel mezuniyet şartlarında get_graduation_requirements", commit'siz):**
+  "Bilgisayar Mühendisliğinden mezun olabilmek için hangi şartlar gerekiyor?" düzeldi (tek tool çağrısı; 244 AKTS,
+  zorunlu/seçmeli, yuva kuralı, GNO 2,00, geçer notlar, ADSD ve 2023 istisnası, hepsi kaynaklı; staj ayrıca yazılmadı).
+  Kontrol sorularında yan etki: transkript yüklüyken "Genel not ortalamam mezun olmaya yetiyor mu?" analyze_transcript
+  yerine yeni tool'u çağırıp transkript yüklemesini istedi (kötüleşme); "Alan dışı seçmeli almadım, engel olur mu?"
+  iki kayıt yılı durumunu doğru anlattı ama transkripte bakmadı (2023 girişli için "engel değil" demedi).
+- **#14 teşhis 2 (aynı gün, kural daraltıldı: "soru kişiye özel değilse ..., kendi durumunu soruyorsa ve transkript
+  yüklüyse önce analyze_transcript"):** mezuniyet şartları sorusu yine tam ve kaynaklı; GNO sorusu düzeldi
+  (analyze_transcript, "1,97 < 2,00", EXP-003 ile aynı); alan dışı seçmeli sorusu teşhis 1 ile aynı (kural doğru,
+  transkripte bakılmıyor; EXP-003'ten beri açık sorun). Not: setteki beklenen tool mezuniyet şartları sorusunda
+  search_regulations olduğu için gerekli tool metriği bu iyileşmeyi hata sayar; tam koşuda anlamca okuma esas.
+  Tam koşu (EXP-004) kullanıcı kararını bekliyor.
 - **Spec #1 metnini güncelle:** seçmeliler yuva bazlı (her yuva kendi havuzundan, kendi AKTS'si kadar; kullanıcı kararı
   2026-10-22), tool sayısı 6 (+ `confirm_equivalence`, `get_offered_electives`), transkript kaynağı UBYS.
 - **Kalan agent hataları (EXP-003):** "Alan dışı seçmeli almadım, engel olur mu?" yalnız mevzuat arıyor (2023 girişliye
