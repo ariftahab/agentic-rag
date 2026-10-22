@@ -15,6 +15,7 @@ Kalın hücre = parent'a göre değişen parametre.
 | EXP-001 | – | rag | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | v1 | 3.1-flash-lite | – |
 | EXP-002 | – | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | agent_v3 | 3.5-flash-lite | 685 |
 | EXP-003 | EXP-002 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | **agent_v4** | 3.5-flash-lite | 685 |
+| EXP-004 | EXP-003 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | **agent_v5** | 3.5-flash-lite | 685 |
 
 ## 2. Results
 
@@ -23,6 +24,7 @@ Kalın hücre = parent'a göre değişen parametre.
 | EXP-001 | Başlangıç yapılandırması: campus-chatbot retrieval hattı, mühendislik corpus v1, tek prompt | | | | | | | | koşulmadı | |
 | EXP-002 | Agent baseline: agent_v3 prompt, 6 tool, sorular_v1 | v1 | – | – | – | – | – | – | baseline |  |
 | EXP-003 | agent_v4: oturumun transkript durumu prompt'ta | v1 | – | – | – | – | – | – | tool seçimi ↓ kötüleşti (p=1.00, anlamlı değil) | ✗ |
+| EXP-004 | agent_v5: genel mezuniyet şartları için get_graduation_requirements | v1 | – | – | – | – | – | – | answer acc. ↑ iyileşti (p=0.38, anlamlı değil) | ~ |
 
 Hyp.: ✓ doğrulandı · ✗ doğrulanmadı · ~ yön doğru ama anlamlı değil
 
@@ -34,9 +36,11 @@ Tool seçimi: beklenen tool'lar doğru argümanlarla çağrıldı, beklenmeyen t
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | EXP-002 | v1 | 0.732 | 0.738 | 0.738 | 0.809 | 0.976 | 0.636 | 1.000 | 1.07 | 2.04 | 45 | ✓ |
 | EXP-003 | v1 | 0.780 | 0.714 | 0.714 | 0.905 | 1.000 | 0.727 | 1.000 | 1.13 | 2.11 | 45 | ✓ |
+| EXP-004 | v1 | 0.854 | 0.691 | 0.691 | 0.833 | 1.000 | 0.727 | 1.000 | 1.22 | 2.13 | 45 | ✓ |
 
 ## 5. Notes
 
 - **EXP-001:** Başlangıç yapılandırması, koşu yok: campus-chatbot retrieval hattı + corpus v1 (mühendislik, 24 belge), tek prompt v1.
 - **EXP-002:** Agent baseline: tool 0,74, hesap 0,64 (kod 1,00), cevap 0,73 (anlamca ~0,87); ana hata transkript yüklüyken kişisel sorularda analyze_transcript çağrılmaması.
 - **EXP-003:** agent_v4: tool metriği 0,74 → 0,71 (zararsız ek çağrılar hata sayıldı), cevap 0,73 → 0,78 (anlamca ~0,87 → 0,93), hesap 0,64 → 0,73; transkript soruları düzeldi.
+- **EXP-004:** agent_v5: mezuniyet şartları sorusu tam ve kaynaklı (metrikler hata sayıyor, set eskidi); answer_acc 0,78 → 0,85; transkript yüklüyken "ADSD almam gerekiyor mu?" kötüleşti (yeni tool çaldı).
