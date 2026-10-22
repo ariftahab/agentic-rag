@@ -4,7 +4,10 @@ const LABELS = {
   answer: { dogru: "Doğru", kismen: "Kısmen", yanlis: "Yanlış", cevapsiz: "Cevapsız (doğru)" },
   source: { evet: "Evet", hayir: "Hayır", emin_degil: "Emin değilim" },
   stage: { rewrite: "Rewrite", retrieval: "Retrieval", generation: "Generation", corpus_yok: "Corpus'ta yok" },
+  // Agent cevabında hata zincirin hangi halkasında (service.AGENT_ERROR_STAGES).
+  agentStage: { tool_secimi: "Tool seçimi", tool_sonucu: "Tool sonucu", generation: "Generation", corpus_yok: "Corpus'ta yok" },
 };
+const STAGE_TEXT = { ...LABELS.stage, ...LABELS.agentStage };
 const NEEDS_STAGE = ["yanlis", "kismen"]; // hata aşaması yalnız bu etiketlerde sorulur
 
 let records = [];
@@ -14,10 +17,10 @@ function pct(x) { return x == null ? "—" : `%${Math.round(x * 100)}`; }
 async function loadSummary() {
   const s = await api("/admin/summary");
   const l = s.cevap_etiketleri;
-  const stages = Object.entries(s.hata_asamalari).map(([k, v]) => `${LABELS.stage[k]} ${v}`).join(" · ") || "—";
+  const stages = Object.entries(s.hata_asamalari).map(([k, v]) => `${STAGE_TEXT[k]} ${v}`).join(" · ") || "—";
   const srcTotal = Object.values(s.kaynak_dogru).reduce((a, b) => a + b, 0);
   const stats = [
-    [s.toplam, `soru (${s.hatali_istek} hatalı istek)`],
+    [s.toplam, `soru (${s.agent} agent, ${s.hatali_istek} hatalı istek)`],
     [`${s.degerlendirilen}`, "değerlendirildi"],
     [pct(s.dogruluk), `doğruluk (doğru ${l.dogru} + cevapsız ${l.cevapsiz})`],
     [`${l.kismen} / ${l.yanlis}`, "kısmen / yanlış"],
@@ -56,9 +59,11 @@ function recordHtml(r) {
   const evalBadge = e
     ? `<span class="badge ${["dogru", "cevapsiz"].includes(e.answer_label) ? "ok" : "bad"}">${LABELS.answer[e.answer_label]}</span>`
     : `<span class="badge">değerlendirilmedi</span>`;
-  const sources = r.sources.map((s) =>
-    `<button class="source-chip" data-chunk="${s.chunk_id}" title="${escapeHtml(s.label)}">${escapeHtml(s.label)}</button>`
-  ).join("");
+  const sources = r.sources.map(sourceChip).join("");
+  const kind = r.kind === "agent"
+    ? `<div class="rq">Agent · ${r.tool_calls.length ? r.tool_calls.map(escapeHtml).join(" → ") : "tool kullanılmadı"}</div>`
+    : "";
+  const stageLabels = r.kind === "agent" ? LABELS.agentStage : LABELS.stage;
 
   if (r.error) {
     return `<div class="record" data-id="${r.id}">
@@ -71,6 +76,7 @@ function recordHtml(r) {
   const stageDisabled = !NEEDS_STAGE.includes(e?.answer_label);
   return `<div class="record" data-id="${r.id}">
     <div class="q">${escapeHtml(r.question)} ${fb}</div>
+    ${kind}
     ${r.rewritten_query ? `<div class="rq">Aranan: ${escapeHtml(r.rewritten_query)}</div>` : ""}
     <div class="answer">${renderAnswer(r.answer, r.sources)}</div>
     <div class="sources">${sources}</div>
@@ -83,7 +89,7 @@ function recordHtml(r) {
     <form class="eval-form">
       <div class="eval-row"><span>Cevap</span>${choices(`a-${r.id}`, LABELS.answer, e?.answer_label)}</div>
       <div class="eval-row"><span>Doğru kaynak geldi mi?</span>${choices(`s-${r.id}`, LABELS.source, e?.source_ok)}</div>
-      <div class="eval-row"><span>Hata nerede?</span>${choices(`h-${r.id}`, LABELS.stage, e?.error_stage, stageDisabled)}</div>
+      <div class="eval-row"><span>Hata nerede?</span>${choices(`h-${r.id}`, stageLabels, e?.error_stage, stageDisabled)}</div>
       <textarea name="note" placeholder="Not (isteğe bağlı): ör. doğru madde hangisiydi, cevapta ne eksikti">${escapeHtml(e?.note || "")}</textarea>
       <div class="eval-actions"><button class="btn btn-primary" type="submit">Kaydet</button><span class="saved"></span>${deleteControls()}</div>
     </form>

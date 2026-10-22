@@ -53,6 +53,7 @@ function citedFikra(part) {
 }
 
 function matchSource(part, sources) {
+  if (/geçici\s+madde/i.test(part)) return null; // geçici maddeler ayrı chunk değil; "Madde 1"e bağlanmasın
   const m = part.match(/madde\s*(\d+)/i);
   const madde = m ? m[1] : null;
   const titleWords = norm(part.split(/,|madde/i)[0]).split(" ").filter((w) => w.length > 2);
@@ -82,12 +83,24 @@ function linkCitations(text, sources) {
     const parts = inner.split(";").map((part) => {
       const s = matchSource(part, sources);
       if (!s) return escapeHtml(part);
+      if (s.chunk_id == null) { // corpus dışı belge (öğretim planı, ders programı): PDF yeni sekmede
+        return `<a class="cite" href="${pdfUrl(s.source)}" target="_blank" rel="noopener">${escapeHtml(part.trim())}</a>`;
+      }
       const fikra = citedFikra(part);
       return `<a href="#" class="cite" data-chunk="${s.chunk_id}"${fikra ? ` data-fikra="${fikra}"` : ""}>` +
         `${escapeHtml(part.trim())}</a>`;
     });
     return `[${parts.join("; ")}]`;
   });
+}
+
+// Kaynak düğmesi: chunk'lı kaynak panelde açılır; corpus dışı belge (chunk_id null) PDF olarak yeni sekmede.
+function sourceChip(s) {
+  if (s.chunk_id == null) {
+    return `<a class="source-chip" href="${pdfUrl(s.source)}" target="_blank" rel="noopener" title="${escapeHtml(s.label)}">` +
+      `${escapeHtml(s.label)} ↗</a>`;
+  }
+  return `<button class="source-chip" data-chunk="${s.chunk_id}" title="${escapeHtml(s.label)}">${escapeHtml(s.label)}</button>`;
 }
 
 // Markdown → güvenli HTML. LLM'in ürettiği metin HTML içerebilir; DOMPurify, sayfaya eklenmeden önce

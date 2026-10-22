@@ -33,9 +33,7 @@ function addUserMessage(text) {
 }
 
 function addBotMessage(body) {
-  const chips = body.sources.map((s) =>
-    `<button class="source-chip" data-chunk="${s.chunk_id}" title="${escapeHtml(s.label)}">${escapeHtml(s.label)}</button>`
-  ).join("");
+  const chips = body.sources.map(sourceChip).join("");
   const rewrite = body.rewritten_query
     ? `<span class="rewrite" title="Takip sorusu, geçmişe bakılarak bağımsız hale getirildi (query rewriting)">Aranan: ${escapeHtml(body.rewritten_query)}</span>`
     : "";
@@ -54,7 +52,7 @@ function addBotMessage(body) {
     btn.addEventListener("click", () => sendFeedback(body.id, btn, div)));
 }
 
-// Agent cevabı: kaynak düğmeleri ve 👍/👎 yok (agent cevapları soru-cevap log'una yazılmaz); altında çağrılan
+// Agent cevabı: klasik cevaptaki gibi kaynak düğmeleri, tıklanabilir atıflar ve 👍/👎 (#16, #17); ayrıca çağrılan
 // tool'lar görünür ki kullanıcı cevabın hangi hesaptan ya da aramadan geldiğini bilsin.
 function addAgentMessage(body) {
   const tools = body.tool_calls.map((c) => {
@@ -64,10 +62,19 @@ function addAgentMessage(body) {
   // Anlık tool (request_new_tool): kodu o an bir LLM yazdı, test edilmedi; kullanıcı bunu bilsin (#18).
   const generated = body.tool_calls.some((c) => c.name === "request_new_tool")
     ? `<div class="tools">⚠ Anlık üretilmiş hesap, doğrulanmamış</div>` : "";
-  addEl("msg-bot", `
-    <div class="answer">${renderAnswer(body.answer)}</div>
+  const div = addEl("msg-bot", `
+    <div class="answer">${renderAnswer(body.answer, body.sources)}</div>
+    <div class="sources">${body.sources.map(sourceChip).join("")}</div>
     <div class="tools">${tools ? `Kullanılan tool'lar: ${tools}` : "Tool kullanılmadı"}</div>${generated}
-    <div class="meta"><span>${(body.latency_ms / 1000).toFixed(1)} sn</span><span>danışmanlık agent'ı</span></div>`);
+    <div class="meta">
+      <span>${(body.latency_ms / 1000).toFixed(1)} sn</span><span>danışmanlık agent'ı</span>
+      <span class="fb">
+        <button data-rating="1" title="Faydalı" aria-label="Faydalı">👍</button>
+        <button data-rating="-1" title="Faydalı değil" aria-label="Faydalı değil">👎</button>
+      </span>
+    </div>`);
+  div.querySelectorAll(".fb button").forEach((btn) =>
+    btn.addEventListener("click", () => sendFeedback(body.id, btn, div)));
 }
 
 // --- Transkript ---
