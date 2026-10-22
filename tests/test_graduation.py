@@ -671,3 +671,87 @@ def test_llm_summary_says_requirements_are_met():
 def test_report_text_lists_unmatched_out_of_plan_courses():
     text = graduation.report_text(graduation.evaluate(ERASMUS_SAMPLE, MATCH_PLAN), MATCH_PLAN)
     assert "Planda olmayan dersler (1):\n  - Microcomputer Systems (E2)\n" in text
+
+
+# --- What-if (simulate) -----------------------------------------------------------------------
+# BIG_PLAN, 2023 girişli: gereken 230 + 20 seçmeli = 250 (Alan Dışı isteğe bağlı). Geçilen 230 + 12 seçmeli = 242;
+# bu dönem Yapay Zeka (4) geçilirse 246, seçmeli 16 / 20.
+WHAT_IF_SAMPLE = transcript(
+    course(2023, "Güz", "Z1", "Matematik I", 230, "AA"),
+    course(2023, "Güz", "ETK", "Mühendislik Etiği", 4, "CC"),
+    course(2023, "Bahar", "GIR", "Girişimcilik", 4, "AA"),
+    course(2024, "Bahar", "PDO", "Python ile Derin Öğrenme", 4, "CB"),
+    course(2026, "Güz", "YZ", "Yapay Zeka", 4, None),
+    enrolled=2023, gpa=3.1)
+
+
+def test_what_if_set_that_completes_the_requirements():
+    report = graduation.simulate(WHAT_IF_SAMPLE, BIG_PLAN, ["Yapay Sinir Ağları"])
+    assert rule_values(report, "toplam_akts") == (250, 242, 250, False, True)
+    assert rule_values(report, "secmeli_akts") == (20, 12, 20, False, True)
+    assert report["devam_edenler_gecilirse_tum_sartlar_karsilandi"] is True
+
+
+def test_what_if_set_that_does_not_complete_the_requirements():
+    # Alan Dışı Seçmeli Ders toplam AKTS'ye sayılır ama bölüm seçmelisi açığını kapatmaz: 248 / 250, seçmeli 16 / 20.
+    report = graduation.simulate(WHAT_IF_SAMPLE, BIG_PLAN, ["Diksiyon ve Hitabet"])
+    assert rule_values(report, "toplam_akts") == (250, 242, 248, False, False)
+    assert rule_values(report, "secmeli_akts") == (20, 12, 16, False, False)
+    assert report["devam_edenler_gecilirse_tum_sartlar_karsilandi"] is False
+
+
+def test_what_if_without_courses_equals_the_this_term_scenario():
+    assert graduation.simulate(WHAT_IF_SAMPLE, BIG_PLAN, []) == {
+        **graduation.evaluate(WHAT_IF_SAMPLE, BIG_PLAN), "varsayimsal": []}
+
+
+def test_what_if_course_already_passed_or_ongoing_counts_once():
+    report = graduation.simulate(WHAT_IF_SAMPLE, BIG_PLAN, ["Girişimcilik", "Yapay Zeka", "Yapay Sinir Ağları"])
+    assert [(c["ad"], c["durum"]) for c in report["varsayimsal"]] == [
+        ("Girişimcilik", "gecti"), ("Yapay Zeka", "devam_ediyor"), ("Yapay Sinir Ağları", "yeni")]
+    assert report["devam_edenler_gecilirse_akts"] == 250
+
+
+def test_what_if_failed_compulsory_course_is_no_longer_missing():
+    report = graduation.simulate(SAMPLE, PLAN, ["Fizik I"])
+    assert [c["ad"] for c in report["eksik_zorunlu"] if c["durum"] != "devam_ediyor"] == ["Staj I"]
+    assert report["devam_edenler_gecilirse_akts"] == 25     # 19 + Fizik I 6
+
+
+def test_what_if_resolves_names_case_insensitively_in_english_and_by_code():
+    plan = {**BIG_PLAN, "secmeli_yuvalar": [
+        {**s, "havuz": [{**m, "ad_en": "Neural Networks"} if m["kod"] == "YSA" else m for m in s["havuz"]]}
+        for s in BIG_PLAN["secmeli_yuvalar"]]}
+    for name in ("yapay sinir ağları", "Neural Networks", "YSA"):
+        assert graduation.simulate(WHAT_IF_SAMPLE, plan, [name])["varsayimsal"][0]["kod"] == "YSA", name
+
+
+def test_what_if_gpa_stays_the_transcript_value():
+    report = graduation.simulate({**WHAT_IF_SAMPLE, "obs_ozet": {"gno": 1.9}}, BIG_PLAN, ["Yapay Sinir Ağları"])
+    assert rule_values(report, "gno_alt_siniri") == (2.0, 1.9, 1.9, False, False)
+    assert report["devam_edenler_gecilirse_tum_sartlar_karsilandi"] is False
+
+
+def test_what_if_with_unknown_course_name_names_it():
+    with pytest.raises(graduation.UnknownCourseError) as e:
+        graduation.simulate(WHAT_IF_SAMPLE, BIG_PLAN, ["Yapay Sinir Ağları", "Kuantum Fiziği"])
+    assert e.value.names == ["Kuantum Fiziği"]
+    assert "Kuantum Fiziği" in str(e.value)
+
+
+def test_what_if_text_compares_the_sets():
+    reports = [graduation.simulate(WHAT_IF_SAMPLE, BIG_PLAN, names)
+               for names in (["Yapay Sinir Ağları"], ["Diksiyon ve Hitabet"])]
+    text = graduation.simulation_text(graduation.evaluate(WHAT_IF_SAMPLE, BIG_PLAN), reports, BIG_PLAN)
+    assert "Varsayımsal ders olmadan: 246 / 250 AKTS" in text
+    assert "1. küme (Yapay Sinir Ağları): mezuniyet şartları karşılanıyor" in text
+    assert "2. küme (Diksiyon ve Hitabet): mezuniyet şartları karşılanmıyor" in text
+    assert "248 / 250 AKTS" in text and "seçmeli 16 / 20 AKTS (4 AKTS açık)" in text
+    assert "GNO 3.1" in text and "transkriptteki güncel" in text
+    assert "danışman" in text
+
+
+def test_what_if_text_notes_courses_that_add_no_ects():
+    report = graduation.simulate(WHAT_IF_SAMPLE, BIG_PLAN, ["Girişimcilik"])
+    text = graduation.simulation_text(graduation.evaluate(WHAT_IF_SAMPLE, BIG_PLAN), [report], BIG_PLAN)
+    assert "Girişimcilik zaten geçilmiş" in text

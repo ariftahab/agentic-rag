@@ -168,6 +168,59 @@ def evaluate(transcript, plan, rules=None, confirmations=None):
     return report
 
 
+class UnknownCourseError(ValueError):
+    """What-if derslerinden biri öğretim planında yok; `names` bulunamayan adlardır."""
+
+    def __init__(self, names):
+        self.names = names
+        super().__init__("Öğretim planında bulunamayan ders: " + ", ".join(names))
+
+
+def _resolve_plan_courses(names, plan):
+    """Ders adlarını (Türkçe ya da İngilizce, büyük/küçük harf fark etmez) veya kodlarını plan derslerine çevirir."""
+    courses = plan_courses(plan)
+    resolved, unknown = [], []
+    for name in names:
+        match = next((c for c in courses if c["kod"] == name.strip()
+                      or name_similarity(name, c["ad"]) == 1.0 or name_similarity(name, c.get("ad_en", "")) == 1.0),
+                     None)
+        if match is None:
+            unknown.append(name)
+        else:
+            resolved.append(match)
+    if unknown:
+        raise UnknownCourseError(unknown)
+    return resolved
+
+
+def simulate(transcript, plan, courses, rules=None, confirmations=None):
+    """What-if: `courses` (plan ders adları ya da kodları) bu dönemin dersleriyle birlikte geçilmiş varsayılır.
+
+    Varsayımsal dersler transkriptin en son dönemine notsuz eklenir; böylece `evaluate`'in ikinci senaryosu
+    ("devam_edenler_gecilirse_*") "bu dönemin dersleri ve varsayımsal dersler geçilirse" olur, ilk senaryo değişmez.
+    Yalnız AKTS ve ders şartları değişir; GNO transkriptteki güncel değerdir (varsayımsal notla hesap yok).
+    Zaten geçilmiş ya da bu dönem alınan ders bir kez sayılır.
+
+    Dönüş: `evaluate` raporu + "varsayimsal": [{kod, ad, akts, durum: "yeni" | "gecti" | "devam_ediyor"}].
+    Plan dışı ad → UnknownCourseError."""
+    rules = rules or load_rules()
+    targets = _resolve_plan_courses(courses, plan)
+    taken = transcript["dersler"]
+    latest = max(taken, key=_term_key) if taken else {"yil": transcript.get("kayit_yili") or 0, "donem": "Güz"}
+    base = evaluate(transcript, plan, rules, confirmations)
+    # Varsayımsal dersin şu anki durumu: eşlemeler (Erasmus) uygulanmış transkriptte geçilmiş mi, bu dönem mi alınıyor?
+    target_of = {m["kod"]: m["plan_kod"] for m in base["eslesmeler"]}
+    mapped = [{**c, "kod": target_of.get(c["kod"], c["kod"])} for c in taken]
+    passed, ongoing = _latest_status(mapped, set(_rule(rules, "gecer_notlar")["deger"])) if mapped else ([], [])
+    state = {**{c["kod"]: "devam_ediyor" for c in ongoing}, **{c["kod"]: "gecti" for c in passed}}
+    hypothetical = [{"yil": latest["yil"], "donem": latest["donem"], "kod": c["kod"], "ad": c["ad"],
+                     "kredi": c.get("kredi"), "akts": c["akts"], "not": None, "erasmus": False} for c in targets]
+    report = evaluate({**transcript, "dersler": taken + hypothetical}, plan, rules, confirmations)
+    report["varsayimsal"] = [{"kod": c["kod"], "ad": c["ad"], "akts": c["akts"], "durum": state.get(c["kod"], "yeni")}
+                             for c in targets]
+    return report
+
+
 def _rule(rules, rule_id):
     return next(r for r in rules["kurallar"] if r["id"] == rule_id)
 
@@ -447,6 +500,56 @@ def summary_text(report, plan):
                       "kararına bağlıdır, cevapta bunu belirt)"]
         how = {"otomatik": "ders adının çevirisine göre otomatik eşlendi", "teyit": "kullanıcı teyit etti"}
         lines += [f"- {m['ad']} ({m['akts']} AKTS) → {m['plan_ad']}: {how[m['yontem']]}" for m in report["eslesmeler"]]
+    return "\n".join(lines)
+
+
+def _if_passed_line(report):
+    """İkinci senaryonun tek satırlık özeti (what-if metninde her küme için)."""
+    rules = {r["id"]: r for r in report["kurallar"]}
+    total, compulsory, s = rules["toplam_akts"], rules["zorunlu_dersler"], report["secmeli"]
+    return (f"{report['devam_edenler_gecilirse_akts']} / {total['gereken']} AKTS; zorunlu dersler "
+            f"{compulsory['devam_edenler_gecilirse']} / {compulsory['gereken']}; seçmeli "
+            f"{s['devam_edenler_gecilirse_akts']} / {s['gereken_akts']} AKTS ({s['devam_edenler_gecilirse_acik_akts']} "
+            f"AKTS açık); GNO {report['gno']} (transkriptteki güncel değer)")
+
+
+def simulation_text(base, reports, plan):
+    """simulate_courses tool'unun LLM'e verdiği metin: önce varsayımsal ders olmadan "bu dönem geçilirse" durumu
+    (`base` = evaluate raporu), sonra her küme (`reports` = simulate raporları) için sonuç, karşılanmayan şartlar
+    (kaynaklı), eksik kalan zorunlular ve açık seçmeli yuvaları. Seçim danışmana bırakılır."""
+    met = {True: "karşılanıyor", False: "karşılanmıyor"}
+    lines = [
+        f"Öğretim planı: {plan['kaynak']}",
+        "VARSAYIM: Bu dönem alınan dersler ve kümedeki dersler geçilirse. Yalnız AKTS ve ders şartları hesaplanır; "
+        "GNO varsayımsal notlarla hesaplanmaz, transkriptteki güncel değerdir.",
+        "",
+        f"Varsayımsal ders olmadan: {_if_passed_line(base)}; mezuniyet şartları "
+        f"{met[base['devam_edenler_gecilirse_tum_sartlar_karsilandi']]}.",
+    ]
+    for i, report in enumerate(reports, 1):
+        names = ", ".join(c["ad"] for c in report["varsayimsal"])
+        lines += ["", f"{i}. küme ({names}): mezuniyet şartları "
+                      f"{met[report['devam_edenler_gecilirse_tum_sartlar_karsilandi']]}",
+                  f"- {_if_passed_line(report)}"]
+        for c in report["varsayimsal"]:
+            if c["durum"] == "gecti":
+                lines.append(f"- {c['ad']} zaten geçilmiş; ek AKTS getirmez.")
+            elif c["durum"] == "devam_ediyor":
+                lines.append(f"- {c['ad']} bu dönem zaten alınıyor; ek AKTS getirmez.")
+        for r in report["kurallar"]:
+            if not r["devam_edenler_gecilirse_karsilandi"]:
+                sources = "; ".join(f"{k['belge']}, {k['madde']}" for k in r["kaynak"])
+                lines.append(f"- Karşılanmayan şart: {r['aciklama']} gereken {r['gereken']}, sonuç "
+                             f"{r['devam_edenler_gecilirse']}. [{sources}]")
+        missing = [c["ad"] for c in report["eksik_zorunlu"] if c["durum"] != "devam_ediyor"]
+        if missing:
+            lines.append(f"- Eksik kalan zorunlu dersler: {', '.join(missing)}")
+        empty = [f"{y['ad']} ({y['akts']} AKTS)" for y in report["secmeli"]["yuvalar"]
+                 if y["zorunlu"] and not y["devam_edenler_gecilirse_doldu"]]
+        if empty:
+            lines.append(f"- Açık kalan seçmeli yuvaları: {', '.join(empty)}")
+    lines += ["", "Cevapta her kümenin sonucunu ve hesabını aktar; hangi kümenin seçileceği danışman hocanın "
+                  "kararıdır, soranı danışman hocasına yönlendir."]
     return "\n".join(lines)
 
 
