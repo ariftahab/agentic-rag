@@ -26,6 +26,14 @@ tarihçe git'te. Agentic yolun işleri GitHub issue'larında (spec #1, ticket'la
   50-318 sn sürüyordu, sonra 2-3 sn); klasik RAG production modeli değişmedi. Bir mevzuat sorusu yine 55 sn sürdü:
   adım bazında süre kaydı gerekebilir.
 
+- **agent_v4 teşhisi (2026-10-22, deney değil, kod working tree'de):** prompt'a oturumun transkript durumu, "kendi
+  durumunu sorana önce analyze_transcript" ve "confirm_equivalence yalnız kullanıcı eşleme bildirince" kuralları. EXP-002'de
+  transkript farkındalığı hatası olan 6 soruda anlamca doğru cevap 2 → 5: stajlarım tamam mı, ortalamam yetiyor mu,
+  Erasmus dersi sayılmış mı (yan etkili teyit kalktı), alan dışı seçmeli almam gerekiyor mu düzeldi. Kalan: "alan dışı
+  seçmeli almadım, engel olur mu?" yine yalnız mevzuat aradı (2023 girişliye "engel olabilir" dedi); "Seçmeli VII fazlam
+  VIII'i kapatmıyor mu?" kural doğru ama sayısız. Kontroller bozulmadı; transkriptsiz soruda artık tool çağırmadan yükleme
+  istiyor (doğru davranış, ama setin beklenen tool'u analyze_transcript olduğu için tool metriğinde hata sayılır).
+
 ## Sıra
 
 Başlangıç 2026-10-21: production EXP-001 = campus-chatbot retrieval hattı, corpus v1 (Mühendislik, 24 belge), tek prompt v1.

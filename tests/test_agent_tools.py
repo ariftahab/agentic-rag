@@ -213,3 +213,18 @@ def test_course_schedule_uses_this_terms_courses_from_the_transcript():
     content = schedule_reply({"gun": "2026-10-22"}, transcript)
     assert "- 12:30-15:15 Bilişim Hukuku (Seç VII), 4. sınıf, 326" in content
     assert "bütün şubeler" in content
+
+
+@pytest.mark.parametrize("transcript, state", [(SAMPLE, "TRANSCRIPT_LOADED"), (None, "TRANSCRIPT_MISSING")])
+def test_agent_v4_prompt_states_whether_a_transcript_is_loaded(transcript, state):
+    # EXP-002: agent oturumda transkript yüklü olduğunu bilmediği için kişisel sorularda analyze_transcript çağırmadı.
+    import agent
+    llm = ScriptedChatModel([AIMessage("cevap")])
+    AdvisorAgent(retriever=None, llm=llm, plan=PLAN, prompt_version="agent_v4").ask("Stajlarım tamam mı?",
+                                                                                   transcript=transcript)
+    assert f"Oturum durumu: {getattr(agent, state)}" in llm.received[0][0].content
+
+
+def test_older_prompts_have_no_session_state_line():
+    from agent import AGENT_PROMPTS
+    assert all("Oturum durumu" not in AGENT_PROMPTS[v] for v in ("agent_v1", "agent_v2", "agent_v3"))
