@@ -340,15 +340,23 @@ def _fill_slots(slots, passed):
 
 
 def _electives(passed_now, passed_if_ongoing, plan, adsd_required=True):
-    """Seçmeli şartı AKTS toplamıyla; yuvalar yalnız hangilerinin dolduğunu göstermek için.
+    """Seçmeli şartı yuva yuva: her yuva kendi havuzundaki derslerle, kendi AKTS'si kadar dolar (kullanıcı kararı
+    2026-10-22). Sayılan AKTS, yuvaların doldurulan AKTS'lerinin toplamıdır (yuva başına en fazla yuvanın AKTS'si);
+    bir yuvadaki fazlalık başka yuvanın açığını kapatmaz, "fazla_akts" olarak raporlanır.
 
     Alan Dışı Seçmeli Ders yuvası bu toplamın dışındadır (ayrı kural)."""
     slots = sorted(plan.get("secmeli_yuvalar", []), key=lambda s: s["yariyil"])
     counted = [s for s in slots if s["tur"] != "alan_disi"]
     pool_codes = {m["kod"] for s in counted for m in s["havuz"]}
     required = sum(s["akts"] for s in counted)
-    now = sum(c["akts"] for c in passed_now if c["kod"] in pool_codes)
-    if_ongoing = sum(c["akts"] for c in passed_if_ongoing if c["kod"] in pool_codes)
+    filled_now, filled_later = _fill_slots(slots, passed_now), _fill_slots(slots, passed_if_ongoing)
+
+    def slot_ects(filled):
+        return sum(min(slot["akts"], sum(c["akts"] for c in chosen))
+                   for slot, (chosen, _) in zip(slots, filled) if slot["tur"] != "alan_disi")
+
+    now, if_ongoing = slot_ects(filled_now), slot_ects(filled_later)
+    pool_ects = sum(c["akts"] for c in passed_now if c["kod"] in pool_codes)
     yuvalar = [
         {"ad": slot["ad"], "yariyil": slot["yariyil"], "akts": slot["akts"], "tur": slot["tur"],
          "zorunlu": adsd_required or slot["tur"] != "alan_disi",
@@ -356,7 +364,7 @@ def _electives(passed_now, passed_if_ongoing, plan, adsd_required=True):
          "devam_edenler_gecilirse_dersler": [c["ad"] for c in chosen_later],
          "devam_edenler_gecilirse_doldu": done_later}
         for slot, (chosen_now, done_now), (chosen_later, done_later)
-        in zip(slots, _fill_slots(slots, passed_now), _fill_slots(slots, passed_if_ongoing))
+        in zip(slots, filled_now, filled_later)
     ]
     return {
         "gereken_akts": required,
@@ -364,7 +372,7 @@ def _electives(passed_now, passed_if_ongoing, plan, adsd_required=True):
         "acik_akts": max(0, required - now),
         "devam_edenler_gecilirse_akts": if_ongoing,
         "devam_edenler_gecilirse_acik_akts": max(0, required - if_ongoing),
-        "fazla_akts": max(0, now - required),
+        "fazla_akts": pool_ects - now,
         "yuvalar": yuvalar,
     }
 

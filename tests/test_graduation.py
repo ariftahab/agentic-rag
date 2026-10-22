@@ -220,8 +220,26 @@ def test_extra_passed_elective_ects_is_reported_as_surplus():
         course(2025, "Güz", "YSA", "Yapay Sinir Ağları", 4, "BA"),
         course(2025, "Bahar", "SIB", "Siber Güvenlik", 4, "AA"),
     ), ELECTIVE_PLAN)["secmeli"]
-    assert (s["gecilen_akts"], s["acik_akts"], s["fazla_akts"]) == (24, 0, 4)
+    assert (s["gecilen_akts"], s["acik_akts"], s["fazla_akts"]) == (20, 0, 4)
     assert s["devam_edenler_gecilirse_acik_akts"] == 0                 # fazlalık açığı eksiye düşürmez
+
+
+def test_surplus_in_one_slot_does_not_fill_another_slot():
+    # Her yuva kendi havuzundan, kendi AKTS'si kadar dolar (kullanıcı kararı 2026-10-22): Seçmeli VII'de fazladan
+    # alınan ders, Seçmeli VIII'in açığını kapatmaz.
+    plan = {**PLAN, "secmeli_yuvalar": [
+        {"ad": "Seçmeli VII", "kod": "S7", "yariyil": 7, "akts": 4, "tur": "bolum",
+         "havuz": [{"kod": "YZ", "ad": "Yapay Zeka", "akts": 4}, {"kod": "YSA", "ad": "Yapay Sinir Ağları", "akts": 4}]},
+        {"ad": "Seçmeli VIII", "kod": "S8", "yariyil": 8, "akts": 4, "tur": "bolum",
+         "havuz": [{"kod": "GI", "ad": "Görüntü İşleme", "akts": 4}]},
+    ]}
+    report = graduation.evaluate(transcript(
+        course(2025, "Güz", "YZ", "Yapay Zeka", 4, "BB"),
+        course(2025, "Güz", "YSA", "Yapay Sinir Ağları", 4, "BA"),
+    ), plan)
+    s = report["secmeli"]
+    assert (s["gecilen_akts"], s["acik_akts"], s["fazla_akts"]) == (4, 4, 4)
+    assert rule_values(report, "secmeli_akts") == (8, 4, 4, False, False)
 
 
 def test_course_in_two_pools_is_kept_for_the_slot_that_needs_it():

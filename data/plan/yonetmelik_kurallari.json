@@ -19,7 +19,7 @@
     },
     {
       "id": "secmeli_akts",
-      "aciklama": "Öğretim planının seçmeli dersler için öngördüğü AKTS, zorunlu derslerden ayrı olarak tamamlanır; seçmeliler AKTS toplamıyla sayılır.",
+      "aciklama": "Öğretim planının seçmeli dersler için öngördüğü AKTS, zorunlu derslerden ayrı olarak tamamlanır; her seçmeli yuvası kendi havuzundaki derslerle, yuvanın AKTS'si kadar dolar (bir yuvadaki fazla AKTS başka yuvaya sayılmaz).",
       "kaynak": [
         {"belge": "BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği", "madde": "Madde 35, fıkra 1, bent a"}
       ]
