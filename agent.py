@@ -322,9 +322,16 @@ def make_tools(retriever, plan, transcript, confirmations, today, with_requireme
             if transcript is None:
                 return NO_TRANSCRIPT
             files["transkript.json"] = json.dumps(transcript, ensure_ascii=False)
-        result = code_runner.run(gorev, files)
-        generated.append({"gorev": gorev, "transkript": transkript_gerekli, "kod": result["code"],
-                          "cikti": result["outputs"]})
+        # Log kaydı zinciri ayırır: görevi Gemini yazdı, adımları ve cevabı Haiku üretti, son cümleyi yine Gemini kurar.
+        record = {"gorev": gorev, "transkript": transkript_gerekli}
+        generated.append(record)
+        try:
+            result = code_runner.run(gorev, files)
+        except Exception as e:  # agent döngüsü hatayı LLM'e verir; log'da da hangi aşamada olduğu görünsün
+            record["hata"] = f"{type(e).__name__}: {str(e)[:300]}"
+            raise
+        record.update(haiku_cevabi=result["answer"], adimlar=result["steps"], istek_sayisi=result["requests"],
+                      sure_ms=result["duration_ms"], tokens=result["tokens"], bitis=result["stop_reason"])
         return f"{CODE_RESULT_HEADER}\n\n{result['answer']}"
 
     tools = (search_regulations, analyze_transcript, confirm_equivalence, simulate_courses, get_offered_electives,

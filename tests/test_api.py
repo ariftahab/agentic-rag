@@ -187,7 +187,8 @@ def test_agent_ask_without_transcript_reaches_tools_and_is_logged(tmp_path):
 
 class FakeCodeRunner:
     def run(self, task, files):
-        return {"answer": "Toplam 21 saat.", "code": ["print(21)"], "outputs": ["21\n"]}
+        return {"answer": "Toplam 21 saat.", "steps": [{"tip": "kod", "kod": "print(21)", "cikti": "21\n"}], "requests": 1, "duration_ms": 5,
+                "tokens": {"input": 10, "output": 2}, "stop_reason": "end_turn"}
 
 
 def test_generated_code_is_logged(tmp_path):
@@ -198,8 +199,26 @@ def test_generated_code_is_logged(tmp_path):
     ], prompt_version="agent_v7", code_runner=FakeCodeRunner())
     assert client.post("/agent/ask", json={"question": "3. sınıfın haftada kaç saat dersi var?"}).status_code == 200
     record = json.loads(log_text(tmp_path))
-    assert record["uretilen_kod"] == [{"gorev": "haftalık ders saati", "transkript": False, "kod": ["print(21)"],
-                                       "cikti": ["21\n"]}]
+    [item] = record["uretilen_kod"]
+    assert (item["gorev"], item["haiku_cevabi"]) == ("haftalık ders saati", "Toplam 21 saat.")
+    assert item["adimlar"] == [{"tip": "kod", "kod": "print(21)", "cikti": "21\n"}]
+    assert record["cevap"] == ANSWER                        # Gemini'nin son cümlesi ayrı: kim neyi yazdı görünür
+
+
+class FailingCodeRunner:
+    def run(self, task, files):
+        raise TimeoutError("sandbox cevap vermedi")
+
+
+def test_failed_code_run_is_logged_with_its_error(tmp_path):
+    client = make_client(tmp_path, [
+        AIMessage("", tool_calls=[{"name": "request_new_tool", "id": "1", "args": {"gorev": "haftalık ders saati"}}]),
+        AIMessage(ANSWER),
+    ], prompt_version="agent_v7", code_runner=FailingCodeRunner())
+    client.post("/agent/ask", json={"question": "3. sınıfın haftada kaç saat dersi var?"})
+    record = json.loads(log_text(tmp_path))
+    assert record["uretilen_kod"] == [{"gorev": "haftalık ders saati", "transkript": False,
+                                       "hata": "TimeoutError: sandbox cevap vermedi"}]
 
 
 def test_agent_error_is_logged_by_type_only(tmp_path):

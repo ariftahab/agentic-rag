@@ -56,7 +56,10 @@ def test_files_go_to_the_sandbox_and_are_deleted_afterwards():
     assert {"type": "container_upload", "file_id": "file_1"} in request["messages"][0]["content"]
     assert client.uploaded == [("ders_programi.json", b"{}", "application/json")]
     assert client.deleted == ["file_1"]
-    assert result == {"answer": "Toplam 12 saat.", "code": ["python -c 'print(12)'"], "outputs": ["12\n"]}
+    assert result["answer"] == "Toplam 12 saat."
+    assert result["steps"] == [{"tip": "kod", "kod": "python -c 'print(12)'", "cikti": "12\n"},
+                               {"tip": "metin", "metin": "Toplam 12 saat."}]
+    assert (result["requests"], result["stop_reason"]) == (1, "end_turn") and result["duration_ms"] >= 0
 
 
 def test_files_are_deleted_even_when_the_request_fails():
@@ -72,7 +75,7 @@ def test_pause_turn_continues_in_the_same_container_within_a_limit():
     result = codeact.CodeRunner(client).run("görev", {})
     assert client.requests[1]["container"] == "cnt_9"
     assert client.requests[1]["messages"][-1] == {"role": "assistant", "content": paused.content}
-    assert result["answer"] == "Bitti." and result["code"] == ["ls"]
+    assert result["answer"] == "Bitti." and result["steps"][0]["kod"] == "ls"
 
 
 def test_endless_pause_turn_stops_after_the_limit():
@@ -84,7 +87,20 @@ def test_endless_pause_turn_stops_after_the_limit():
 
 def test_failed_code_reports_stderr():
     client = FakeClient([response(code_call("python x.py"), code_result("", 1, "NameError"), text("Hata aldım."))])
-    assert codeact.CodeRunner(client).run("görev", {})["outputs"] == ["Hata (çıkış kodu 1): NameError"]
+    assert codeact.CodeRunner(client).run("görev", {})["steps"][0]["cikti"] == "Hata (çıkış kodu 1): NameError"
+
+
+def test_steps_keep_the_order_of_moves_and_sum_tokens_across_requests():
+    # Yanlış bir cevapta hangi hamlenin bozduğunu görmek için: kod → çıktı → ara metin → kod → çıktı, sırasıyla.
+    first = response(code_call("ls"), code_result("a.json\n"), text("Dosyaya bakıyorum."),
+                     stop_reason="pause_turn")
+    first.usage = NS(input_tokens=100, output_tokens=10)
+    second = response(code_call("python hesap.py"), code_result("21\n"), text("21 saat."))
+    second.usage = NS(input_tokens=50, output_tokens=5)
+    result = codeact.CodeRunner(FakeClient([first, second])).run("görev", {})
+    assert [s["tip"] for s in result["steps"]] == ["kod", "metin", "kod", "metin"]
+    assert [s.get("cikti") for s in result["steps"]] == ["a.json\n", None, "21\n", None]
+    assert result["tokens"] == {"input": 150, "output": 15} and result["requests"] == 2
 
 
 def test_task_message_describes_each_file_so_haiku_skips_exploring():

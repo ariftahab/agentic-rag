@@ -11,6 +11,7 @@ istek sayısı ve token sınırlı. Sonuç güvenilmeyen veri olarak agent'a dö
 ama ulaşabileceği veri yalnız yüklenen dosyalardır).
 """
 import json
+import time
 
 import anthropic
 
@@ -45,42 +46,61 @@ class CodeRunner:
         return self._client
 
     def run(self, task, files):
-        """files: {dosya adı: JSON metni}. Dönüş: {"answer", "code": [...], "outputs": [...]}."""
+        """files: {dosya adı: JSON metni}. Dönüş: {"answer", "steps", "requests", "duration_ms", "tokens",
+        "stop_reason"}. steps sırayla Haiku'nun hamleleri: {"tip": "kod", "kod", "cikti"} ya da {"tip": "metin"}; yanlış
+        bir cevapta hatanın görevde mi (Gemini), kodda mı yoksa özetlemede mi (Haiku) olduğu buradan okunur."""
         uploaded = []
+        started = time.perf_counter()
         try:
             for name, content in files.items():
                 uploaded.append(self.client.files.upload(file=(name, content.encode("utf-8"), "application/json")))
             schemas = "\n\n".join(schema_text(name, content) for name, content in files.items()) or "Dosya yok."
             blocks = [{"type": "text", "text": f"Görev: {task}\n\nSandbox'taki dosyalar:\n\n{schemas}"}]
             blocks += [{"type": "container_upload", "file_id": f.id} for f in uploaded]
-            return self._loop([{"role": "user", "content": blocks}])
+            result = self._loop([{"role": "user", "content": blocks}])
         finally:
             for f in uploaded:
                 try:
                     self.client.files.delete(f.id)
                 except Exception:  # silme hatası cevabı bozmasın; dosya hesapta kalır, log'a düşmez
                     pass
+        result["duration_ms"] = round((time.perf_counter() - started) * 1000)
+        return result
 
     def _loop(self, messages):
-        code, outputs, container = [], [], None
-        for _ in range(MAX_REQUESTS):
+        steps, by_id, container = [], {}, None
+        tokens = {"input": 0, "output": 0}
+        for request in range(1, MAX_REQUESTS + 1):
             kwargs = {"container": container} if container else {}
             response = self.client.messages.create(model=self.model, max_tokens=MAX_TOKENS, system=SYSTEM,
                                                    messages=messages, tools=[CODE_TOOL], **kwargs)
+            usage = getattr(response, "usage", None)
+            if usage is not None:
+                tokens["input"] += usage.input_tokens
+                tokens["output"] += usage.output_tokens
             texts = []
             for block in response.content:
                 if block.type == "server_tool_use":
-                    code.append(_code_of(block))
-                elif block.type == "bash_code_execution_tool_result":
-                    outputs.append(_output_of(block.content))
+                    step = {"tip": "kod", "kod": _code_of(block), "cikti": None}
+                    steps.append(step)
+                    by_id[getattr(block, "id", len(steps))] = step
+                elif block.type.endswith("_code_execution_tool_result"):
+                    # Sonuç kendi çağrısına id ile bağlanır; id yoksa son çağrıya.
+                    step = by_id.get(getattr(block, "tool_use_id", len(steps)), steps[-1] if steps else None)
+                    if step is not None:
+                        step["cikti"] = _output_of(block.content)
                 elif block.type == "text":
                     texts.append(block.text)
+                    steps.append({"tip": "metin", "metin": block.text})
             if response.stop_reason != "pause_turn":
-                return {"answer": "\n".join(texts).strip() or UNFINISHED, "code": code, "outputs": outputs}
+                answer = "\n".join(texts).strip() or UNFINISHED
+                return {"answer": answer, "steps": steps, "requests": request, "tokens": tokens,
+                        "stop_reason": response.stop_reason}
             # Sunucu tarafı döngü durakladı: aynı container'la, aynı mesajlarla devam edilir (ek "devam" mesajı yok).
             container = response.container.id
             messages = messages + [{"role": "assistant", "content": response.content}]
-        return {"answer": UNFINISHED, "code": code, "outputs": outputs}
+        return {"answer": UNFINISHED, "steps": steps, "requests": MAX_REQUESTS, "tokens": tokens,
+                "stop_reason": "pause_turn"}
 
 
 SCHEMA_VALUE_CHARS = 120   # bundan kısa üst düzey değerler olduğu gibi yazılır
@@ -113,7 +133,10 @@ def _code_of(block):
 
 
 def _output_of(result):
-    if getattr(result, "type", None) != "bash_code_execution_result":
+    kind = getattr(result, "type", None)
+    if kind and kind.startswith("text_editor_code_execution") and not kind.endswith("error"):
+        return "dosya işlemi tamam"
+    if kind != "bash_code_execution_result":
         return f"Tool hatası: {getattr(result, 'error_code', result)}"
     if result.return_code != 0:
         return f"Hata (çıkış kodu {result.return_code}): {result.stderr}"

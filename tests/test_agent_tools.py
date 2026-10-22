@@ -291,7 +291,7 @@ class FakeRunner:
 
     def run(self, task, files):
         self.calls.append((task, files))
-        return {"answer": "Toplam 12 saat.", "code": ["print(12)"], "outputs": ["12\n"]}
+        return {"answer": "Toplam 12 saat.", "steps": [{"tip": "kod", "kod": "print(12)", "cikti": "12\n"}], "requests": 1, "duration_ms": 5, "tokens": {"input": 10, "output": 2}, "stop_reason": "end_turn"}
 
 
 def new_tool_reply(prompt_version, args, transcript, runner):
@@ -309,7 +309,9 @@ def test_new_tool_sends_plan_and_schedule_but_not_the_transcript_by_default():
     assert task == "3. sınıfın haftalık ders saati"
     assert sorted(files) == ["ders_programi.json", "ogretim_plani.json"]
     assert "Toplam 12 saat." in content and "doğrulanmadı" in content
-    assert result["generated_code"] == [{"gorev": task, "transkript": False, "kod": ["print(12)"], "cikti": ["12\n"]}]
+    assert result["generated_code"] == [{"gorev": task, "transkript": False, "haiku_cevabi": "Toplam 12 saat.",
+                                         "adimlar": [{"tip": "kod", "kod": "print(12)", "cikti": "12\n"}], "istek_sayisi": 1, "sure_ms": 5,
+                                         "tokens": {"input": 10, "output": 2}, "bitis": "end_turn"}]
 
 
 def test_new_tool_sends_the_transcript_only_when_needed_and_loaded():

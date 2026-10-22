@@ -89,10 +89,17 @@ def main():
 
         print(f"\n{result['answer']}")
         if use_agent:
-            for item in result.get("generated_code", []):  # anlık tool'un yazdığı kod (doğrulanmamış)
+            for item in result.get("generated_code", []):  # anlık tool'un hamleleri (doğrulanmamış)
                 print(f"\n[anlık tool] {item['gorev']}")
-                for code in item["kod"]:
-                    print("  " + code.replace("\n", "\n  "))
+                if "hata" in item:
+                    print(f"  Hata: {item['hata']}")
+                    continue
+                print(f"  {item['istek_sayisi']} istek, {item['sure_ms'] / 1000:.1f} sn, {item['tokens']}")
+                for step in item["adimlar"]:
+                    text = step["kod"] if step["tip"] == "kod" else step["metin"]
+                    print(f"  [{step['tip']}] " + text.replace("\n", "\n    "))
+                    if step["tip"] == "kod":
+                        print("    → " + str(step["cikti"]).replace("\n", "\n      "))
             continue
         if result["query"] != question:
             print(f"\n(Aranan soru: {result['query']})")
