@@ -306,6 +306,8 @@ def graduation_requirements(plan=None, rules=None):
         "plan_toplam_akts": _plan_total(plan, True),
         "zorunlu_akts": sum(c["akts"] for c in plan["zorunlu_dersler"]),
         "zorunlu_ders_sayisi": len(plan["zorunlu_dersler"]),
+        "stajlar": [{k: c[k] for k in ("ad", "yariyil", "akts")} for c in plan["zorunlu_dersler"]
+                    if c["ad"].lower().startswith("staj")],
         "secmeli_akts": sum(s["akts"] for s in slots if s["tur"] != "alan_disi"),
         "secmeli_yuvalar": [{k: s[k] for k in ("ad", "yariyil", "akts", "tur")} for s in slots],
         "kurallar": [
@@ -318,6 +320,37 @@ def graduation_requirements(plan=None, rules=None):
             {"id": "alan_disi_secmeli_istisna", **adsd["istisna"]},
         ],
     }
+
+
+SLOT_KIND_TEXT = {"bolum": "bölüm seçmelisi", "rektorluk": "rektörlük seçmelisi", "alan_disi": "alan dışı seçmeli"}
+
+
+def requirements_text(summary):
+    """get_graduation_requirements tool'unun LLM'e verdiği metin: planın toplamları, stajlar, seçmeli yuvaları ve
+    her biri kaynağıyla mezuniyet kuralları. Transkript gerekmez; kişiye özel durum analyze_transcript'tedir."""
+    adsd = next(r for r in summary["kurallar"] if r["id"] == "alan_disi_secmeli")
+    lines = [
+        f"Öğretim planı: {summary['ogretim_plani']}",
+        "",
+        f"MEZUNİYET ŞARTLARI ({summary['bolum']}, {summary['katalog_yili']} öğretim planı)",
+        f"Öğretim planının toplamı {summary['plan_toplam_akts']} AKTS: {summary['zorunlu_ders_sayisi']} zorunlu ders "
+        f"{summary['zorunlu_akts']} AKTS (stajlar dahil), bölüm ve rektörlük seçmelileri {summary['secmeli_akts']} AKTS, "
+        f"Alan Dışı Seçmeli Ders {adsd['akts']} AKTS.",
+        "",
+        "STAJLAR (zorunlu ders olarak planda)",
+    ]
+    lines += [f"- {c['ad']} ({c['yariyil']}. yarıyıl, {c['akts']} AKTS)" for c in summary["stajlar"]]
+    lines += ["", "SEÇMELİ YUVALARI (her yuva kendi havuzundaki derslerle, kendi AKTS'si kadar dolar)"]
+    lines += [f"- {s['ad']} ({s['yariyil']}. yarıyıl, {s['akts']} AKTS, {SLOT_KIND_TEXT[s['tur']]})"
+              for s in summary["secmeli_yuvalar"]]
+    lines += ["", "KURALLAR"]
+    for r in summary["kurallar"]:
+        text = r["aciklama"]
+        if r["id"] == "alan_disi_secmeli":
+            text += f" Bu zorunluluk {r['zorunlu_ilk_kayit_yili']} ve sonrasında kaydolan öğrenciler içindir."
+        sources = "; ".join(f"{k['belge']}, {k['madde']}" for k in r["kaynak"])
+        lines.append(f"- {text} [{sources}]")
+    return "\n".join(lines)
 
 
 def _fill_slots(slots, passed):

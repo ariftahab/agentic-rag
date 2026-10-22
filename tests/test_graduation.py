@@ -611,6 +611,21 @@ def test_requirements_summary_lists_each_rule_once_with_the_out_of_field_ects():
     assert next(r for r in summary["kurallar"] if r["id"] == "alan_disi_secmeli")["akts"] == 2
 
 
+def test_requirements_text_gives_every_rule_with_its_source():
+    text = graduation.requirements_text(graduation.graduation_requirements(RULES_PLAN))
+    assert "48 AKTS" in text                                                     # planın bağlayıcı toplamı
+    assert "- Seçmeli VII (7. yarıyıl, 8 AKTS, bölüm seçmelisi)" in text         # yuva bazlı seçmeliler
+    assert "2,00" in text and "[BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 35, fıkra 1, bent b]" in text
+    assert "2024" in text and "Geçici Madde 1" in text                           # ADSD ve kayıt yılı istisnası
+    rule_lines = [line for line in text.splitlines() if line.startswith("- ") and "yarıyıl" not in line]
+    assert rule_lines and all(line.endswith("]") for line in rule_lines)         # her kuralın kaynağı var
+
+
+def test_requirements_text_names_the_internships_of_the_real_plan():
+    text = graduation.requirements_text(graduation.graduation_requirements())
+    assert "Staj I (5. yarıyıl, 5 AKTS)" in text and "Staj II (7. yarıyıl, 5 AKTS)" in text
+
+
 @pytest.mark.parametrize("a, b, expected", [
     ("Operating Systems", "Operating Systems I", 2 / 3),
     ("Computer Networks", "Data Communication and Computer Networks", 0.5),   # "and" sayılmaz
