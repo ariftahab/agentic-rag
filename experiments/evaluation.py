@@ -17,6 +17,11 @@ Agent metrikleri (params.mod = "agent"; yalnız ilgili alanı tanımlı sorular 
   tool_dogru      : beklenen her tool doğru argümanlarla çağrıldı ve beklenmeyen bir tool çağrılmadı (0/1);
                     ortalaması tool_secimi_dogrulugu ('beklenen_tool_lar'), bkz. tool_selection
   tool_adi_dogru  : aynısı, argümanlara bakmadan (0/1); ortalaması tool_adi_dogrulugu. İkisinin farkı argüman hatası.
+  gerekli_tool_dogru: beklenen her tool doğru argümanlarla çağrıldı; fazladan çağrı serbest (0/1); ortalaması
+                    gerekli_tool_dogrulugu. EXP-003'ten sonra eklendi: katı metrik kuralın metni için ek arama gibi
+                    doğru davranışları hata sayıyordu.
+  yan_etkisiz     : oturum durumunu değiştiren bir tool (SIDE_EFFECT_TOOLS) beklenmeden çağrılmadı (0/1); ortalaması
+                    yan_etkisiz_orani. İkisi eski sonuçlarda kayıtlı eksik/fazla tool listelerinden türetilir.
   hesap_dogru     : beklenen her sayı (AKTS, GNO) cevap metninde tam olarak geçiyor (0/1); ortalaması
                     hesap_dogrulugu ('beklenen_sayilar', transkript senaryoları), bkz. calculation
   arac_hesap_dogru: elle hesaplanan sayılar deterministik modülün (graduation.evaluate) sonucuyla aynı (0/1);
@@ -47,6 +52,7 @@ METRIC_DIRECTION = {
     "cevap_uzunlugu": -1, "netlestirme_uzunlugu": -1, "birlestirme_isabeti": +1,
     "fikra_atif_orani": +1, "fikra_dogrulugu": +1,
     "tool_secimi_dogrulugu": +1, "tool_adi_dogrulugu": +1, "hesap_dogrulugu": +1,
+    "gerekli_tool_dogrulugu": +1, "yan_etkisiz_orani": +1,
 }
 PER_QUESTION_KEY = {  # özet metrik -> soru başına değer anahtarı
     "mrr@10": "rr", "hit@1": "hit@1", "hit@3": "hit@3", "hit@5": "hit@5", "hit@10": "hit@10",
@@ -58,11 +64,15 @@ PER_QUESTION_KEY = {  # özet metrik -> soru başına değer anahtarı
     "fikra_atif_orani": "fikra_atif", "fikra_dogrulugu": "fikra_dogru",
     # Agent metrikleri (yalnız mod=agent; RAG sonuçlarında bu alanlar yok, karşılaştırmaya girmez).
     "tool_secimi_dogrulugu": "tool_dogru", "tool_adi_dogrulugu": "tool_adi_dogru", "hesap_dogrulugu": "hesap_dogru",
+    # Eski sonuçlarda alan yok; soru başına değer eksik/fazla tool listelerinden türetilir (run.per_question_value).
+    "gerekli_tool_dogrulugu": None, "yan_etkisiz_orani": None,
 }
 LLM_METRICS = {"answer_acc", "cevap_uzunlugu", "netlestirme_uzunlugu", "birlestirme_isabeti", "fikra_atif_orani",
-               "fikra_dogrulugu", "tool_secimi_dogrulugu", "tool_adi_dogrulugu", "hesap_dogrulugu"}
+               "fikra_dogrulugu", "tool_secimi_dogrulugu", "tool_adi_dogrulugu", "hesap_dogrulugu",
+               "gerekli_tool_dogrulugu", "yan_etkisiz_orani"}
 BINARY_METRICS = {"hit@1", "hit@3", "hit@5", "hit@10", "context_hit", "answer_acc", "rerank_input_recall",
-                  "birlestirme_isabeti", "tool_secimi_dogrulugu", "tool_adi_dogrulugu", "hesap_dogrulugu"}
+                  "birlestirme_isabeti", "tool_secimi_dogrulugu", "tool_adi_dogrulugu", "hesap_dogrulugu",
+                  "gerekli_tool_dogrulugu", "yan_etkisiz_orani"}
 NO_CHANGE_EPS = 1e-9
 
 
@@ -232,6 +242,16 @@ def args_match(expected, actual):
     return all(k in actual and _norm_value(actual[k]) == _norm_value(v) for k, v in expected.items())
 
 
+# Oturum durumunu değiştiren tool'lar: beklenmeden çağrılmaları zararsız fazla çağrı değil, hatadır
+# (ör. kullanıcının bildirmediği bir eşdeğerliği kaydetmek sonraki bütün analizleri değiştirir).
+SIDE_EFFECT_TOOLS = {"confirm_equivalence"}
+
+
+def tool_values(missing, extra):
+    """Gevşek tool metrikleri: gerekli tool'lar çağrıldı mı, yan etkili bir tool beklenmeden çağrıldı mı."""
+    return {"gerekli_tool_dogru": int(not missing), "yan_etkisiz": int(not SIDE_EFFECT_TOOLS & set(extra))}
+
+
 def tool_selection(expected, calls):
     """Sorunun beklenen tool çağrılarıyla agent'ın çağrılarını karşılaştırır.
 
@@ -246,7 +266,7 @@ def tool_selection(expected, calls):
     missing_names = [e["name"] for e in expected if not any(c["name"] == e["name"] for c in calls)]
     extra = list(dict.fromkeys(c["name"] for c in calls if c["name"] not in names))
     return {"tool_dogru": int(not missing and not extra), "tool_adi_dogru": int(not missing_names and not extra),
-            "eksik_tool_lar": missing, "fazla_tool_lar": extra}
+            **tool_values(missing, extra), "eksik_tool_lar": missing, "fazla_tool_lar": extra}
 
 
 def numbers_in_text(text):

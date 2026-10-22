@@ -98,6 +98,41 @@ def test_several_expected_tools_must_all_be_called_in_any_order():
 
 # --- Hesap doğruluğu ---
 
+def test_required_tools_ignore_harmless_extra_calls():
+    # EXP-003: kuralın metni için ek search_regulations doğru bir davranıştı ama katı metrik onu hata saydı.
+    out = ev.tool_selection([{"name": "analyze_transcript"}],
+                            calls(("search_regulations", {"query": "staj"}), ("analyze_transcript", {})))
+    assert (out["tool_dogru"], out["gerekli_tool_dogru"], out["yan_etkisiz"]) == (0, 1, 1)
+
+
+def test_required_tools_still_need_the_expected_args():
+    out = ev.tool_selection([{"name": "get_course_schedule", "args": {"gun": "perşembe"}}],
+                            calls(("get_course_schedule", {"gun": "cuma"})))
+    assert out["gerekli_tool_dogru"] == 0
+
+
+def test_unexpected_side_effect_tool_is_flagged():
+    # Otomatik eşlenmiş Erasmus dersi sorulunca istenmemiş teyit kaydı: oturum durumunu değiştirir.
+    out = ev.tool_selection([{"name": "analyze_transcript"}],
+                            calls(("analyze_transcript", {}), ("confirm_equivalence", {"transcript_course": "X"})))
+    assert (out["gerekli_tool_dogru"], out["yan_etkisiz"]) == (1, 0)
+
+
+def test_expected_side_effect_tool_is_not_flagged():
+    out = ev.tool_selection([{"name": "confirm_equivalence"}], calls(("confirm_equivalence", {})))
+    assert out["yan_etkisiz"] == 1
+
+
+def test_new_tool_metrics_are_derived_from_older_result_rows():
+    # Eski sonuç dosyaları değişmez; yeni metrikler kayıtlı eksik/fazla tool listelerinden türetilir.
+    row = {"tool_dogru": 0, "eksik_tool_lar": [], "fazla_tool_lar": ["confirm_equivalence"]}
+    assert run.per_question_value(row, "gerekli_tool_dogrulugu", None) == 1
+    assert run.per_question_value(row, "yan_etkisiz_orani", None) == 0
+    assert run.per_question_value({"answer": "x"}, "gerekli_tool_dogrulugu", None) is None
+    metrics = run.derived_agent_metrics([row, {"eksik_tool_lar": ["analyze_transcript"], "fazla_tool_lar": []}])
+    assert (metrics["gerekli_tool_dogrulugu"], metrics["yan_etkisiz_orani"]) == (0.5, 0.5)
+
+
 def test_numbers_in_text_reads_turkish_and_english_decimals():
     assert ev.numbers_in_text("Geçilen 180 AKTS, GNO 2,47; bu dönem sonunda 2.47 kalır.") == [180.0, 2.47, 2.47]
 

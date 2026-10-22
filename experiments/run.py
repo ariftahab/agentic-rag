@@ -323,7 +323,19 @@ def agent_rows(agent, items, wait, plan, transcripts_dir=None):
 # Agent özet metrikleri: ad -> soru başına anahtar (yalnız anahtarı olan sorular üzerinden ortalama)
 AGENT_METRICS = (("answer_acc", "answer_ok", "answer_n"), ("tool_secimi_dogrulugu", "tool_dogru", "tool_secimi_n"),
                  ("tool_adi_dogrulugu", "tool_adi_dogru", None), ("hesap_dogrulugu", "hesap_dogru", "hesap_n"),
-                 ("arac_hesap_dogrulugu", "arac_hesap_dogru", "arac_hesap_n"))
+                 ("arac_hesap_dogrulugu", "arac_hesap_dogru", "arac_hesap_n"),
+                 ("gerekli_tool_dogrulugu", "gerekli_tool_dogru", None), ("yan_etkisiz_orani", "yan_etkisiz", None))
+DERIVED_TOOL_METRICS = {"gerekli_tool_dogrulugu": "gerekli_tool_dogru", "yan_etkisiz_orani": "yan_etkisiz"}
+
+
+def derived_agent_metrics(rows):
+    """Sonradan eklenen tool metrikleri (gerekli tool, yan etki) sonuç dosyasına dokunmadan, satırlardan."""
+    out = {}
+    for metric in DERIVED_TOOL_METRICS:
+        values = [v for v in (per_question_value(r, metric, None) for r in rows) if v is not None]
+        if values:
+            out[metric] = round(statistics.mean(values), 4)
+    return out
 
 
 def agent_metrics(rows):
@@ -412,7 +424,7 @@ def run_agent(exp_id, exp, cfg, diff, dataset, dataset_hash, wait):
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     (RESULTS_DIR / f"{exp_id}.json").write_text(json.dumps(result, ensure_ascii=False, indent=1), encoding="utf-8")
     m = result["llm"]["metrics"]
-    print("  " + " ".join(f"{k}={m[k]:.3f}" for k in ("tool_secimi_dogrulugu", "tool_adi_dogrulugu", "hesap_dogrulugu",
+    print("  " + " ".join(f"{k}={m[k]:.3f}" for k in ("tool_secimi_dogrulugu", "tool_adi_dogrulugu", "gerekli_tool_dogrulugu", "yan_etkisiz_orani", "hesap_dogrulugu",
                                                       "arac_hesap_dogrulugu", "answer_acc") if k in m))
     if result["karsilastirma"] and "karar" in result["karsilastirma"]:
         k = result["karsilastirma"]["karar"]
@@ -471,6 +483,10 @@ def per_question_value(row, metric, key):
         return len(row["answer"])
     if metric == "netlestirme_uzunlugu":
         return len(row["answer"]) if row.get("netlestirme_tetik") else None
+    if metric in DERIVED_TOOL_METRICS:
+        if "eksik_tool_lar" not in row:  # sorunun beklenen tool'u yok
+            return None
+        return ev.tool_values(row["eksik_tool_lar"], row["fazla_tool_lar"])[DERIVED_TOOL_METRICS[metric]]
     return row.get(key)
 
 

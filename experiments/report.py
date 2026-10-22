@@ -10,6 +10,7 @@ import json
 
 import config
 from experiments import evaluation as ev
+from experiments import run
 
 LOG_FILE = config.EXPERIMENTS_DIR / "experiment_log.md"
 
@@ -26,10 +27,12 @@ SHORT_VALUES = {
     "gemini-2.5-flash": "2.5-flash", "gemini-3.1-flash-lite": "3.1-flash-lite", "gemini-3.5-flash-lite": "3.5-flash-lite",
 }
 METRIC_NAMES = {"mrr@10": "MRR@10", "context_chars": "context chars", "answer_acc": "answer acc.",
-                "tool_secimi_dogrulugu": "tool seçimi", "tool_adi_dogrulugu": "tool adı", "hesap_dogrulugu": "hesap"}
+                "tool_secimi_dogrulugu": "tool seçimi", "tool_adi_dogrulugu": "tool adı", "hesap_dogrulugu": "hesap",
+                "gerekli_tool_dogrulugu": "gerekli tool", "yan_etkisiz_orani": "yan etkisiz"}
 # Agent tablosu: başlık -> llm.metrics anahtarı
 AGENT_COLUMNS = [("Answer acc.", "answer_acc"), ("Tool seçimi", "tool_secimi_dogrulugu"),
-                 ("Tool adı", "tool_adi_dogrulugu"), ("Hesap (cevap)", "hesap_dogrulugu"),
+                 ("Tool adı", "tool_adi_dogrulugu"), ("Gerekli tool", "gerekli_tool_dogrulugu"),
+                 ("Yan etkisiz", "yan_etkisiz_orani"), ("Hesap (cevap)", "hesap_dogrulugu"),
                  ("Hesap (tool)", "arac_hesap_dogrulugu"), ("Ort. tool çağrısı", "ort_tool_cagrisi"),
                  ("Ort. tur", "ort_tur")]
 
@@ -57,14 +60,16 @@ def _agent_lines(configs, results):
         return []
     lines = [
         "Tool seçimi: beklenen tool'lar doğru argümanlarla çağrıldı, beklenmeyen tool yok. Tool adı: aynısı, "
-        "argümanlara bakmadan. Hesap (cevap): elle hesaplanan AKTS/GNO cevapta tam olarak geçiyor. Hesap (tool): "
+        "argümanlara bakmadan. Gerekli tool: beklenen tool'lar doğru argümanlarla çağrıldı, fazla çağrı serbest. Yan "
+        "etkisiz: oturum durumunu değiştiren tool (teyit kaydı) beklenmeden çağrılmadı. Hesap (cevap): elle hesaplanan AKTS/GNO cevapta tam olarak geçiyor. Hesap (tool): "
         "aynı sayılar deterministik modülün sonucuyla aynı (LLM'den bağımsız). Answer acc. anlamca ayrıca okunur.",
         "",
         "| Exp | Set | " + " | ".join(c for c, _ in AGENT_COLUMNS) + " | n | Tamamlandı |",
         "|---|---|" + "---|" * len(AGENT_COLUMNS) + "---|---|",
     ]
     for exp_id, res in agent_results.items():
-        m = res["llm"]["metrics"]
+        # Sonradan eklenen metrikler eski sonuç dosyalarında yok; soru satırlarından türetilir.
+        m = {**run.derived_agent_metrics(res["llm"]["per_question"]), **res["llm"]["metrics"]}
         cells = [(_num(m[k], 2) if k.startswith("ort_") else _num(m[k])) if m.get(k) is not None else "–"
                  for _, k in AGENT_COLUMNS]
         done = "✓" if res["llm"].get("tamamlandi", True) else "✗ (kota)"
