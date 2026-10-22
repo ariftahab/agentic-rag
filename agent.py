@@ -10,6 +10,7 @@ verilir. Transkript LLM'in argümanı değildir; oturumda durur ve analyze_trans
 LLM'e transkriptin kendisi değil, yalnız değerlendirme raporu gider (kişisel bilgi zaten parser'da ayıklanır).
 """
 import json
+import re
 from datetime import date
 
 from langchain_core.messages import SystemMessage, HumanMessage, ToolMessage
@@ -175,12 +176,31 @@ NO_TRANSCRIPT = ("Bu oturumda yüklenmiş bir transkript yok. Kullanıcıdan UBY
 TURN_LIMIT_ANSWER = "Bu soruyu belirlenen adım sayısı içinde cevaplayamadım. Soruyu daha dar sorabilir misiniz?"
 
 
+# Kural dosyasındaki belge adları → corpus'taki PDF: tool çıktısındaki "[<belge>, Madde N ...]" atıfları maddenin
+# chunk'ına bağlanır, arayüzde tıklanınca madde açılır (#17). "Geçici Madde" ayrı chunk değil; bağlanmaz.
+RULE_DOCUMENTS = {"BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği": "önlisans lisans eğitim öğretim.pdf",
+                  "BAİBÜ Alan Dışı Seçmeli Ders Yönergesi": "alan dışı seçmeli ders yönergesi.pdf"}
+_RULE_CITATION = re.compile("(" + "|".join(map(re.escape, RULE_DOCUMENTS)) + r"), Madde (\d+)")
+_PDF_REFERENCE = re.compile(r"\(data/([^()]+?\.pdf)\)")  # "Öğretim Planı, 2024-2025 (data/öğretim planı.pdf)"
+
+
+def external_documents(plan, schedule_data):
+    """Corpus dışında olup tool'ların kaynak gösterdiği belgeler: {dosya adı: başlık} (öğretim planı, ders programı).
+    Başlık kaynak metninin kendisi; cevaptaki atıf ("[... (data/x.pdf)]") bu başlıkla eşleşir."""
+    out = {}
+    for text in (plan.get("kaynak", ""), schedule_data.get("kaynak", "")):
+        m = _PDF_REFERENCE.search(text)
+        if m:
+            out[m.group(1)] = text
+    return out
+
+
 def _same_name(a, b):
     return graduation.name_similarity(a, b) == 1.0
 
 
 def make_tools(retriever, plan, transcript, confirmations, today, with_requirements=False, transcript_detail=False,
-               code_runner=None, generated=None):
+               code_runner=None, generated=None, found=None):
     """Bu çağrıya (oturuma) bağlı tool'lar. `transcript` ve `confirmations` closure'da durur; LLM'in görebileceği
     argümanlar değildir. confirm_equivalence `confirmations` sözlüğünü yerinde günceller (çağıran taraf saklar)."""
 
@@ -191,7 +211,10 @@ def make_tools(retriever, plan, transcript, confirmations, today, with_requireme
         Args:
             query: Aranacak konu, Türkçe ve bağımsız bir soru ya da ifade olarak (ör. "staj başvurusu nasıl yapılır").
         """
-        return _format_context(retriever.search(query))
+        docs = retriever.search(query)
+        if found is not None:  # cevabın kaynakları (arayüzde düğme ve atıf linki)
+            found.extend(docs)
+        return _format_context(docs)
 
     def analyze_transcript() -> str:
         """Oturumda yüklü transkripti öğretim planıyla karşılaştırır: şu an geçilen AKTS, bu dönemin dersleri
@@ -352,6 +375,12 @@ class AdvisorAgent:
         self.transcript_detail = prompt_version in TRANSCRIPT_DETAIL_PROMPTS
         # Anlık tool yalnız v7'de ve bir çalıştırıcı verildiyse açılır (testler sahtesini verir).
         self.code_runner = code_runner if prompt_version in CODE_TOOL_PROMPTS else None
+        self.documents = external_documents(plan, schedule.load_schedule())
+        # (belge, madde) -> maddenin ilk chunk'ı: kural atıflarını kaynağa çevirmek için.
+        self._articles = {}
+        for c in getattr(retriever, "chunks", None) or []:
+            if c.metadata.get("madde") is not None:
+                self._articles.setdefault((c.metadata["source"], c.metadata["madde"]), c)
 
     @classmethod
     def from_config(cls, cfg, prompt_version=AGENT_PROMPT_VERSION):
@@ -374,9 +403,11 @@ class AdvisorAgent:
         """
         today = date.today()
         generated = []  # request_new_tool'un ürettiği kodlar (log için)
+        found = []      # cevabın dayandığı chunk'lar: search_regulations sonuçları ve tool çıktılarındaki kural atıfları
+        documents = {}  # corpus dışı kaynak belgeler (öğretim planı, ders programı)
         tools = make_tools(self.retriever, self.plan, transcript, {} if confirmations is None else confirmations, today,
                            with_requirements=self.with_requirements, transcript_detail=self.transcript_detail,
-                           code_runner=self.code_runner, generated=generated)
+                           code_runner=self.code_runner, generated=generated, found=found)
         by_name = {t.name: t for t in tools}
         llm = self.llm.bind_tools(tools)
         system = self.system.format(no_answer=config.NO_ANSWER, today=today.strftime("%d.%m.%Y"),
@@ -390,7 +421,8 @@ class AdvisorAgent:
             messages.append(message)
             if not message.tool_calls:
                 return {"answer": message.text.strip(), "tool_calls": calls, "turns": turn,
-                        "usage": token_usage(usage), "generated_code": generated}
+                        "usage": token_usage(usage), "generated_code": generated,
+                        "sources": _unique_chunks(found), "documents": list(documents.values())}
             for call in message.tool_calls:
                 calls.append({"name": call["name"], "args": call["args"]})
                 if on_tool_call:
@@ -400,6 +432,26 @@ class AdvisorAgent:
                     result = tool.invoke(call["args"]) if tool else f"Bilinmeyen tool: {call['name']}"
                 except Exception as e:  # hatalı argüman vb.: LLM düzeltebilsin diye hata metni geri verilir
                     result = f"Tool hatası: {type(e).__name__}: {e}"
+                self._collect_cited(result, found, documents)
                 messages.append(ToolMessage(content=result, tool_call_id=call["id"], name=call["name"]))
         return {"answer": TURN_LIMIT_ANSWER, "tool_calls": calls, "turns": MAX_TURNS, "usage": token_usage(usage),
-                "generated_code": generated}
+                "generated_code": generated, "sources": _unique_chunks(found), "documents": list(documents.values())}
+
+    def _collect_cited(self, text, found, documents):
+        """Tool çıktısındaki kural atıflarını (maddenin ilk chunk'ı) ve corpus dışı belge referanslarını toplar."""
+        for name, madde in _RULE_CITATION.findall(text):
+            chunk = self._articles.get((RULE_DOCUMENTS[name], int(madde)))
+            if chunk is not None:
+                found.append(chunk)
+        for filename in _PDF_REFERENCE.findall(text):
+            if filename in self.documents:
+                documents[filename] = {"source": filename, "title": self.documents[filename]}
+
+
+def _unique_chunks(docs):
+    seen, out = set(), []
+    for d in docs:
+        if d.metadata["chunk_id"] not in seen:
+            seen.add(d.metadata["chunk_id"])
+            out.append(d)
+    return out

@@ -338,3 +338,52 @@ def test_agent_v7_prompt_adds_only_the_new_tool_rule():
     added = [line for line in v7 if line not in v6]
     assert len(added) == 1 and "request_new_tool" in added[0]
     assert [line for line in v6 if line not in v7] == []
+
+
+# --- Kaynaklar (#16, #17): cevabın dayandığı chunk'lar ve corpus dışı belgeler ---
+
+from langchain_core.documents import Document  # noqa: E402
+
+
+def chunk(chunk_id, source, madde):
+    return Document(page_content=f"MADDE {madde}- ...", metadata={"chunk_id": chunk_id, "source": source,
+                                                                   "title": source[:-4], "page": 1, "madde": madde})
+
+
+CHUNKS = [chunk(1, "önlisans lisans eğitim öğretim.pdf", 35), chunk(2, "önlisans lisans eğitim öğretim.pdf", 35),
+          chunk(3, "alan dışı seçmeli ders yönergesi.pdf", 1), chunk(4, "alan dışı seçmeli ders yönergesi.pdf", 7),
+          chunk(5, "mühendislik fakültesi staj yönergesi.pdf", 10)]
+
+
+class FakeRetriever:
+    chunks = CHUNKS
+
+    def search(self, query):
+        return [CHUNKS[4]]
+
+
+def sources_of(calls, transcript=None, plan=None):
+    llm = ScriptedChatModel([AIMessage("", tool_calls=calls), AIMessage("cevap")])
+    return AdvisorAgent(retriever=FakeRetriever(), llm=llm, plan=plan or graduation.load_plan(),
+                        prompt_version="agent_v6").ask("soru", transcript=transcript)
+
+
+def test_search_results_become_sources():
+    result = sources_of([{"name": "search_regulations", "args": {"query": "staj"}, "id": "1"}])
+    assert [d.metadata["chunk_id"] for d in result["sources"]] == [5]
+
+
+def test_rule_citations_in_tool_output_link_to_the_first_chunk_of_the_article():
+    result = sources_of([{"name": "get_graduation_requirements", "args": {}, "id": "1"}])
+    ids = [d.metadata["chunk_id"] for d in result["sources"]]
+    assert 1 in ids and 2 not in ids and 4 in ids        # Madde 35'in ilk chunk'ı, ADSD Madde 7
+    assert 3 not in ids                                    # "Geçici Madde 1" Madde 1'e bağlanmaz
+    assert len(ids) == len(set(ids))
+
+
+def test_plan_and_schedule_pdfs_become_document_sources():
+    result = sources_of([{"name": "analyze_transcript", "args": {}, "id": "1"},
+                         {"name": "get_offered_electives", "args": {"yuva": "Seçmeli III"}, "id": "2"}],
+                        transcript=SAMPLE)
+    assert {d["source"] for d in result["documents"]} == {"öğretim planı.pdf", "2026_27_Güz_Lisans_v2.pdf"}
+    assert all(d["title"].endswith(f"(data/{d['source']})") for d in result["documents"])
