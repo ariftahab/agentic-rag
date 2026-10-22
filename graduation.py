@@ -157,6 +157,7 @@ def evaluate(transcript, plan, rules=None, confirmations=None):
         "eslesmeler": matches,
         "eslesmeyen": unmatched,
         "secmeli": _electives(passed, passed + ongoing, plan, adsd_required),
+        "bu_donem": [{"ad": c["ad"], "kod": c["kod"], "akts": c["akts"]} for c in ongoing],
         "gno": transcript.get("obs_ozet", {}).get("gno"),
         "kayit_yili": transcript.get("kayit_yili"),
     }
@@ -388,8 +389,9 @@ def report_text(report, plan):
 
 def summary_text(report, plan):
     """analyze_transcript tool'unun LLM'e verdiği kısa özet: önce iki senaryo, sonra kaynaklı kurallar, eksik
-    zorunlular ve açık seçmeli yuvaları. Ders sınıflandırması ve dolu yuvalar dışarıda kalır; tam rapor (~11 bin
-    karakter) verildiğinde LLM "bu dönem geçilirse" senaryosunu ve açık seçmeli AKTS'yi çoğu cevapta atlıyordu."""
+    zorunlular, bu dönemin dersleri ve açık seçmeli yuvaları. Geçilmiş derslerin sınıflandırması ve dolu yuvalar
+    dışarıda kalır; tam rapor (~11 bin karakter) verildiğinde LLM "bu dönem geçilirse" senaryosunu ve açık seçmeli
+    AKTS'yi çoğu cevapta atlıyordu."""
     s = report["secmeli"]
     rules = {r["id"]: r for r in report["kurallar"]}
     total, compulsory = rules["toplam_akts"], rules["zorunlu_dersler"]
@@ -426,6 +428,15 @@ def summary_text(report, plan):
     lines += ["", "EKSİK ZORUNLU DERSLER"]
     lines += [f"- {c['ad']} ({c['yariyil']}. yarıyıl, {c['akts']} AKTS, {STATUS_TEXT[c['durum']]})"
               for c in report["eksik_zorunlu"]]
+    # Bu dönemin dersleri: "bu dönem hangi seçmelileri alıyorum" sorusu için (dolan yuvalar özette yok).
+    kinds = {c["kod"]: c["sinif"] for c in report["siniflandirma"]}
+    slot_of = {name: y["ad"] for y in s["yuvalar"] for name in y["devam_edenler_gecilirse_dersler"]}
+    kind_text = {"zorunlu": "zorunlu", "planda_yok": "planda yok"}
+    lines += ["", "BU DÖNEM ALINAN DERSLER"]
+    for c in report["bu_donem"]:
+        kind = (f"seçmeli: {slot_of.get(c['ad'], 'yuvalar dolu, fazla seçmeli')}" if kinds[c["kod"]] == "secmeli"
+                else kind_text[kinds[c["kod"]]])
+        lines.append(f"- {c['ad']} ({c['akts']} AKTS, {kind})")
     lines += ["", "AÇIK SEÇMELİ YUVALARI"]
     for y in s["yuvalar"]:
         if not y["doldu"]:

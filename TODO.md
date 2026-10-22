@@ -22,10 +22,6 @@ tarihçe git'te. Agentic yolun işleri GitHub issue'larında (spec #1, ticket'la
   2026-10-21, geliştirme için). Yayına almadan önce gizlilik yeniden ele alınacak (#10'un "log'da transkript içeriği
   yok" ölçütü şu an bilerek sağlanmıyor).
 
-- **Sonraki oturumun ilk işi: staj tutarsızlığı.** Kullanıcı web'de transkriptle sorduğu bir soruda agent'ın stajları
-  önce zorunlu ders sayıp sonra "stajlar hariç" dediğini gördü. Soru ve cevap `logs/agent.jsonl`'in son kayıtlarında
-  (2026-10-21 23:10 sonrası; log git dışında, yerelde). "Mezun olmak için neyim eksik?" tek başına 3 koşuda
-  sorunu üretmedi (31 / 40 stajlar dahil); büyük olasılıkla takip sorusunda. Önce log incelenir, sonra bitti tanımı.
 - **Agent modeli:** web ve terminalde agent `gemini-3.5-flash-lite` (`agent.AGENT_LLM_MODEL`, 3.1-flash-lite ile
   50-318 sn sürüyordu, sonra 2-3 sn); klasik RAG production modeli değişmedi. Bir mevzuat sorusu yine 55 sn sürdü:
   adım bazında süre kaydı gerekebilir.

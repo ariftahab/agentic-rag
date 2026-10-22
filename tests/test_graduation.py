@@ -348,6 +348,25 @@ def test_llm_summary_leaves_out_course_classification():
     assert "Matematik I" not in graduation.summary_text(report, PLAN)
 
 
+def test_llm_summary_lists_current_term_courses_with_kind_and_ects():
+    # "Bu dönem hangi seçmelileri alıyorum?" sorusu için: dolan yuvalar özette olmadığından agent cevaplayamıyordu.
+    report = graduation.evaluate(transcript(
+        course(2025, "Bahar", "PDO", "Python ile Derin Öğrenme", 4, "CB"),
+        course(2026, "Güz", "Z4", "Bitirme Projesi I", 5, None),
+        course(2026, "Güz", "YZ", "Yapay Zeka", 4, None),
+        course(2026, "Güz", "SIB", "Siber Güvenlik", 4, None),
+        course(2026, "Güz", "2FI1", "Operating Systems", 5, None),
+    ), ELECTIVE_PLAN)
+    lines = graduation.summary_text(report, ELECTIVE_PLAN).splitlines()
+    start = lines.index("BU DÖNEM ALINAN DERSLER")
+    assert lines[start + 1:start + 5] == [
+        "- Bitirme Projesi I (5 AKTS, zorunlu)",
+        "- Yapay Zeka (4 AKTS, seçmeli: Seçmeli VII)",
+        "- Siber Güvenlik (4 AKTS, seçmeli: Seçmeli VII)",
+        "- Operating Systems (5 AKTS, planda yok)",
+    ]
+
+
 # --- Plan dışı derslerin eşlenmesi (Erasmus, intibak) -----------------------------------------
 # Adlar gerçek transkriptteki Erasmus dersleri ve öğretim planındaki İngilizce adlardır; eşik bunlarla seçildi.
 MATCH_PLAN = {
