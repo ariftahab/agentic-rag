@@ -9,6 +9,7 @@ import json
 import re
 import time
 from datetime import datetime
+from importlib import metadata
 from pathlib import Path
 
 import numpy as np
@@ -280,8 +281,24 @@ def get_embeddings(cfg):
     )
 
 
+# Chunk'ları ve vektörleri belirleyen kütüphaneler: sürümleri değişince (paket yükseltmesi) indeks ve cache yeniden
+# kurulur; yoksa yeni ortam eski ortamın embedding'lerini sessizce kullanır ve yükseltme ölçülemez.
+INDEX_LIBRARIES = ("pdfplumber", "pypdf", "langchain-text-splitters", "sentence-transformers", "transformers", "torch")
+
+
+def library_versions():
+    versions = {}
+    for name in INDEX_LIBRARIES:
+        try:
+            versions[name] = metadata.version(name)
+        except metadata.PackageNotFoundError:
+            versions[name] = None
+    return versions
+
+
 def fingerprint(cfg):
-    """Belge kümesindeki PDF içerikleri + indeks parametreleri + belge ayarları + bu dosyanın kaynak kodu."""
+    """Belge kümesindeki PDF içerikleri + indeks parametreleri + belge ayarları + kütüphane sürümleri + bu dosyanın
+    kaynak kodu."""
     h = hashlib.sha256()
     paths = config.corpus_paths(cfg.corpus)
     for path in paths:
@@ -290,7 +307,7 @@ def fingerprint(cfg):
     # Yalnız bu küme içindeki belgelerin başlık/tür ayarları: DOCUMENTS'a başka bir kümenin belgesi
     # eklenince bu kümenin indeksi gereksiz yere yeniden kurulmasın.
     documents = {p.name: config.DOCUMENTS[p.name] for p in paths if p.name in config.DOCUMENTS}
-    settings = [cfg.index_params(), documents]
+    settings = [cfg.index_params(), documents, library_versions()]
     h.update(json.dumps(settings, sort_keys=True, ensure_ascii=False).encode())
     # Satır sonları normalize edilir: git'in CRLF/LF dönüşümü aynı kod için farklı parmak izi üretmesin.
     h.update(Path(__file__).read_bytes().replace(b"\r\n", b"\n"))
@@ -313,13 +330,13 @@ CACHE_DIR = config.INDEX_ROOT / "_cache"
 def document_key(path, cfg):
     """Belgenin cache anahtarı: chunk'larını ve vektörlerini belirleyen her şey.
 
-    PDF byte'ları, belge ayarı (başlık/tür), indeks parametreleri (chunking, embedding modeli, device...) ve bu dosyanın
-    kaynağı. Kod değişirse chunking de değişmiş olabilir; bu yüzden ingest.py değişince bütün cache geçersizleşir.
+    PDF byte'ları, belge ayarı (başlık/tür), indeks parametreleri (chunking, embedding modeli, device...), kütüphane
+    sürümleri ve bu dosyanın kaynağı. Kod değişirse chunking de değişmiş olabilir; bu yüzden ingest.py değişince bütün cache geçersizleşir.
     """
     h = hashlib.sha256()
     h.update(path.name.encode())
     h.update(path.read_bytes())
-    h.update(json.dumps([cfg.index_params(), config.DOCUMENTS.get(path.name)], sort_keys=True,
+    h.update(json.dumps([cfg.index_params(), config.DOCUMENTS.get(path.name), library_versions()], sort_keys=True,
                         ensure_ascii=False).encode())
     h.update(Path(__file__).read_bytes().replace(b"\r\n", b"\n"))
     return h.hexdigest()[:24]
