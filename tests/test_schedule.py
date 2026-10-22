@@ -102,3 +102,91 @@ def test_llm_text_has_time_section_slot_and_room():
     text = schedule.schedule_text(schedule.lookup(DATA, date(2026, 10, 27), grade=3, courses=["Mikroişlemciler"]), DATA)
     assert "- 13:30-16:15 Mikroişlemciler (A şubesi), 3. sınıf, 327" in text
     assert "- 16:30-18:15 Mikroişlemciler (A şubesi), 3. sınıf, Donanım Laboratuvarı" in text
+
+
+# --- Bu dönem açılan seçmeliler ---------------------------------------------------------------
+# Beklenenler ders programındaki "(Seç III)" gibi yuva etiketlerinden elle okunmuştur (data/2026_27_Güz_Lisans_v2.pdf).
+PLAN = schedule.graduation.load_plan()
+OFFERED = schedule.offered_electives(DATA, PLAN)
+
+
+def slot(name):
+    return next(s for s in OFFERED["yuvalar"] if s["ad"] == name)
+
+
+def test_offered_electives_come_from_the_slot_labels():
+    assert sorted(c["ad"] for c in slot("Seçmeli III")["acilan"]) == [
+        "Kablosuz Algılayıcı Ağlar", "Mühendislik Ekonomisi", "Programlama Dilleri Temelleri", "Web Programlama"]
+    assert sorted(c["ad"] for c in slot("Seçmeli V")["acilan"]) == [
+        "Doğal Dil İşleme", "Makine Öğrenmesine Giriş", "Paralel Hesaplama", "Veri Yönetişimi"]
+    assert sorted(c["ad"] for c in slot("Seçmeli VII")["acilan"]) == [
+        "Bilişim Hukuku", "Nesnelerin İnterneti", "Sensor Ağları", "Veri Madenciliği", "Yapay Sinir Ağları",
+        "Yapay Zeka", "İleri Veri Tabanı Yönetim Sistemleri"]
+
+
+def test_pool_courses_without_a_label_are_not_offered():
+    assert slot("Seçmeli III")["acilmayan"] == []
+    assert sorted(c["ad"] for c in slot("Seçmeli V")["acilmayan"]) == [
+        "Dosya Yapıları", "Gönüllülük Çalışması", "Siber Güvenlik", "Tasarım Desenleri"]
+    assert {"Robotik", "Bulanık Mantık", "E Ticaret"} <= {c["ad"] for c in slot("Seçmeli VII")["acilmayan"]}
+
+
+def test_spring_slots_are_not_offered_this_term():
+    for name in ("Seçmeli IV", "Seçmeli VI", "Seçmeli VIII"):
+        s = slot(name)
+        assert (s["durum"], s["acilan"]) == ("acilmiyor", []), name
+        assert len(s["acilmayan"]) == len(next(p for p in PLAN["secmeli_yuvalar"] if p["ad"] == name)["havuz"])
+
+
+def test_university_wide_slots_are_unknown_not_closed():
+    # Rektörlük ve Alan Dışı seçmelilerini başka birimler açar; bölüm programında olmamaları açılmadıkları demek değil.
+    rek = slot("Rek. Seçmeli I")
+    assert rek["durum"] == "bilinmiyor" and rek["acilmayan"] == []
+    assert [c["ad"] for c in rek["acilan"]] == ["Mühendislik Etiği"]    # bölüm programında etiketsiz geçiyor
+    assert slot("Alan Dışı Seçmeli Ders")["durum"] == "bilinmiyor"
+
+
+def test_offered_course_carries_its_lessons():
+    web = next(c for c in slot("Seçmeli III")["acilan"] if c["ad"] == "Web Programlama")
+    assert (web["kod"], web["akts"], web["sinif"]) == ("1906002192023", 4, 2)
+    assert web["dersler"] and all({"gun", "saatler", "sube", "derslik"} <= set(b) for b in web["dersler"])
+
+
+def test_every_slot_label_names_a_plan_slot_whose_pool_has_the_course():
+    # Veri tutarlılığı: etiket plandaki bir yuvaya, etiketli ders o yuvanın havuzuna karşılık gelmeli.
+    slots = {s["ad"]: {m["kod"] for m in s["havuz"]} for s in PLAN["secmeli_yuvalar"]}
+    labelled = [(schedule.label_slot_name(b["yuva"]), b["kod"]) for b in DATA["dersler"] if b["yuva"]]
+    assert labelled and all(name in slots and code in slots[name] for name, code in labelled)
+
+
+def test_label_slot_name():
+    assert schedule.label_slot_name("Seç III") == "Seçmeli III"
+    assert schedule.label_slot_name("Seç VII") == "Seçmeli VII"
+
+
+@pytest.mark.parametrize("text, expected", [
+    ("Seçmeli III", "Seçmeli III"), ("seç iii", "Seçmeli III"), ("SEÇMELİ 3", "Seçmeli III"), ("3", "Seçmeli III"),
+    ("Seçmeli VII", "Seçmeli VII"), ("rektörlük seçmeli 1", "Rek. Seçmeli I"), ("Seçmeli I", "Rek. Seçmeli I"),
+    ("alan dışı", "Alan Dışı Seçmeli Ders"),
+])
+def test_slot_is_found_by_its_name_or_number(text, expected):
+    assert schedule.find_slot(text, PLAN)["ad"] == expected
+
+
+def test_unknown_slot_is_reported_with_the_slot_names():
+    with pytest.raises(ValueError, match="Seçmeli III"):
+        schedule.find_slot("Seçmeli XII", PLAN)
+
+
+def test_offered_electives_text_for_one_slot():
+    text = schedule.offered_electives_text(OFFERED, "Seçmeli III")
+    assert text.startswith("2026-2027 Güz dönemi, Seçmeli III (3. yarıyıl, 4 AKTS)")
+    assert "- Web Programlama (4 AKTS, 2. sınıf):" in text
+    assert "Seçmeli V " not in text and "Kaynak:" in text
+
+
+def test_offered_electives_text_marks_closed_and_unknown_slots():
+    text = schedule.offered_electives_text(OFFERED)
+    assert "Seçmeli VIII (8. yarıyıl, 20 AKTS): bu dönem açılmıyor" in text
+    assert "Bu dönem açılmayanlar: Dosya Yapıları" in text
+    assert "Rek. Seçmeli I" in text and "bölüm ders programında" in text

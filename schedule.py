@@ -195,6 +195,125 @@ def schedule_text(result, data):
     return "\n".join(lines)
 
 
+# --- Bu dönem açılan seçmeliler ---
+# Programda bölüm seçmelileri "(Seç III)" gibi yuva etiketiyle yazılır; etiket plandaki "Seçmeli III" yuvasıdır.
+# Ders adları programdan okunurken (parse_pdf) plan derslerine ve kodlarına çevrildiği için eşleme kodla yapılır.
+# Rektörlük ve Alan Dışı seçmelilerini başka birimler açar; bölüm programında olmamaları açılmadıkları anlamına
+# gelmediği için bu yuvalar "bilinmiyor" sayılır.
+ROMAN = {"i": 1, "ii": 2, "iii": 3, "iv": 4, "v": 5, "vi": 6, "vii": 7, "viii": 8}
+
+
+def label_slot_name(label):
+    """Programdaki yuva etiketi -> plandaki yuva adı ("Seç III" -> "Seçmeli III")."""
+    return re.sub(r"^Seç\s+", "Seçmeli ", label.strip())
+
+
+def _ascii_words(text):
+    """Büyük/küçük harf ve noktalı/noktasız i farkı olmadan kelimeler ("SEÇMELİ III" -> ["seçmeli", "iii"])."""
+    return re.findall(r"\w+", text.replace("İ", "i").replace("I", "i").replace("ı", "i").lower())
+
+
+def _slot_number(words):
+    return next((int(w) if w.isdigit() else ROMAN[w] for w in words if w.isdigit() or w in ROMAN), None)
+
+
+def find_slot(text, plan):
+    """Kullanıcının yazdığı yuva ("Seçmeli III", "seç 3", "rektörlük seçmeli 1", "alan dışı") -> plan yuvası.
+
+    Numara aynı olan yuvalardan, "rek" yazılmadıysa bölüm yuvası tercih edilir. Bulunamazsa ya da belirsizse
+    yuva adlarını listeleyen ValueError."""
+    slots = sorted(plan.get("secmeli_yuvalar", []), key=lambda s: s["yariyil"])
+    words = _ascii_words(text)
+    exact = [s for s in slots if _ascii_words(s["ad"]) == words]
+    if "alan" in words:
+        found = [s for s in slots if s["tur"] == "alan_disi"]
+    elif exact:
+        found = exact
+    else:
+        number = _slot_number(words)
+        found = [s for s in slots if s["tur"] != "alan_disi" and _slot_number(_ascii_words(s["ad"])) == number]
+        rectorate = any(w.startswith("rek") for w in words)
+        preferred = [s for s in found if (s["tur"] == "rektorluk") == rectorate]
+        found = preferred or found
+    if len(found) != 1:
+        names = ", ".join(s["ad"] for s in slots)
+        raise ValueError(f'Seçmeli yuvası anlaşılamadı: "{text}". Yuvalar: {names}.')
+    return found[0]
+
+
+def _offered_course(course, blocks):
+    return {"kod": course["kod"], "ad": course["ad"], "akts": course["akts"], "sinif": blocks[0]["sinif"],
+            "dersler": [{k: b[k] for k in ("gun", "saatler", "sube", "derslik")} for b in blocks]}
+
+
+def offered_electives(data, plan):
+    """Plandaki her seçmeli yuvası için bu dönem açılan ve açılmayan dersler (LLM'siz).
+
+    Bölüm yuvası: açılanlar programda o yuvanın etiketiyle geçen dersler, açılmayanlar havuzun geri kalanı;
+    durum "acilan_var" ya da "acilmiyor". Rektörlük ve Alan Dışı yuvası: durum "bilinmiyor"; açılanlar yalnız
+    havuzdan bölüm programında geçen dersler (ör. Mühendislik Etiği), açılmayan listesi boş.
+
+    Dönüş: {"donem", "kaynak", "yuvalar": [{"ad", "yariyil", "akts", "tur", "durum", "acilan", "acilmayan"}]};
+    açılan ders: {"kod", "ad", "akts", "sinif", "dersler": [{"gun", "saatler", "sube", "derslik"}]}."""
+    courses = {c["kod"]: c for c in graduation.plan_courses(plan)}
+    labelled, scheduled = {}, {}
+    for b in data["dersler"]:
+        scheduled.setdefault(b["kod"], []).append(b)
+        if b["yuva"]:
+            labelled.setdefault(label_slot_name(b["yuva"]), {}).setdefault(b["kod"], []).append(b)
+    slots = []
+    for slot in sorted(plan.get("secmeli_yuvalar", []), key=lambda s: s["yariyil"]):
+        pool = [m["kod"] for m in slot["havuz"]]
+        if slot["tur"] == "bolum":
+            here = labelled.get(slot["ad"], {})
+            codes = pool + [k for k in here if k not in pool and k in courses]  # havuzda olmayan etiketli ders
+            offered = [_offered_course(courses[k], here[k]) for k in codes if k in here]
+            closed = [{k: m[k] for k in ("kod", "ad", "akts")} for m in slot["havuz"] if m["kod"] not in here]
+            status = "acilan_var" if offered else "acilmiyor"
+        else:
+            offered = [_offered_course(courses[k], scheduled[k]) for k in pool if k in scheduled]
+            closed, status = [], "bilinmiyor"
+        slots.append({"ad": slot["ad"], "yariyil": slot["yariyil"], "akts": slot["akts"], "tur": slot["tur"],
+                      "durum": status, "acilan": offered, "acilmayan": closed})
+    return {"donem": data["donem"], "kaynak": data["kaynak"], "yuvalar": slots}
+
+
+def _lesson_text(lesson):
+    time = f"{lesson['gun']} {lesson['saatler'][0][:5]}-{lesson['saatler'][-1][-5:]}"
+    extra = [f"{lesson['sube']} şubesi"] if lesson["sube"] else []
+    room = ROOMS.get(lesson["derslik"], lesson["derslik"])
+    return f"{time} ({', '.join(extra + [room or 'derslik belirtilmemiş'])})"
+
+
+def _slot_lines(slot):
+    head = f"{slot['ad']} ({slot['yariyil']}. yarıyıl, {slot['akts']} AKTS)"
+    courses = [f"- {c['ad']} ({c['akts']} AKTS, {c['sinif']}. sınıf): " + "; ".join(map(_lesson_text, c["dersler"]))
+               for c in slot["acilan"]]
+    closed = [f"Bu dönem açılmayanlar: {', '.join(c['ad'] for c in slot['acilmayan'])}"] if slot["acilmayan"] else []
+    if slot["durum"] == "acilan_var":
+        return [f"{head}: bu dönem açılanlar:"] + courses + closed
+    if slot["durum"] == "acilmiyor":
+        return [f"{head}: bu dönem açılmıyor; havuzundaki derslerin hiçbiri ders programında yok."] + closed
+    if courses:
+        return ([f"{head}: havuzdaki dersleri rektörlük ya da ilgili birimler açar; bölüm ders programında "
+                 "yer alanlar:"] + courses + ["Diğer havuz derslerinin açılıp açılmadığını ilgili birimden teyit et."])
+    return [f"{head}: havuzdaki dersleri rektörlük ya da ilgili birimler açar, bölüm ders programında yer almıyor; "
+            "açılıp açılmadığını ilgili birimden teyit et."]
+
+
+def offered_electives_text(offered, slot_name=None):
+    """get_offered_electives tool'unun LLM'e verdiği metin: tek yuva (`slot_name`) ya da bütün yuvalar."""
+    if slot_name:
+        slot = next(s for s in offered["yuvalar"] if s["ad"] == slot_name)
+        lines = _slot_lines(slot)
+        lines[0] = f"{offered['donem']} dönemi, {lines[0]}"
+    else:
+        lines = [f"{offered['donem']} dönemi seçmeli yuvaları:"]
+        for slot in offered["yuvalar"]:
+            lines += ["", *_slot_lines(slot)]
+    return "\n".join(lines + ["", f"Kaynak: {offered['kaynak']}"])
+
+
 if __name__ == "__main__":
     written = write_schedule()
     print(f"{len(written['dersler'])} ders bloğu yazıldı: {SCHEDULE_PATH}")
