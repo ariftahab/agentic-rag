@@ -11,6 +11,7 @@ import pytest
 from langchain_core.messages import AIMessage, ToolMessage
 
 import graduation
+import schedule
 from agent import AdvisorAgent, NO_TRANSCRIPT
 
 PLAN = {
@@ -142,11 +143,15 @@ def simulate_reply(args, transcript):
 
 
 def test_simulate_courses_evaluates_each_set_on_the_session_transcript():
+    # Açılan seçmeliler gerçek ders programından; test planının kodları programda olmadığı için hepsi "açılmıyor".
     sets = [["Yapay Zeka", "Yapay Sinir Ağları"], ["Yapay Zeka"]]
     expected = graduation.simulation_text(
         graduation.evaluate(SAMPLE, ELECTIVE_PLAN),
-        [graduation.simulate(SAMPLE, ELECTIVE_PLAN, names) for names in sets], ELECTIVE_PLAN)
-    assert simulate_reply({"course_sets": sets}, SAMPLE) == expected
+        [graduation.simulate(SAMPLE, ELECTIVE_PLAN, names) for names in sets], ELECTIVE_PLAN,
+        offered=schedule.offered_electives(schedule.load_schedule(), ELECTIVE_PLAN))
+    content = simulate_reply({"course_sets": sets}, SAMPLE)
+    assert content == expected
+    assert "Yapay Sinir Ağları bu dönem açılmıyor" in content
 
 
 def test_simulate_courses_with_unknown_course_asks_for_plan_names():
@@ -158,12 +163,36 @@ def test_simulate_courses_without_transcript_asks_for_historical():
     assert simulate_reply({"course_sets": [["Yapay Zeka"]]}, None) == NO_TRANSCRIPT
 
 
-def test_default_prompt_knows_the_what_if_tool():
+def test_default_prompt_knows_the_what_if_and_offered_electives_tools():
     from agent import AGENT_PROMPTS, AGENT_PROMPT_VERSION
 
-    assert AGENT_PROMPT_VERSION == "agent_v2"
+    assert AGENT_PROMPT_VERSION == "agent_v3"
+    assert "simulate_courses" in AGENT_PROMPTS["agent_v3"] and "get_offered_electives" in AGENT_PROMPTS["agent_v3"]
+    assert "get_offered_electives" not in AGENT_PROMPTS["agent_v2"]      # eski sürümler değişmez
     assert "simulate_courses" in AGENT_PROMPTS["agent_v2"] and "UBYS" in AGENT_PROMPTS["agent_v2"]
-    assert "OBS'den" in AGENT_PROMPTS["agent_v1"]          # eski sürüm değişmez
+    assert "OBS'den" in AGENT_PROMPTS["agent_v1"]
+
+
+def offered_reply(args):
+    llm = ScriptedChatModel([
+        AIMessage("", tool_calls=[{"name": "get_offered_electives", "args": args, "id": "1"}]),
+        AIMessage("nihai cevap"),
+    ])
+    AdvisorAgent(retriever=None, llm=llm, plan=graduation.load_plan()).ask("Seçmeli III için ne açılıyor?")
+    return next(m for m in llm.received[-1] if isinstance(m, ToolMessage)).content
+
+
+def test_offered_electives_for_one_slot_without_a_transcript():
+    plan = graduation.load_plan()
+    expected = schedule.offered_electives_text(schedule.offered_electives(schedule.load_schedule(), plan),
+                                               "Seçmeli III")
+    content = offered_reply({"yuva": "seçmeli 3"})
+    assert content == expected and "Web Programlama" in content
+
+
+def test_offered_electives_with_unknown_slot_lists_the_slot_names():
+    content = offered_reply({"yuva": "Seçmeli XII"})
+    assert "Seçmeli XII" in content and "Seçmeli III" in content
 
 
 def schedule_reply(args, transcript):

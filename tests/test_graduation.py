@@ -755,3 +755,68 @@ def test_what_if_text_notes_courses_that_add_no_ects():
     report = graduation.simulate(WHAT_IF_SAMPLE, BIG_PLAN, ["Girişimcilik"])
     text = graduation.simulation_text(graduation.evaluate(WHAT_IF_SAMPLE, BIG_PLAN), [report], BIG_PLAN)
     assert "Girişimcilik zaten geçilmiş" in text
+
+
+# --- What-if ve bu dönem açılan seçmeliler ----------------------------------------------------
+# schedule.offered_electives çıktısının biçimi: bölüm yuvalarında açılan / açılmayan, rektörlük ve alan dışı
+# yuvalarında "bilinmiyor" (onları başka birimler açar).
+def _pool(*codes):
+    names = {"PDO": "Python ile Derin Öğrenme", "SIB": "Siber Güvenlik", "YZ": "Yapay Zeka",
+             "YSA": "Yapay Sinir Ağları"}
+    return [{"kod": c, "ad": names[c], "akts": 4} for c in codes]
+
+
+OFFERED = {"donem": "2026-2027 Güz", "kaynak": "test programı", "yuvalar": [
+    {"ad": "Rek. Seçmeli I", "durum": "bilinmiyor", "acilan": [], "acilmayan": []},
+    {"ad": "Rek. Seçmeli II", "durum": "bilinmiyor", "acilan": [], "acilmayan": []},
+    {"ad": "Seçmeli VI", "durum": "acilmiyor", "acilan": [], "acilmayan": _pool("PDO", "SIB")},
+    {"ad": "Seçmeli VII", "durum": "acilan_var", "acilan": _pool("YZ", "YSA"), "acilmayan": _pool("SIB")},
+    {"ad": "Alan Dışı Seçmeli Ders", "durum": "bilinmiyor", "acilan": [], "acilmayan": []},
+]}
+
+
+def offered_text(names, offered=OFFERED):
+    report = graduation.simulate(WHAT_IF_SAMPLE, BIG_PLAN, names)
+    return graduation.simulation_text(graduation.evaluate(WHAT_IF_SAMPLE, BIG_PLAN), [report], BIG_PLAN,
+                                      offered=offered)
+
+
+def test_what_if_marks_a_course_not_offered_this_term():
+    text = offered_text(["Siber Güvenlik"])
+    assert "- Siber Güvenlik bu dönem açılmıyor (2026-2027 Güz ders programında yok)" in text
+
+
+def test_what_if_does_not_mark_offered_courses():
+    assert "açılmıyor" not in offered_text(["Yapay Sinir Ağları"]).split("Açık kalan")[0]
+
+
+def test_what_if_course_offered_in_one_of_its_slots_counts_as_offered():
+    yuvalar = [{**s, "acilan": _pool("SIB"), "acilmayan": [], "durum": "acilan_var"} if s["ad"] == "Seçmeli VII" else s
+               for s in OFFERED["yuvalar"]]
+    assert "Siber Güvenlik bu dönem açılmıyor" not in offered_text(["Siber Güvenlik"], {**OFFERED, "yuvalar": yuvalar})
+
+
+def test_what_if_university_wide_course_is_unknown_not_closed():
+    text = offered_text(["Diksiyon ve Hitabet"])
+    assert "- Diksiyon ve Hitabet bölüm ders programında yer almıyor" in text
+    assert "Diksiyon ve Hitabet bu dönem açılmıyor" not in text
+
+
+def test_what_if_open_slots_list_only_offered_courses_not_yet_taken():
+    # Seçmeli VII açık kalıyor (Yapay Zeka bu dönem alınıyor, 4 / 8): önerilebilecek tek açılan ders Yapay Sinir Ağları.
+    text = offered_text(["Diksiyon ve Hitabet"])
+    assert "Açık kalan seçmeli yuvaları: Seçmeli VII (8 AKTS; bu dönem açılanlar: Yapay Sinir Ağları)" in text
+    assert "yalnız bu dönem açılan" in text and "Kaynak: test programı" in text
+
+
+def test_what_if_open_slot_that_is_not_offered_says_so():
+    yuvalar = [{**s, "acilan": [], "acilmayan": _pool("YZ", "YSA"), "durum": "acilmiyor"} if s["ad"] == "Seçmeli VII"
+               else s for s in OFFERED["yuvalar"]]
+    text = offered_text(["Diksiyon ve Hitabet"], {**OFFERED, "yuvalar": yuvalar})
+    assert "Seçmeli VII (8 AKTS; bu dönem açılmıyor)" in text
+
+
+def test_what_if_without_offered_electives_is_unchanged():
+    assert "açılmıyor" not in graduation.simulation_text(
+        graduation.evaluate(WHAT_IF_SAMPLE, BIG_PLAN), [graduation.simulate(WHAT_IF_SAMPLE, BIG_PLAN, ["Siber Güvenlik"])],
+        BIG_PLAN)

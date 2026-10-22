@@ -513,10 +513,25 @@ def _if_passed_line(report):
             f"AKTS açık); GNO {report['gno']} (transkriptteki güncel değer)")
 
 
-def simulation_text(base, reports, plan):
+def _offer_status(offered):
+    """Havuz dersi kodu -> "acilan" | "acilmayan" (rektörlük ve alan dışı dersleri, programda yoksa, burada yok).
+    İki havuzda bulunan ders, birinde açılıyorsa açılıyor sayılır."""
+    status = {c["kod"]: "acilmayan" for slot in offered["yuvalar"] for c in slot["acilmayan"]}
+    status.update({c["kod"]: "acilan" for slot in offered["yuvalar"] for c in slot["acilan"]})
+    return status
+
+
+def simulation_text(base, reports, plan, offered=None):
     """simulate_courses tool'unun LLM'e verdiği metin: önce varsayımsal ders olmadan "bu dönem geçilirse" durumu
     (`base` = evaluate raporu), sonra her küme (`reports` = simulate raporları) için sonuç, karşılanmayan şartlar
-    (kaynaklı), eksik kalan zorunlular ve açık seçmeli yuvaları. Seçim danışmana bırakılır."""
+    (kaynaklı), eksik kalan zorunlular ve açık seçmeli yuvaları. Seçim danışmana bırakılır.
+
+    `offered` (schedule.offered_electives çıktısı) verilirse bu dönem açılmayan varsayımsal seçmeliler işaretlenir,
+    rektörlük ve alan dışı seçmelileri "bölüm programında yok" diye belirtilir ve açık yuvaların yanında yalnız bu
+    dönem açılan, henüz alınmamış dersler listelenir."""
+    status = _offer_status(offered) if offered else {}
+    unknown_slots = {s["ad"] for s in offered["yuvalar"] if s["durum"] == "bilinmiyor"} if offered else set()
+    pools = {s["ad"]: s for s in plan.get("secmeli_yuvalar", [])}
     met = {True: "karşılanıyor", False: "karşılanmıyor"}
     lines = [
         f"Öğretim planı: {plan['kaynak']}",
@@ -536,6 +551,13 @@ def simulation_text(base, reports, plan):
                 lines.append(f"- {c['ad']} zaten geçilmiş; ek AKTS getirmez.")
             elif c["durum"] == "devam_ediyor":
                 lines.append(f"- {c['ad']} bu dönem zaten alınıyor; ek AKTS getirmez.")
+            elif status.get(c["kod"]) == "acilmayan":
+                lines.append(f"- {c['ad']} bu dönem açılmıyor ({offered['donem']} ders programında yok); "
+                             "bu dönem alınamaz.")
+            elif offered and c["kod"] not in status and any(
+                    c["kod"] in {m["kod"] for m in pools[name]["havuz"]} for name in unknown_slots):
+                lines.append(f"- {c['ad']} bölüm ders programında yer almıyor (rektörlük ya da alan dışı seçmelisi); "
+                             "açılıp açılmadığı ilgili birimden teyit edilmeli.")
         for r in report["kurallar"]:
             if not r["devam_edenler_gecilirse_karsilandi"]:
                 sources = "; ".join(f"{k['belge']}, {k['madde']}" for k in r["kaynak"])
@@ -544,13 +566,30 @@ def simulation_text(base, reports, plan):
         missing = [c["ad"] for c in report["eksik_zorunlu"] if c["durum"] != "devam_ediyor"]
         if missing:
             lines.append(f"- Eksik kalan zorunlu dersler: {', '.join(missing)}")
-        empty = [f"{y['ad']} ({y['akts']} AKTS)" for y in report["secmeli"]["yuvalar"]
-                 if y["zorunlu"] and not y["devam_edenler_gecilirse_doldu"]]
+        taken = {c["kod"] for c in report["siniflandirma"]}
+        empty = [f"{y['ad']} ({y['akts']} AKTS{_offered_note(y['ad'], offered, taken)})"
+                 for y in report["secmeli"]["yuvalar"] if y["zorunlu"] and not y["devam_edenler_gecilirse_doldu"]]
         if empty:
             lines.append(f"- Açık kalan seçmeli yuvaları: {', '.join(empty)}")
+    if offered:
+        lines += ["", f"Ders önerirken yalnız bu dönem açılan dersleri öner. Kaynak: {offered['kaynak']}"]
     lines += ["", "Cevapta her kümenin sonucunu ve hesabını aktar; hangi kümenin seçileceği danışman hocanın "
                   "kararıdır, soranı danışman hocasına yönlendir."]
     return "\n".join(lines)
+
+
+def _offered_note(slot_name, offered, taken):
+    """Açık yuvanın yanına: bu dönem açılan ve transkriptte (varsayımsal dersler dahil) olmayan dersler."""
+    slot = next((s for s in offered["yuvalar"] if s["ad"] == slot_name), None) if offered else None
+    if slot is None:
+        return ""
+    names = ", ".join(c["ad"] for c in slot["acilan"] if c["kod"] not in taken)
+    if slot["durum"] == "bilinmiyor":
+        return (f"; bölüm ders programında: {names}; diğerleri için ilgili birime sor" if names
+                else "; bölüm ders programında yok, ilgili birime sor")
+    if slot["durum"] == "acilmiyor":
+        return "; bu dönem açılmıyor"
+    return f"; bu dönem açılanlar: {names}" if names else "; bu dönem açılan dersler zaten alınmış"
 
 
 if __name__ == "__main__":
