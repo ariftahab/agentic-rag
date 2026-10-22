@@ -170,6 +170,21 @@ def test_agent_log_keeps_question_answer_and_tool_calls(tmp_path):
     assert record["hata"] is None and record["latency_ms"] is not None
 
 
+def test_agent_ask_without_transcript_reaches_tools_and_is_logged(tmp_path):
+    # Web sohbeti transkript yokken de agent'a gider (#13): ders programı gibi tool'lar transkriptsiz çalışır.
+    client = make_client(tmp_path, [
+        AIMessage("", tool_calls=[{"name": "get_course_schedule", "id": "1", "args": {"gun": "Pazartesi", "sinif": 2}}]),
+        AIMessage(ANSWER),
+    ])
+    res = client.post("/agent/ask", json={"question": "Pazartesi 2. sınıfın dersleri?"})
+    assert res.status_code == 200
+    body = res.json()
+    assert body["answer"] == ANSWER
+    assert [c["name"] for c in body["tool_calls"]] == ["get_course_schedule"]
+    record = json.loads(log_text(tmp_path))
+    assert record["transkript"] is False and record["tool_lar"] == ["get_course_schedule"]
+
+
 def test_agent_error_is_logged_by_type_only(tmp_path):
     client = make_client(tmp_path, [])  # hazır mesaj yok: LLM çağrısı IndexError fırlatır
     res = client.post("/agent/ask", json={"question": QUESTION, "transcript": SAMPLE})

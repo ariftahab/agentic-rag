@@ -131,25 +131,17 @@ async function ask(question) {
   addUserMessage(question);
   const typing = addEl("typing", "Cevap hazırlanıyor");
   try {
-    let body;
-    if (state.transcript) {
-      // Transkript yüklüyse danışmanlık agent'ı (tool calling); değilse eskisi gibi mevzuat sohbeti (/ask).
-      body = await api("/agent/ask", {
-        method: "POST",
-        body: { question, history: state.history, session_id: state.sessionId,
-                transcript: state.transcript, confirmations: state.confirmations },
-      });
-      state.confirmations = body.confirmations;
-      typing.remove();
-      addAgentMessage(body);
-    } else {
-      body = await api("/ask", {
-        method: "POST",
-        body: { question, history: state.history, session_id: state.sessionId },
-      });
-      typing.remove();
-      addBotMessage(body);
-    }
+    // Her soru danışmanlık agent'ına gider; transkript yoksa null gider ve agent bunu "yüklü değil" olarak görür.
+    // Ders programı, açılan seçmeliler ve mevzuat tool'ları transkriptsiz de çalışır. Klasik /ask (addBotMessage)
+    // deney ve geriye uyumluluk için sunucuda duruyor, arayüz kullanmıyor.
+    const body = await api("/agent/ask", {
+      method: "POST",
+      body: { question, history: state.history, session_id: state.sessionId,
+              transcript: state.transcript, confirmations: state.confirmations },
+    });
+    state.confirmations = body.confirmations;
+    typing.remove();
+    addAgentMessage(body);
     state.history.push({ role: "user", content: question }, { role: "assistant", content: body.answer });
   } catch (e) {
     // Hata ekranda görünür ama geçmişe eklenmez: sonraki soruların rewrite'ını bozmasın.
