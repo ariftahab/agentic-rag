@@ -1,15 +1,16 @@
 # TODO
 
 Yalnız açık işler, sırasıyla. Yapılanların sonuçları config `notlar` alanlarında, `experiments/experiment_log.md`'de;
-tarihçe git'te. Agentic yolun işleri GitHub issue'larında (spec #1; açık ticket'lar #13-#15).
+tarihçe git'te. Agentic yolun işleri GitHub issue'larında (spec #1; açık ticket'lar #14-#17).
 
 ## Kaldığımız yer (2026-10-22 akşam)
 
 Durum: agent varsayılanı `agent_v4` (EXP-003); deneyler EXP-002 (agent baseline) ve EXP-003 koşuldu, tool metriği
 ikiye ayrıldı (gerekli tool, yan etkisiz). Spec #1 hikâye hikâye kontrol edildi; boşluklar:
 
-- **Sonraki iş, sırayla:** #13 web'de transkriptsiz sorular agent'a gitsin → #14 `get_graduation_requirements`
-  tool'u (prompt değişikliği; önce alt küme teşhisi) → #15 model karşılaştırması deneyi (onayla).
+- **Sonraki iş, sırayla:** #14 `get_graduation_requirements` tool'u (prompt değişikliği; önce alt küme teşhisi) →
+  #15 model karşılaştırması deneyi (onayla) → #16 agent cevaplarında kaynak, 👍/👎 ve /admin → #17 tıklanabilir atıflar.
+  #13 kapandı (2026-10-22): web sohbeti transkriptsiz de agent'a gidiyor.
 - **Spec #1 metnini güncelle:** seçmeliler yuva bazlı (her yuva kendi havuzundan, kendi AKTS'si kadar; kullanıcı kararı
   2026-10-22), tool sayısı 6 (+ `confirm_equivalence`, `get_offered_electives`), transkript kaynağı UBYS.
 - **Kalan agent hataları (EXP-003):** "Alan dışı seçmeli almadım, engel olur mu?" yalnız mevzuat arıyor (2023 girişliye
