@@ -15,6 +15,8 @@ langchain-community==0.4.2
 langchain-text-splitters==1.1.3
 langchain-huggingface==1.2.3
 langchain-google-genai==4.4.2
+# Anlık tool (codeact.py, agent_v7): Claude Haiku + sunucu tarafı code_execution; .env'de ANTHROPIC_API_KEY.
+anthropic==2.1.0
 # UI / API (app/).
 fastapi==0.159.1
 uvicorn[standard]==0.54.0
