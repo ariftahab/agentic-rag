@@ -260,3 +260,24 @@ def test_agent_v5_prompt_adds_only_the_requirements_rule():
     added = [line for line in v5 if line not in v4]
     assert len(added) == 1 and "get_graduation_requirements" in added[0]
     assert [line for line in v4 if line not in v5] == []
+
+
+def tool_reply(prompt_version, name, transcript):
+    llm = ScriptedChatModel([AIMessage("", tool_calls=[{"name": name, "args": {}, "id": "1"}]), AIMessage("cevap")])
+    AdvisorAgent(retriever=None, llm=llm, plan=graduation.load_plan(), prompt_version=prompt_version).ask(
+        "Alan dışı seçmeli ders almam gerekiyor mu?", transcript=transcript)
+    return next(m for m in llm.received[-1] if isinstance(m, ToolMessage)).content
+
+
+def test_agent_v6_states_enrollment_year_and_redirects_personal_questions():
+    from agent import AGENT_PROMPTS
+    assert AGENT_PROMPTS["agent_v6"] == AGENT_PROMPTS["agent_v5"]           # fark yalnız tool çıktılarında
+    assert "Kayıt yılı: 2023-2024" in tool_reply("agent_v6", "analyze_transcript", SAMPLE)
+    assert "analyze_transcript tool'unu çağır" in tool_reply("agent_v6", "get_graduation_requirements", SAMPLE)
+    assert "analyze_transcript tool'unu çağır" not in tool_reply("agent_v6", "get_graduation_requirements", None)
+
+
+def test_agent_v5_tool_outputs_are_unchanged():
+    # EXP-004 aynı tool çıktılarıyla tekrar üretilebilsin.
+    assert "Kayıt yılı" not in tool_reply("agent_v5", "analyze_transcript", SAMPLE)
+    assert "analyze_transcript tool'unu çağır" not in tool_reply("agent_v5", "get_graduation_requirements", SAMPLE)

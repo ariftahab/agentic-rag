@@ -123,11 +123,17 @@ Kurallar:
 - Kısa, net ve Türkçe cevap ver."""
 
 AGENT_PROMPTS = {"agent_v1": _AGENT_V1_SYSTEM, "agent_v2": _AGENT_V2_SYSTEM, "agent_v3": _AGENT_V3_SYSTEM,
-                 "agent_v4": _AGENT_V4_SYSTEM, "agent_v5": _AGENT_V5_SYSTEM}
+                 "agent_v4": _AGENT_V4_SYSTEM, "agent_v5": _AGENT_V5_SYSTEM,
+                 # agent_v6: prompt v5 ile aynı; değişen tool çıktıları (TRANSCRIPT_DETAIL_PROMPTS). EXP-004'te transkript
+                 # yüklüyken kişisel ADSD sorusu get_graduation_requirements'a gitti ve kayıt yılı bilinmedi.
+                 "agent_v6": _AGENT_V5_SYSTEM}
 AGENT_PROMPT_VERSION = "agent_v4"
 # Sonradan eklenen tool yalnız onu anlatan sürümlerde açılır: eski sürümlerin deneyleri (EXP-002, EXP-003) aynı tool
 # listesiyle tekrar üretilebilsin.
-REQUIREMENTS_TOOL_PROMPTS = {"agent_v5"}
+REQUIREMENTS_TOOL_PROMPTS = {"agent_v5", "agent_v6"}
+# Bu sürümlerde analyze_transcript kayıt yılını yazar, get_graduation_requirements transkript yüklüyse kişisel
+# sorular için analyze_transcript'e yönlendirir (EXP-004 aynı çıktılarla tekrar üretilebilsin).
+TRANSCRIPT_DETAIL_PROMPTS = {"agent_v6"}
 
 # agent_v4'ten itibaren prompt'taki "Oturum durumu" satırı (eski sürümlerde yer tutucu yok, format onu yok sayar).
 TRANSCRIPT_LOADED = ("kullanıcının tarihsel transkripti bu oturumda yüklü; analyze_transcript, simulate_courses ve "
@@ -143,7 +149,7 @@ def _same_name(a, b):
     return graduation.name_similarity(a, b) == 1.0
 
 
-def make_tools(retriever, plan, transcript, confirmations, today, with_requirements=False):
+def make_tools(retriever, plan, transcript, confirmations, today, with_requirements=False, transcript_detail=False):
     """Bu çağrıya (oturuma) bağlı tool'lar. `transcript` ve `confirmations` closure'da durur; LLM'in görebileceği
     argümanlar değildir. confirm_equivalence `confirmations` sözlüğünü yerinde günceller (çağıran taraf saklar)."""
 
@@ -161,7 +167,8 @@ def make_tools(retriever, plan, transcript, confirmations, today, with_requireme
         geçilirse ulaşılacak AKTS ve eksik zorunlu dersler (durumlarıyla). Transkript yüklenmemişse bunu bildirir."""
         if transcript is None:
             return NO_TRANSCRIPT
-        return graduation.summary_text(graduation.evaluate(transcript, plan, confirmations=confirmations), plan)
+        return graduation.summary_text(graduation.evaluate(transcript, plan, confirmations=confirmations), plan,
+                                       enrollment=transcript_detail)
 
     def confirm_equivalence(transcript_course: str, plan_course: str) -> str:
         """Kullanıcının teyidini kaydeder: transkriptteki plan dışı bir dersin (Erasmus, intibak) öğretim planındaki
@@ -261,7 +268,11 @@ def make_tools(retriever, plan, transcript, confirmations, today, with_requireme
         """Bölümün mezuniyet şartlarını transkript olmadan döndürür: öğretim planının toplam AKTS'si, zorunlu dersler,
         stajlar, seçmeli yuvaları ve AKTS'leri, Alan Dışı Seçmeli Ders ve kayıt yılı istisnası, GNO alt sınırı ve
         geçer notlar; her kural kaynağıyla (belge ve madde)."""
-        return graduation.requirements_text(graduation.graduation_requirements(plan))
+        text = graduation.requirements_text(graduation.graduation_requirements(plan))
+        if transcript_detail and transcript is not None:
+            text += ("\n\nBu oturumda transkript yüklü. Soran kendi durumunu soruyorsa (ör. bu şart bana uygulanıyor mu, "
+                     "eksiğim var mı) analyze_transcript tool'unu çağır ve cevabı kayıt yılına ve rapora göre ver.")
+        return text
 
     tools = (search_regulations, analyze_transcript, confirm_equivalence, simulate_courses, get_offered_electives,
              get_course_schedule) + ((get_graduation_requirements,) if with_requirements else ())
@@ -277,6 +288,7 @@ class AdvisorAgent:
         self.plan = plan
         self.system = AGENT_PROMPTS[prompt_version]
         self.with_requirements = prompt_version in REQUIREMENTS_TOOL_PROMPTS
+        self.transcript_detail = prompt_version in TRANSCRIPT_DETAIL_PROMPTS
 
     @classmethod
     def from_config(cls, cfg):
@@ -297,7 +309,7 @@ class AdvisorAgent:
         """
         today = date.today()
         tools = make_tools(self.retriever, self.plan, transcript, {} if confirmations is None else confirmations, today,
-                           with_requirements=self.with_requirements)
+                           with_requirements=self.with_requirements, transcript_detail=self.transcript_detail)
         by_name = {t.name: t for t in tools}
         llm = self.llm.bind_tools(tools)
         system = self.system.format(no_answer=config.NO_ANSWER, today=today.strftime("%d.%m.%Y"),
