@@ -43,6 +43,8 @@ Başlangıç 2026-10-21: production EXP-001 = campus-chatbot retrieval hattı, c
        aynı (~18-20 sn), yalnız reranker yüklemesi 2,7 → 5 sn (transformers 5'in yeni ağırlık yükleme yolu). Önceki
        16,1 / 47,8 sn ölçümleri kurulumdan hemen sonraki soğuk açılışlardı. Yükseltme
        retrieval davranışını değiştirebileceği için deney olarak (yeni index fingerprint'i, sonuçların karşılaştırması).
+       **Karar (2026-10-22):** #7 ve #11 bitince, ilk soru seti deneyinden (#12) önce yükseltilir; bütün tez
+       deneyleri aynı ortamda koşsun diye. Yükseltmeyle `agent.py`'deki thought signature yaması kaldırılır.
 4. [ ] **Soru seti v1** — danışmanlık + transkript senaryoları (#12); baseline EXP-001 ve agent bununla koşulur.
 5. [ ] **2021 ders içerikleri corpus v2** — soru seti hazır olunca deney olarak.
 6. [ ] **Lisansüstü belgeleri** — şimdilik corpus'ta (kullanıcı kararı 2026-10-21).
