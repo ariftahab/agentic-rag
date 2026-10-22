@@ -1,23 +1,24 @@
-# Doğrudan kullanılan paketler (Python 3.11 ile test edildi).
+# Doğrudan kullanılan paketler (Python 3.11 ile test edildi; 2026-10-22 yükseltmesi).
 # Alt bağımlılıkları pip kendisi çözer; tam liste için: pip freeze
 # GPU (NVIDIA) için torch'u önce CUDA build'iyle kurun, yoksa pip CPU sürümünü indirir:
-#   pip install torch==2.9.0 --index-url https://download.pytorch.org/whl/cu128
-python-dotenv==1.2.1
-pdfplumber==0.11.9
-faiss-cpu==1.12.0
+#   pip install torch==2.11.0 --index-url https://download.pytorch.org/whl/cu128
+python-dotenv==1.2.4
+pdfplumber==0.11.10
+pypdf==6.21.2
+faiss-cpu==1.15.1
 rank-bm25==0.2.2
-sentence-transformers==5.1.2
-langchain-core==1.0.4
-langchain-community==0.4.1
-langchain-text-splitters==1.0.0
-langchain-huggingface==1.0.1
-langchain-google-genai==3.0.1
+sentence-transformers==6.2.0
+transformers==5.20.2
+huggingface-hub==1.33.0
+langchain-core==1.6.13
+langchain-community==0.4.2
+langchain-text-splitters==1.1.3
+langchain-huggingface==1.2.3
+langchain-google-genai==4.4.2
 # UI / API (app/).
-fastapi==0.142.2
+fastapi==0.159.1
 uvicorn[standard]==0.54.0
 httpx==0.28.1
 # Test. cosmic-ray: mutasyon testi (cosmic-ray.toml), Windows'ta çalışan araç (mutmut yalnız WSL).
 pytest==9.1.1
-cosmic-ray==8.4.6
-# transformers huggingface-hub<1.0 istiyor; hub 1.x/2.x embedding modelinin yüklenmesini bozuyor.
-huggingface-hub==0.36.0
+cosmic-ray==8.7.0

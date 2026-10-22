@@ -9,10 +9,8 @@ ve sonucu cümleye döker. RagBot gibi stateless: geçmiş ve parse edilmiş tra
 verilir. Transkript LLM'in argümanı değildir; oturumda durur ve analyze_transcript onu kendisi okur.
 LLM'e transkriptin kendisi değil, yalnız değerlendirme raporu gider (kişisel bilgi zaten parser'da ayıklanır).
 """
-import base64
 from datetime import date
 
-import langchain_google_genai.chat_models as _genai_chat
 from langchain_core.messages import SystemMessage, HumanMessage, ToolMessage
 from langchain_core.tools import StructuredTool
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -29,34 +27,6 @@ REQUEST_TIMEOUT_S = 180  # tek bir LLM isteği için en fazla bekleme
 # cevapları 50-318 sn sürdü; 3.5-flash-lite aynı sorularda 3-5 sn. Karşılaştırma soru seti hazır olunca deney olarak.
 AGENT_LLM_MODEL = "gemini-3.5-flash-lite"
 
-
-# --- langchain-google-genai 3.0.x düzeltmesi: thought signature ---
-# Gemini 3 modelleri her tool isteğine (function call) bir "thought signature" ekler; tool sonucu geri verilirken
-# bu imzanın aynen geri gönderilmesi zorunludur, yoksa API 400 döner. langchain-google-genai 3.0.1 (ve 3.0.3) cevapta
-# yalnız tool isteği varsa imzayı atıyor; ayrıca geri gönderirken imzayı content listesindeki sıraya göre
-# tool isteğiyle eşliyor. Bu sarmalayıcı, tool isteği içeren cevaplarda content'i "i. tool isteğinin imzası i.
-# sırada" olacak şekilde yeniden kurar. Tool isteği olmayan cevaplara (RagBot'un bütün cevapları) dokunmaz.
-# Paket 4.x'e yükseltilince (langchain-core sabitlemesi gözden geçirilerek) kaldırılabilir.
-def _keep_function_call_signatures(parse):
-    def wrapper(candidate, *args, **kwargs):
-        message = parse(candidate, *args, **kwargs)
-        if not message.tool_calls or kwargs.get("streaming"):
-            return message
-        blocks = []
-        for part in candidate.content.parts:
-            if not part.function_call:
-                continue
-            signature = getattr(part, "thought_signature", None)
-            blocks.append({"type": "function_call_signature", "signature": base64.b64encode(signature).decode("ascii")}
-                          if signature else {"type": "text", "text": ""})
-        message.content = blocks
-        return message
-    return wrapper
-
-
-if not getattr(_genai_chat._parse_response_candidate, "_keeps_signatures", False):
-    _genai_chat._parse_response_candidate = _keep_function_call_signatures(_genai_chat._parse_response_candidate)
-    _genai_chat._parse_response_candidate._keeps_signatures = True
 
 # --- System prompt'lar ---
 # Sürümler silinmez; değişiklik yeni anahtarla eklenir (rag.PROMPTS gibi). Kurallar olumlu yazılır.
