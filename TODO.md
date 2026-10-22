@@ -22,7 +22,15 @@ ikiye ayrıldı (gerekli tool, yan etkisiz). Spec #1 hikâye hikâye kontrol edi
   (analyze_transcript, "1,97 < 2,00", EXP-003 ile aynı); alan dışı seçmeli sorusu teşhis 1 ile aynı (kural doğru,
   transkripte bakılmıyor; EXP-003'ten beri açık sorun). Not: setteki beklenen tool mezuniyet şartları sorusunda
   search_regulations olduğu için gerekli tool metriği bu iyileşmeyi hata sayar; tam koşuda anlamca okuma esas.
-  Tam koşu (EXP-004) kullanıcı kararını bekliyor.
+  EXP-004 koşuldu (answer_acc 0,78 → 0,85; transkript yüklüyken "Alan dışı seçmeli ders almam gerekiyor mu?"
+  kötüleşti); #14 kapandı, varsayılan agent_v4'te kaldı (kullanıcı kararı 2026-10-22).
+- **ADSD yönlendirme teşhisi 1 (2026-10-22, commit'siz, working tree'de `agent.py`):** get_graduation_requirements
+  sonucuna transkript yüklüyse "kendi durumunu soruyorsa analyze_transcript çağır" satırı eklendi. Mezuniyet
+  şartları ve GNO soruları değişmedi (doğru). "Alan dışı seçmeli ders almam gerekiyor mu?" (2024 girişli) artık
+  analyze_transcript çağırıyor ve dersin alınmadığını söylüyor, ama kayıt yılını bilmediği için "kayıt yılınızı
+  kontrol edin" diyor: analyze_transcript raporunda öğrencinin kayıt yılı yazmıyor (yalnız kuralın sonucu).
+  "Alan dışı seçmeli almadım, engel olur mu?" (2023 girişli) yine analyze_transcript çağırmadı. Kısmi iyileşme;
+  ikinci deneme kullanıcı kararını bekliyor.
 - **Spec #1 metnini güncelle:** seçmeliler yuva bazlı (her yuva kendi havuzundan, kendi AKTS'si kadar; kullanıcı kararı
   2026-10-22), tool sayısı 6 (+ `confirm_equivalence`, `get_offered_electives`), transkript kaynağı UBYS.
 - **Kalan agent hataları (EXP-003):** "Alan dışı seçmeli almadım, engel olur mu?" yalnız mevzuat arıyor (2023 girişliye
