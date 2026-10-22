@@ -67,7 +67,7 @@ class FakeBot:
 
 
 def make_client(tmp_path, replies=(), **agent_kwargs):
-    agent = AdvisorAgent(retriever=None, llm=ScriptedChatModel(replies), plan=PLAN, **agent_kwargs)
+    agent = AdvisorAgent(llm=ScriptedChatModel(replies), plan=PLAN, **{"retriever": None, **agent_kwargs})
     service = ChatService(FakeBot(), "EXP-TEST", log_dir=tmp_path, agent=agent)
     app.dependency_overrides[get_service] = lambda: service
     return TestClient(app)
@@ -254,3 +254,69 @@ def test_classic_ask_is_unchanged(tmp_path):
     assert res.json()["answer"] == "mevzuat cevabı"
     record = json.loads((tmp_path / "sohbet.jsonl").read_text(encoding="utf-8"))
     assert record["soru"] == "Devamsızlık sınırı nedir?"
+
+
+# --- Agent cevaplarında kaynak, geri bildirim ve yönetici kaydı (#16, #17) ---
+
+from langchain_core.documents import Document  # noqa: E402
+
+STAJ = Document(page_content="MADDE 10- (1) ... 40 iş günü ...",
+                metadata={"chunk_id": 7, "source": "mühendislik fakültesi staj yönergesi.pdf",
+                          "title": "mühendislik fakültesi staj yönergesi", "page": 3, "madde": 10})
+STAJ_RETRIEVER = SimpleNamespace(chunks=[STAJ], search=lambda query: [STAJ])
+
+
+def staj_client(tmp_path):
+    return make_client(tmp_path, [
+        AIMessage("", tool_calls=[{"name": "search_regulations", "id": "1", "args": {"query": "staj süresi"}}]),
+        AIMessage("Zorunlu staj 40 iş günüdür [mühendislik fakültesi staj yönergesi, Madde 10]."),
+    ], retriever=STAJ_RETRIEVER)
+
+
+def test_agent_answer_carries_its_sources_and_logs_them(tmp_path):
+    body = staj_client(tmp_path).post("/agent/ask", json={"question": "Zorunlu staj kaç iş günü?"}).json()
+    assert body["sources"] == [{"chunk_id": 7, "label": "mühendislik fakültesi staj yönergesi, Madde 10, s. 3",
+                                "source": "mühendislik fakültesi staj yönergesi.pdf",
+                                "title": "mühendislik fakültesi staj yönergesi", "page": 3, "madde": 10}]
+    assert json.loads(log_text(tmp_path))["kaynaklar"][0]["chunk_id"] == 7
+
+
+def test_agent_answer_accepts_feedback(tmp_path):
+    client = staj_client(tmp_path)
+    answer_id = client.post("/agent/ask", json={"question": "Zorunlu staj kaç iş günü?"}).json()["id"]
+    assert client.post("/feedback", json={"id": answer_id, "rating": 1}).status_code == 201
+
+
+def test_admin_lists_agent_answers_with_agent_error_stages(tmp_path):
+    client = staj_client(tmp_path)
+    answer_id = client.post("/agent/ask", json={"question": "Zorunlu staj kaç iş günü?"}).json()["id"]
+    service = app.dependency_overrides[get_service]()
+    [row] = service.records()
+    assert (row["id"], row["tur"], row["tool_lar"]) == (answer_id, "agent", ["search_regulations"])
+    service.evaluate(answer_id, "yanlis", "evet", "tool_secimi")
+    with pytest.raises(ValueError):
+        service.evaluate(answer_id, "yanlis", "evet", "rewrite")      # agent'ta rewrite aşaması yok
+    assert service.summary()["agent"] == 1
+    service.delete(answer_id)
+    assert service.records() == [] and log_text(tmp_path).count(answer_id) == 0
+
+
+def test_plan_and_schedule_pdfs_are_served_only_as_agent_documents(tmp_path):
+    client = make_client(tmp_path)
+    service = app.dependency_overrides[get_service]()
+    service.agent.documents = {"öğretim planı.pdf": "Öğretim Planı (data/öğretim planı.pdf)"}
+    assert service.pdf_path("öğretim planı.pdf").name == "öğretim planı.pdf"
+    with pytest.raises(KeyError):
+        service.pdf_path("../.env")
+
+
+
+def test_admin_skips_early_agent_records_without_question(tmp_path):
+    # 2026-10-21'deki ilk agent kayıtları yalnız metadata tutuyordu (soru ve cevap yok); liste bunlarla bozulmasın.
+    old = {"id": "eski", "zaman": "2026-10-21T18:00:00", "oturum": None, "transkript": True, "gecmis_uzunlugu": 0,
+           "tool_lar": ["analyze_transcript"], "tur": 2, "config": "EXP-001", "commit": "abc", "latency_ms": 900,
+           "hata": None}
+    (tmp_path / "agent.jsonl").write_text(json.dumps(old) + "\n", encoding="utf-8")
+    make_client(tmp_path)
+    service = app.dependency_overrides[get_service]()
+    assert service.records() == [] and service.summary()["toplam"] == 0

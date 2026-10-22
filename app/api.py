@@ -37,7 +37,7 @@ class AskRequest(BaseModel):
 
 
 class Source(BaseModel):
-    chunk_id: int
+    chunk_id: int | None = Field(description="Corpus dışı belgede (öğretim planı, ders programı) null; PDF açılır")
     label: str
     # Bu alanlar 2026-10-06'dan önceki log kayıtlarında yok; bu yüzden isteğe bağlı.
     source: str | None = Field(default=None, description="PDF dosya adı (GET /files/{source})")
@@ -82,6 +82,7 @@ class AgentAskResponse(BaseModel):
     id: str
     answer: str
     tool_calls: list[ToolCall]
+    sources: list[Source] = Field(description="Cevabın dayandığı mevzuat maddeleri ve belgeler")
     confirmations: dict[str, str | None] = Field(description="Güncel teyitler; istemci bir sonraki isteğe ekler")
     latency_ms: int
 
@@ -114,8 +115,9 @@ class EvaluationRequest(BaseModel):
     answer_label: Literal["dogru", "kismen", "yanlis", "cevapsiz"] = Field(
         description="cevapsiz: bilgi corpus'ta yokken doğru şekilde 'bilgim yok' dedi")
     source_ok: Literal["evet", "hayir", "emin_degil"] = Field(description="LLM'e doğru kaynak gitti mi?")
-    error_stage: Literal["rewrite", "retrieval", "generation", "corpus_yok"] | None = Field(
-        default=None, description="Yalnız yanlis / kismen için: hata hangi aşamada?")
+    error_stage: Literal["rewrite", "retrieval", "generation", "corpus_yok", "tool_secimi", "tool_sonucu"] | None = Field(
+        default=None, description="Yalnız yanlis / kismen için: hata hangi aşamada? Klasik cevapta rewrite / "
+        "retrieval / generation / corpus_yok; agent cevabında tool_secimi / tool_sonucu / generation / corpus_yok")
     note: str | None = Field(default=None, max_length=2000)
 
 
@@ -129,6 +131,8 @@ class Evaluation(BaseModel):
 
 class RecordOut(BaseModel):
     id: str
+    kind: Literal["rag", "agent"] = Field(description="rag: klasik /ask; agent: /agent/ask")
+    tool_calls: list[str] = Field(description="Agent cevabında çağrılan tool'lar (sırasıyla); klasikte boş")
     time: str
     session_id: str | None
     question: str
@@ -233,13 +237,13 @@ async def upload_transcript(request: Request, service: ChatService = Depends(get
 @app.post("/agent/ask", response_model=AgentAskResponse, tags=["danışmanlık"])
 def agent_ask(req: AgentAskRequest, service: ChatService = Depends(get_service)):
     """Danışmanlık agent'ı (tool calling). Transkript ve teyitler her istekte istemciden gelir (sunucu stateless);
-    güncel teyitler cevapta döner. Log'a yalnız metadata yazılır (logs/agent.jsonl), soru ve cevap yazılmaz."""
+    güncel teyitler cevapta döner. Soru, cevap, tool çağrıları ve kaynaklar logs/agent.jsonl'e yazılır."""
     try:
         result = service.ask_agent(req.question, [m.model_dump() for m in req.history], transcript=req.transcript,
                                    confirmations=dict(req.confirmations), session_id=req.session_id)
     except Exception as e:
         raise _llm_error(e)
-    return AgentAskResponse(**result)
+    return AgentAskResponse(**{**result, "sources": [_source(s) for s in result["sources"]]})
 
 
 def _llm_error(e):
@@ -325,7 +329,7 @@ def require_admin(credentials: HTTPBasicCredentials = Depends(_basic)):
 def _record(r):
     e = r["degerlendirme"]
     return RecordOut(
-        id=r["id"], time=r["zaman"], session_id=r["oturum"], question=r["soru"],
+        id=r["id"], kind=r["tur"], tool_calls=r["tool_lar"], time=r["zaman"], session_id=r["oturum"], question=r["soru"],
         rewritten_query=r["rewritten_query"], answer=r["cevap"], sources=[_source(s) for s in r["kaynaklar"]],
         experiment=r["config"], commit=r["commit"], latency_ms=r["latency_ms"], error=r["hata"],
         feedback=r["geri_bildirim"],

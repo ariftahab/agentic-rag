@@ -40,6 +40,10 @@ MAX_TRANSCRIPT_BYTES = 5 * 1024 * 1024  # UBYS transkripti ~40 KB; sınır yaln�
 ANSWER_LABELS = ("dogru", "kismen", "yanlis", "cevapsiz")  # cevapsiz: bilgi yokken doğru şekilde "bilgim yok" dedi
 SOURCE_OK = ("evet", "hayir", "emin_degil")                # LLM'e doğru kaynak gitti mi?
 ERROR_STAGES = ("rewrite", "retrieval", "generation", "corpus_yok")  # yalnız yanlis / kismen için
+# Agent cevaplarında hata zincirin hangi halkasında: tool_secimi = Gemini yanlış/eksik tool seçti ya da argümanı (ör.
+# anlık tool görevi) yanlış yazdı; tool_sonucu = tool yanlış veri/hesap döndürdü (arama, plan verisi, ders programı,
+# Haiku'nun kodu); generation = tool sonucu doğruydu, Gemini yanlış aktardı; corpus_yok = bilgi hiçbir kaynakta yok.
+AGENT_ERROR_STAGES = ("tool_secimi", "tool_sonucu", "generation", "corpus_yok")
 
 
 def _git(*args):
@@ -75,6 +79,9 @@ class ChatService:
         # satırları birbirine karıştırmasın diye yazma işlemi kilitle sıraya sokulur.
         self._lock = threading.Lock()
         self._known_ids = {r["id"] for r in self._read(self.chat_log)}
+        # Agent cevapları da geri bildirim, değerlendirme ve silme alır (#16); hata aşamaları türüne göre.
+        self._agent_ids = {r["id"] for r in self._read(self.agent_log)}
+        self._known_ids |= self._agent_ids
 
     @classmethod
     def from_experiment(cls, experiment_id=None):
@@ -122,6 +129,12 @@ class ChatService:
         tmp.write_text("".join(line + "\n" for line in kept), encoding="utf-8")
         os.replace(tmp, path)
         return len(lines) - len(kept)
+
+    @staticmethod
+    def _document_info(doc):
+        """Corpus dışı kaynak belge (öğretim planı, ders programı): chunk'ı yok, arayüz PDF'i açar."""
+        return {"chunk_id": None, "etiket": doc["title"], "source": doc["source"], "title": doc["title"],
+                "page": None, "madde": None}
 
     @staticmethod
     def _source_info(doc):
@@ -216,6 +229,8 @@ class ChatService:
             record["tool_cagrilari"] = result["tool_calls"]
             record["cevap"] = result["answer"]
             record["tur"] = result.get("turns")
+            record["kaynaklar"] = ([self._source_info(d) for d in result.get("sources", [])]
+                                   + [self._document_info(d) for d in result.get("documents", [])])
             if result.get("generated_code"):  # request_new_tool'un ürettiği kod: hangi anlık tool'lar istendi (#18)
                 record["uretilen_kod"] = result["generated_code"]
         except Exception as e:
@@ -224,8 +239,10 @@ class ChatService:
         finally:
             record["latency_ms"] = round((time.perf_counter() - started) * 1000)
             self._append(self.agent_log, record)
+            self._known_ids.add(record["id"])
+            self._agent_ids.add(record["id"])
         return {"id": record["id"], "answer": result["answer"], "tool_calls": result["tool_calls"],
-                "confirmations": confirmations, "latency_ms": record["latency_ms"]}
+                "sources": record["kaynaklar"], "confirmations": confirmations, "latency_ms": record["latency_ms"]}
 
     def feedback(self, answer_id, rating, note=None):
         """rating: 1 (👍) ya da -1 (👎). Bilinmeyen bir cevap kimliği için KeyError."""
@@ -267,6 +284,8 @@ class ChatService:
         (whitelist). Böylece "../.env" gibi bir adla data/ dışındaki dosyalara ulaşılamaz (path traversal).
         """
         allowed = {c.metadata["source"] for c in self._chunks.values()}
+        if self.agent is not None:  # agent'ın kaynak gösterdiği corpus dışı belgeler (öğretim planı, ders programı)
+            allowed |= set(self.agent.documents)
         if source not in allowed:
             raise KeyError(source)
         return config.DATA_DIR / source
@@ -278,7 +297,8 @@ class ChatService:
             raise KeyError(answer_id)
         if answer_label not in ANSWER_LABELS or source_ok not in SOURCE_OK:
             raise ValueError("geçersiz etiket")
-        if error_stage is not None and (error_stage not in ERROR_STAGES or answer_label not in ("yanlis", "kismen")):
+        stages = AGENT_ERROR_STAGES if answer_id in self._agent_ids else ERROR_STAGES
+        if error_stage is not None and (error_stage not in stages or answer_label not in ("yanlis", "kismen")):
             raise ValueError("hata aşaması yalnız 'yanlis' ve 'kismen' cevaplar için verilir")
         record = {"id": answer_id, "cevap_etiketi": answer_label, "kaynak_dogru": source_ok,
                   "hata_asamasi": error_stage, "not": note, "zaman": _now()}
@@ -292,8 +312,9 @@ class ChatService:
         # Okuma-yazma arasında başka bir istek dosyaya satır eklemesin diye kilit bütün işlem boyunca tutulur.
         with self._lock:
             removed = {path.name: self._remove_id(path, answer_id)
-                       for path in (self.chat_log, self.feedback_log, self.evaluation_log)}
+                       for path in (self.chat_log, self.agent_log, self.feedback_log, self.evaluation_log)}
             self._known_ids.discard(answer_id)
+            self._agent_ids.discard(answer_id)
         return removed
 
     def records(self):
@@ -301,9 +322,19 @@ class ChatService:
         # Dosyalar sırayla okunduğu için sözlükte aynı id'nin en son satırı kalır ("en son yazılan geçerli").
         feedback = {r["id"]: r["puan"] for r in self._read(self.feedback_log)}
         evaluation = {r["id"]: r for r in self._read(self.evaluation_log)}
+        rows = [{**r, "tur": "rag", "tool_lar": []} for r in self._read(self.chat_log)]
+        # 2026-10-21'deki ilk agent kayıtları yalnız metadata tutuyordu (soru/cevap yok): değerlendirilecek bir şey yok.
+        rows += [self._agent_row(r) for r in self._read(self.agent_log) if "soru" in r]
+        rows.sort(key=lambda r: r["zaman"], reverse=True)
         return [{**self._complete_sources(r), "geri_bildirim": feedback.get(r["id"]),
-                 "degerlendirme": evaluation.get(r["id"])}
-                for r in reversed(self._read(self.chat_log))]
+                 "degerlendirme": evaluation.get(r["id"])} for r in rows]
+
+    @staticmethod
+    def _agent_row(r):
+        """Agent kaydını klasik kaydın alanlarına çevirir (yönetici sayfası ikisini tek listede gösterir)."""
+        return {"id": r["id"], "zaman": r["zaman"], "oturum": r["oturum"], "soru": r["soru"], "rewritten_query": None,
+                "cevap": r["cevap"], "kaynaklar": r.get("kaynaklar", []), "config": r["config"], "commit": r["commit"],
+                "latency_ms": r["latency_ms"], "hata": r["hata"], "tur": "agent", "tool_lar": r["tool_lar"]}
 
     def _complete_sources(self, record):
         """Kaynaklara source/title/page/madde eklenmeden önce yazılmış kayıtları gösterim için tamamlar.
@@ -324,6 +355,7 @@ class ChatService:
         labels = Counter(e["cevap_etiketi"] for e in evaluated)
         return {
             "toplam": len(rows),
+            "agent": sum(r["tur"] == "agent" for r in rows),
             "hatali_istek": len(rows) - len(answered),
             "degerlendirilen": len(evaluated),
             "cevap_etiketleri": {k: labels.get(k, 0) for k in ANSWER_LABELS},
