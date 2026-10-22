@@ -28,12 +28,12 @@ Hyp.: ✓ doğrulandı · ✗ doğrulanmadı · ~ yön doğru ama anlamlı deği
 
 ### Agent
 
-Tool seçimi: beklenen tool'lar doğru argümanlarla çağrıldı, beklenmeyen tool yok. Tool adı: aynısı, argümanlara bakmadan. Hesap (cevap): elle hesaplanan AKTS/GNO cevapta tam olarak geçiyor. Hesap (tool): aynı sayılar deterministik modülün sonucuyla aynı (LLM'den bağımsız). Answer acc. anlamca ayrıca okunur.
+Tool seçimi: beklenen tool'lar doğru argümanlarla çağrıldı, beklenmeyen tool yok. Tool adı: aynısı, argümanlara bakmadan. Gerekli tool: beklenen tool'lar doğru argümanlarla çağrıldı, fazla çağrı serbest. Yan etkisiz: oturum durumunu değiştiren tool (teyit kaydı) beklenmeden çağrılmadı. Hesap (cevap): elle hesaplanan AKTS/GNO cevapta tam olarak geçiyor. Hesap (tool): aynı sayılar deterministik modülün sonucuyla aynı (LLM'den bağımsız). Answer acc. anlamca ayrıca okunur.
 
-| Exp | Set | Answer acc. | Tool seçimi | Tool adı | Hesap (cevap) | Hesap (tool) | Ort. tool çağrısı | Ort. tur | n | Tamamlandı |
-|---|---|---|---|---|---|---|---|---|---|---|
-| EXP-002 | v1 | 0.732 | 0.738 | 0.738 | 0.636 | 1.000 | 1.07 | 2.04 | 45 | ✓ |
-| EXP-003 | v1 | 0.780 | 0.714 | 0.714 | 0.727 | 1.000 | 1.13 | 2.11 | 45 | ✓ |
+| Exp | Set | Answer acc. | Tool seçimi | Tool adı | Gerekli tool | Yan etkisiz | Hesap (cevap) | Hesap (tool) | Ort. tool çağrısı | Ort. tur | n | Tamamlandı |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| EXP-002 | v1 | 0.732 | 0.738 | 0.738 | 0.809 | 0.976 | 0.636 | 1.000 | 1.07 | 2.04 | 45 | ✓ |
+| EXP-003 | v1 | 0.780 | 0.714 | 0.714 | 0.905 | 1.000 | 0.727 | 1.000 | 1.13 | 2.11 | 45 | ✓ |
 
 ## 5. Notes
 
