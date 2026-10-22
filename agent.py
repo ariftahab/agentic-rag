@@ -99,9 +99,35 @@ Kurallar:
 - Bugünün tarihi: {today}.
 - Kısa, net ve Türkçe cevap ver."""
 
+# agent_v5: genel mezuniyet şartları için get_graduation_requirements (EXP-003'te "mezuniyet şartları neler?"
+# yalnız mevzuat aramasıyla 240 AKTS ve staja indi; şartlar tek maddede değil). Geri kalanı v4 ile aynı.
+_AGENT_V5_SYSTEM = """Sen Bolu Abant İzzet Baysal Üniversitesi (BAİBÜ) Mühendislik Fakültesi için bir danışmanlık asistanısın. Sorulara danışman hocalar da öğrenciler de sorabilir.
+
+Oturum durumu: {transcript_state}
+
+Kurallar:
+- Mevzuat sorularında (staj, ders kaydı, sınavlar, yatay geçiş, mezuniyet şartları vb.) search_regulations tool'unu kullan ve cevabı yalnız dönen parçalara dayandır.
+- Kullandığın her bilginin sonunda kaynağını köşeli parantezle belirt (parça etiketlerinde yazan belge adı ve madde).
+- Transkriptle ilgili sorularda (eksik dersler, tamamlanan AKTS, mezuniyet durumu) analyze_transcript tool'unu kullan; sayıları raporda yazdığı gibi aktar ve öğretim planını kaynak olarak göster.
+- Soru kişiye özel değil, bölümün genel mezuniyet şartlarıyla ilgiliyse (toplam AKTS, zorunlu ve seçmeli dersler, staj, alan dışı seçmeli, GNO) get_graduation_requirements tool'unu kullan ve şartların hepsini kaynaklarıyla aktar; bir kuralın ayrıntısı (ör. staj süresi) gerekiyorsa ayrıca search_regulations tool'unu kullan. Soran kendi durumunu soruyorsa ve transkript yüklüyse önce analyze_transcript tool'unu kullan.
+- Soran kendi durumunu soruyorsa (stajlarım tamam mı, ortalamam yetiyor mu, alan dışı seçmeli almam gerekiyor mu, şu ders eksik mi) ve transkript yüklüyse önce analyze_transcript tool'unu kullan ve cevabı rapora dayandır; kuralın metni de gerekiyorsa ayrıca search_regulations tool'unu kullan.
+- confirm_equivalence tool'unu yalnız kullanıcı plan dışı bir dersin öğretim planındaki karşılığını kendisi bildirdiğinde kullan; otomatik eşlenmiş dersleri analyze_transcript raporundaki eşleme bölümünden aktar.
+- "Şu dersleri alırsam AKTS tamamlanır mı?" gibi varsayımsal sorularda simulate_courses tool'unu kullan: dersleri öğretim planındaki adlarıyla ver, karşılaştırılacak her seçeneği ayrı bir küme olarak gönder. Her kümenin tamamlayıp tamamlamadığını ve neyin eksik kaldığını aktar; GNO'nun transkriptteki güncel değer olduğunu belirt.
+- "Bu dönem Seçmeli III için ne açılıyor?" gibi bu dönem açılan seçmeli sorularında get_offered_electives tool'unu kullan. Ders önerirken ve what-if kümesi kurarken yalnız bu dönem açılan dersleri kullan; tool sonucunda "bu dönem açılmıyor" diye işaretlenen dersleri bu ifadeyle aktar.
+- Bütün sayıları tool sonuçlarından al ve olduğu gibi aktar; hesabı tool'lar yapar.
+- Transkript gerektiğinde, UBYS'den indirilen tarihsel transkripti yüklemesini iste; bu dönem alınan dersler (seçmeliler dahil) yalnız tarihsel transkriptte görünür.
+- Ders seçimi ve tercih sorularında kuralı ve hesabı ver, kararı için soranı danışman hocasına yönlendir.
+- Hitapta nötr ol: aynı cevap danışman hocaya da öğrenciye de uysun; transkriptten "transkriptteki öğrenci" gibi üçüncü kişi ifadeleriyle bahset.
+- Tool'lardan dönen bilgi soruyu cevaplamaya yetmiyorsa yalnızca "{no_answer}" yaz ve ilgili birime başvurmayı öner.
+- Bugünün tarihi: {today}.
+- Kısa, net ve Türkçe cevap ver."""
+
 AGENT_PROMPTS = {"agent_v1": _AGENT_V1_SYSTEM, "agent_v2": _AGENT_V2_SYSTEM, "agent_v3": _AGENT_V3_SYSTEM,
-                 "agent_v4": _AGENT_V4_SYSTEM}
+                 "agent_v4": _AGENT_V4_SYSTEM, "agent_v5": _AGENT_V5_SYSTEM}
 AGENT_PROMPT_VERSION = "agent_v4"
+# Sonradan eklenen tool yalnız onu anlatan sürümlerde açılır: eski sürümlerin deneyleri (EXP-002, EXP-003) aynı tool
+# listesiyle tekrar üretilebilsin.
+REQUIREMENTS_TOOL_PROMPTS = {"agent_v5"}
 
 # agent_v4'ten itibaren prompt'taki "Oturum durumu" satırı (eski sürümlerde yer tutucu yok, format onu yok sayar).
 TRANSCRIPT_LOADED = ("kullanıcının tarihsel transkripti bu oturumda yüklü; analyze_transcript, simulate_courses ve "
@@ -117,7 +143,7 @@ def _same_name(a, b):
     return graduation.name_similarity(a, b) == 1.0
 
 
-def make_tools(retriever, plan, transcript, confirmations, today):
+def make_tools(retriever, plan, transcript, confirmations, today, with_requirements=False):
     """Bu çağrıya (oturuma) bağlı tool'lar. `transcript` ve `confirmations` closure'da durur; LLM'in görebileceği
     argümanlar değildir. confirm_equivalence `confirmations` sözlüğünü yerinde günceller (çağıran taraf saklar)."""
 
@@ -231,8 +257,14 @@ def make_tools(retriever, plan, transcript, confirmations, today):
                      "bütün şubeler listelendi.")
         return text
 
+    def get_graduation_requirements() -> str:
+        """Bölümün mezuniyet şartlarını transkript olmadan döndürür: öğretim planının toplam AKTS'si, zorunlu dersler,
+        stajlar, seçmeli yuvaları ve AKTS'leri, Alan Dışı Seçmeli Ders ve kayıt yılı istisnası, GNO alt sınırı ve
+        geçer notlar; her kural kaynağıyla (belge ve madde)."""
+        return graduation.requirements_text(graduation.graduation_requirements(plan))
+
     tools = (search_regulations, analyze_transcript, confirm_equivalence, simulate_courses, get_offered_electives,
-             get_course_schedule)
+             get_course_schedule) + ((get_graduation_requirements,) if with_requirements else ())
     return [StructuredTool.from_function(f) for f in tools]
 
 
@@ -244,6 +276,7 @@ class AdvisorAgent:
         self.llm = llm
         self.plan = plan
         self.system = AGENT_PROMPTS[prompt_version]
+        self.with_requirements = prompt_version in REQUIREMENTS_TOOL_PROMPTS
 
     @classmethod
     def from_config(cls, cfg):
@@ -263,7 +296,8 @@ class AdvisorAgent:
         Dönüş: {"answer", "tool_calls": [{"name", "args"}], "turns", "usage"}.
         """
         today = date.today()
-        tools = make_tools(self.retriever, self.plan, transcript, {} if confirmations is None else confirmations, today)
+        tools = make_tools(self.retriever, self.plan, transcript, {} if confirmations is None else confirmations, today,
+                           with_requirements=self.with_requirements)
         by_name = {t.name: t for t in tools}
         llm = self.llm.bind_tools(tools)
         system = self.system.format(no_answer=config.NO_ANSWER, today=today.strftime("%d.%m.%Y"),

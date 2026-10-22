@@ -50,6 +50,7 @@ class ScriptedChatModel:
         self.received = []
 
     def bind_tools(self, tools):
+        self.tools = [t.name for t in tools]
         return self
 
     def invoke(self, messages):
@@ -228,3 +229,34 @@ def test_agent_v4_prompt_states_whether_a_transcript_is_loaded(transcript, state
 def test_older_prompts_have_no_session_state_line():
     from agent import AGENT_PROMPTS
     assert all("Oturum durumu" not in AGENT_PROMPTS[v] for v in ("agent_v1", "agent_v2", "agent_v3"))
+
+
+def requirements_reply(prompt_version):
+    llm = ScriptedChatModel([
+        AIMessage("", tool_calls=[{"name": "get_graduation_requirements", "args": {}, "id": "1"}]),
+        AIMessage("nihai cevap"),
+    ])
+    AdvisorAgent(retriever=None, llm=llm, plan=graduation.load_plan(), prompt_version=prompt_version).ask(
+        "Mezun olmak için hangi şartlar gerekiyor?")
+    return llm, next(m for m in llm.received[-1] if isinstance(m, ToolMessage)).content
+
+
+def test_graduation_requirements_tool_works_without_a_transcript():
+    llm, content = requirements_reply("agent_v5")
+    assert "get_graduation_requirements" in llm.tools
+    assert content == graduation.requirements_text(graduation.graduation_requirements())
+
+
+def test_older_prompts_do_not_see_the_graduation_requirements_tool():
+    # Eski sürümlerin deneyleri (EXP-002, EXP-003) aynı tool listesiyle tekrar üretilebilsin.
+    llm, content = requirements_reply("agent_v4")
+    assert "get_graduation_requirements" not in llm.tools
+    assert content == "Bilinmeyen tool: get_graduation_requirements"
+
+
+def test_agent_v5_prompt_adds_only_the_requirements_rule():
+    from agent import AGENT_PROMPTS
+    v4, v5 = AGENT_PROMPTS["agent_v4"].splitlines(), AGENT_PROMPTS["agent_v5"].splitlines()
+    added = [line for line in v5 if line not in v4]
+    assert len(added) == 1 and "get_graduation_requirements" in added[0]
+    assert [line for line in v4 if line not in v5] == []
