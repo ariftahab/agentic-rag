@@ -281,3 +281,58 @@ def test_agent_v5_tool_outputs_are_unchanged():
     # EXP-004 aynı tool çıktılarıyla tekrar üretilebilsin.
     assert "Kayıt yılı" not in tool_reply("agent_v5", "analyze_transcript", SAMPLE)
     assert "analyze_transcript tool'unu çağır" not in tool_reply("agent_v5", "get_graduation_requirements", SAMPLE)
+
+
+class FakeRunner:
+    """CodeRunner yerine: gelen görevi ve dosyaları kaydeder, hazır sonuç döndürür."""
+
+    def __init__(self):
+        self.calls = []
+
+    def run(self, task, files):
+        self.calls.append((task, files))
+        return {"answer": "Toplam 12 saat.", "code": ["print(12)"], "outputs": ["12\n"]}
+
+
+def new_tool_reply(prompt_version, args, transcript, runner):
+    llm = ScriptedChatModel([AIMessage("", tool_calls=[{"name": "request_new_tool", "args": args, "id": "1"}]),
+                             AIMessage("cevap")])
+    result = AdvisorAgent(retriever=None, llm=llm, plan=graduation.load_plan(), prompt_version=prompt_version,
+                          code_runner=runner).ask("3. sınıfın haftada kaç saat dersi var?", transcript=transcript)
+    return llm, next(m for m in llm.received[-1] if isinstance(m, ToolMessage)).content, result
+
+
+def test_new_tool_sends_plan_and_schedule_but_not_the_transcript_by_default():
+    runner = FakeRunner()
+    llm, content, result = new_tool_reply("agent_v7", {"gorev": "3. sınıfın haftalık ders saati"}, SAMPLE, runner)
+    task, files = runner.calls[0]
+    assert task == "3. sınıfın haftalık ders saati"
+    assert sorted(files) == ["ders_programi.json", "ogretim_plani.json"]
+    assert "Toplam 12 saat." in content and "doğrulanmadı" in content
+    assert result["generated_code"] == [{"gorev": task, "transkript": False, "kod": ["print(12)"], "cikti": ["12\n"]}]
+
+
+def test_new_tool_sends_the_transcript_only_when_needed_and_loaded():
+    runner = FakeRunner()
+    new_tool_reply("agent_v7", {"gorev": "AA notlu derslerin AKTS toplamı", "transkript_gerekli": True}, SAMPLE, runner)
+    files = runner.calls[0][1]
+    assert json.loads(files["transkript.json"]) == SAMPLE
+    _, content, _ = new_tool_reply("agent_v7", {"gorev": "AA notlu derslerin AKTS toplamı",
+                                                "transkript_gerekli": True}, None, runner)
+    assert content == NO_TRANSCRIPT and len(runner.calls) == 1             # transkript yoksa sandbox'a hiç gidilmez
+
+
+def test_only_agent_v7_sees_the_new_tool():
+    for version in ("agent_v4", "agent_v5", "agent_v6"):
+        llm, content, _ = new_tool_reply(version, {"gorev": "x"}, None, FakeRunner())
+        assert "request_new_tool" not in llm.tools and content == "Bilinmeyen tool: request_new_tool"
+    llm, _, _ = new_tool_reply("agent_v7", {"gorev": "x"}, None, FakeRunner())
+    assert "request_new_tool" in llm.tools
+
+
+def test_agent_v7_prompt_adds_only_the_new_tool_rule():
+    from agent import AGENT_PROMPTS
+    v6, v7 = AGENT_PROMPTS["agent_v6"].splitlines(), AGENT_PROMPTS["agent_v7"].splitlines()
+    added = [line for line in v7 if line not in v6]
+    assert len(added) == 1 and "request_new_tool" in added[0]
+    assert [line for line in v6 if line not in v7] == []
