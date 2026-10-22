@@ -491,17 +491,32 @@ def _gpa_text(report):
     return "GNO henüz yok (notlu ders yok)" if report["gno"] is None else f"GNO {report['gno']}"
 
 
-def summary_text(report, plan):
+def enrollment_text(report):
+    """Kayıt yılı ve Alan Dışı Seçmeli Ders'in bu öğrenci için durumu (kayıt yılı akademik yılın başlangıcıdır)."""
+    year = report["kayit_yili"]
+    adsd = next(r for r in report["kurallar"] if r["id"] == "alan_disi_secmeli")
+    status = "zorunlu" if adsd["zorunlu"] else "isteğe bağlı"
+    if year is None:
+        return f"Kayıt yılı: transkriptte yok (Alan Dışı Seçmeli Ders bu öğrenci için {status} sayıldı)."
+    return f"Kayıt yılı: {year}-{year + 1} (Alan Dışı Seçmeli Ders bu öğrenci için {status})."
+
+
+def summary_text(report, plan, enrollment=False):
     """analyze_transcript tool'unun LLM'e verdiği kısa özet: önce iki senaryo, sonra kaynaklı kurallar, eksik
     zorunlular, bu dönemin dersleri ve açık seçmeli yuvaları. Geçilmiş derslerin sınıflandırması ve dolu yuvalar
     dışarıda kalır; tam rapor (~11 bin karakter) verildiğinde LLM "bu dönem geçilirse" senaryosunu ve açık seçmeli
-    AKTS'yi çoğu cevapta atlıyordu."""
+    AKTS'yi çoğu cevapta atlıyordu.
+
+    enrollment=True: planın altına kayıt yılı ve ADSD'nin bu öğrenci için zorunlu olup olmadığı yazılır (agent_v6;
+    önceki özette yalnız kuralın sonucu vardı, LLM "kayıt yılınızı kontrol edin" diyordu)."""
     s = report["secmeli"]
     rules = {r["id"]: r for r in report["kurallar"]}
     total, compulsory = rules["toplam_akts"], rules["zorunlu_dersler"]
     met = {True: "karşılanıyor", False: "karşılanmıyor"}
-    lines = [
-        f"Öğretim planı: {plan['kaynak']}",
+    lines = [f"Öğretim planı: {plan['kaynak']}"]
+    if enrollment:
+        lines.append(enrollment_text(report))
+    lines += [
         "",
         "İKİ SENARYO",
         f"1) Şu an: {report['gecilen_akts']} / {total['gereken']} AKTS; zorunlu dersler {compulsory['mevcut']} / "

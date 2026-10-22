@@ -861,3 +861,13 @@ def test_llm_summary_states_missing_gpa_in_words():
     text = graduation.summary_text(report, PLAN)
     assert "None" not in text
     assert "GNO henüz yok (notlu ders yok)" in text
+
+
+@pytest.mark.parametrize("enrolled, status", [(2023, "isteğe bağlı"), (2025, "zorunlu")])
+def test_summary_can_state_the_enrollment_year_and_out_of_field_status(enrolled, status):
+    report = graduation.evaluate(transcript(course(enrolled, "Güz", "Z1", "Matematik I", 6, "CC"), enrolled=enrolled),
+                                 RULES_PLAN)
+    text = graduation.summary_text(report, RULES_PLAN, enrollment=True)
+    assert text.splitlines()[1] == (f"Kayıt yılı: {enrolled}-{enrolled + 1} "
+                                    f"(Alan Dışı Seçmeli Ders bu öğrenci için {status}).")
+    assert "Kayıt yılı" not in graduation.summary_text(report, RULES_PLAN)  # varsayılan özet değişmez
