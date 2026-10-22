@@ -31,6 +31,12 @@ ikiye ayrıldı (gerekli tool, yan etkisiz). Spec #1 hikâye hikâye kontrol edi
   kontrol edin" diyor: analyze_transcript raporunda öğrencinin kayıt yılı yazmıyor (yalnız kuralın sonucu).
   "Alan dışı seçmeli almadım, engel olur mu?" (2023 girişli) yine analyze_transcript çağırmadı. Kısmi iyileşme;
   ikinci deneme kullanıcı kararını bekliyor.
+- **ADSD teşhisi 2 (aynı gün, commit'siz):** agent_v6 = v5 prompt'u + tool çıktıları: analyze_transcript planın
+  altına "Kayıt yılı: 2024-2025 (Alan Dışı Seçmeli Ders bu öğrenci için zorunlu)" yazıyor, yönlendirme satırı
+  yalnız v6'da (EXP-004 tekrar üretilebilir). "Alan dışı seçmeli ders almam gerekiyor mu?" (2024 girişli) düzeldi:
+  "kayıt yılınıza göre zorunlu, henüz alınmamış". Mezuniyet şartları (stajlar artık ayrı madde) ve GNO soruları
+  doğru. "Alan dışı seçmeli almadım, engel olur mu?" (2023 girişli) düzelmedi: analyze_transcript yerine
+  search_regulations çağırıyor, iki durumu anlatıp kayıt yılına bırakıyor. 2 deneme doldu; karar kullanıcıda.
 - **Spec #1 metnini güncelle:** seçmeliler yuva bazlı (her yuva kendi havuzundan, kendi AKTS'si kadar; kullanıcı kararı
   2026-10-22), tool sayısı 6 (+ `confirm_equivalence`, `get_offered_electives`), transkript kaynağı UBYS.
 - **Kalan agent hataları (EXP-003):** "Alan dışı seçmeli almadım, engel olur mu?" yalnız mevzuat arıyor (2023 girişliye
