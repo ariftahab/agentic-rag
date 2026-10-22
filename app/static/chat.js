@@ -61,9 +61,12 @@ function addAgentMessage(body) {
     const args = Object.values(c.args).map((v) => JSON.stringify(v)).join(", ");
     return `<code>${escapeHtml(c.name)}(${escapeHtml(args)})</code>`;
   }).join(" → ");
+  // Anlık tool (request_new_tool): kodu o an bir LLM yazdı, test edilmedi; kullanıcı bunu bilsin (#18).
+  const generated = body.tool_calls.some((c) => c.name === "request_new_tool")
+    ? `<div class="tools">⚠ Anlık üretilmiş hesap, doğrulanmamış</div>` : "";
   addEl("msg-bot", `
     <div class="answer">${renderAnswer(body.answer)}</div>
-    <div class="tools">${tools ? `Kullanılan tool'lar: ${tools}` : "Tool kullanılmadı"}</div>
+    <div class="tools">${tools ? `Kullanılan tool'lar: ${tools}` : "Tool kullanılmadı"}</div>${generated}
     <div class="meta"><span>${(body.latency_ms / 1000).toFixed(1)} sn</span><span>danışmanlık agent'ı</span></div>`);
 }
 

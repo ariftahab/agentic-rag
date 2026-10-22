@@ -216,6 +216,8 @@ class ChatService:
             record["tool_cagrilari"] = result["tool_calls"]
             record["cevap"] = result["answer"]
             record["tur"] = result.get("turns")
+            if result.get("generated_code"):  # request_new_tool'un ürettiği kod: hangi anlık tool'lar istendi (#18)
+                record["uretilen_kod"] = result["generated_code"]
         except Exception as e:
             record["hata"] = type(e).__name__
             raise

@@ -66,8 +66,8 @@ class FakeBot:
         return {"answer": "mevzuat cevabı", "query": question, "docs": []}
 
 
-def make_client(tmp_path, replies=()):
-    agent = AdvisorAgent(retriever=None, llm=ScriptedChatModel(replies), plan=PLAN)
+def make_client(tmp_path, replies=(), **agent_kwargs):
+    agent = AdvisorAgent(retriever=None, llm=ScriptedChatModel(replies), plan=PLAN, **agent_kwargs)
     service = ChatService(FakeBot(), "EXP-TEST", log_dir=tmp_path, agent=agent)
     app.dependency_overrides[get_service] = lambda: service
     return TestClient(app)
@@ -183,6 +183,23 @@ def test_agent_ask_without_transcript_reaches_tools_and_is_logged(tmp_path):
     assert [c["name"] for c in body["tool_calls"]] == ["get_course_schedule"]
     record = json.loads(log_text(tmp_path))
     assert record["transkript"] is False and record["tool_lar"] == ["get_course_schedule"]
+
+
+class FakeCodeRunner:
+    def run(self, task, files):
+        return {"answer": "Toplam 21 saat.", "code": ["print(21)"], "outputs": ["21\n"]}
+
+
+def test_generated_code_is_logged(tmp_path):
+    # Anlık tool'un yazdığı kod log'da (#18): hangi hesapların kalıcı tool olması gerektiği buradan görülür.
+    client = make_client(tmp_path, [
+        AIMessage("", tool_calls=[{"name": "request_new_tool", "id": "1", "args": {"gorev": "haftalık ders saati"}}]),
+        AIMessage(ANSWER),
+    ], prompt_version="agent_v7", code_runner=FakeCodeRunner())
+    assert client.post("/agent/ask", json={"question": "3. sınıfın haftada kaç saat dersi var?"}).status_code == 200
+    record = json.loads(log_text(tmp_path))
+    assert record["uretilen_kod"] == [{"gorev": "haftalık ders saati", "transkript": False, "kod": ["print(21)"],
+                                       "cikti": ["21\n"]}]
 
 
 def test_agent_error_is_logged_by_type_only(tmp_path):

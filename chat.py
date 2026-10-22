@@ -4,6 +4,7 @@ Kullanım:
     python chat.py                          # klasik RAG (RagBot, production yapılandırması)
     python chat.py --agent                  # agent (tool calling), transkriptsiz
     python chat.py --transkript dosya.pdf   # agent, UBYS tarihsel transkriptiyle
+    python chat.py --agent --prompt agent_v7  # agent, belirli bir prompt sürümüyle (v7: anlık tool)
 """
 import argparse
 import os
@@ -25,8 +26,9 @@ def main():
     parser = argparse.ArgumentParser(description="BAİBÜ Mühendislik Fakültesi danışmanlık asistanı")
     parser.add_argument("--agent", action="store_true", help="tool calling yapan agent ile başlat")
     parser.add_argument("--transkript", metavar="PDF", help="UBYS tarihsel transkripti (agent ile başlatır)")
+    parser.add_argument("--prompt", metavar="SÜRÜM", help="agent prompt sürümü (ör. agent_v7; agent ile başlatır)")
     args = parser.parse_args()
-    use_agent = args.agent or args.transkript is not None
+    use_agent = args.agent or args.transkript is not None or args.prompt is not None
 
     # Anahtar yoksa modelleri yüklemeye hiç başlama.
     if not os.getenv("GOOGLE_API_KEY"):
@@ -49,8 +51,8 @@ def main():
     print(f"Asistan hazırlanıyor (yapılandırma: {config.PRODUCTION_EXPERIMENT}, "
           f"{'agent' if use_agent else 'RAG'}, modeller yükleniyor)...")
     if use_agent:
-        from agent import AdvisorAgent
-        bot = AdvisorAgent.from_config(config.production_config())
+        from agent import AGENT_PROMPT_VERSION, AdvisorAgent
+        bot = AdvisorAgent.from_config(config.production_config(), prompt_version=args.prompt or AGENT_PROMPT_VERSION)
     else:
         bot = RagBot.from_config(config.production_config())
     print("Hazır. Çıkmak için 'çık', yeni konuya geçmek için 'yeni' yazın.")
@@ -87,6 +89,10 @@ def main():
 
         print(f"\n{result['answer']}")
         if use_agent:
+            for item in result.get("generated_code", []):  # anlık tool'un yazdığı kod (doğrulanmamış)
+                print(f"\n[anlık tool] {item['gorev']}")
+                for code in item["kod"]:
+                    print("  " + code.replace("\n", "\n  "))
             continue
         if result["query"] != question:
             print(f"\n(Aranan soru: {result['query']})")
