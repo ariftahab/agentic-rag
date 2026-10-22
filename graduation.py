@@ -448,6 +448,16 @@ def report_text(report, plan):
     return "\n".join(lines)
 
 
+def _value(v):
+    """Kural değeri LLM metninde; boş değer (ilk dönemde GNO) "None" yerine "yok"."""
+    return "yok" if v is None else v
+
+
+def _gpa_text(report):
+    """GNO; ilk dönem öğrencisinde notlu ders olmadığı için transkriptte yoktur."""
+    return "GNO henüz yok (notlu ders yok)" if report["gno"] is None else f"GNO {report['gno']}"
+
+
 def summary_text(report, plan):
     """analyze_transcript tool'unun LLM'e verdiği kısa özet: önce iki senaryo, sonra kaynaklı kurallar, eksik
     zorunlular, bu dönemin dersleri ve açık seçmeli yuvaları. Geçilmiş derslerin sınıflandırması ve dolu yuvalar
@@ -463,7 +473,7 @@ def summary_text(report, plan):
         "İKİ SENARYO",
         f"1) Şu an: {report['gecilen_akts']} / {total['gereken']} AKTS; zorunlu dersler {compulsory['mevcut']} / "
         f"{compulsory['gereken']}; seçmeli {s['gecilen_akts']} / {s['gereken_akts']} AKTS ({s['acik_akts']} AKTS açık); "
-        f"GNO {report['gno']}; mezuniyet şartları {met[report['tum_sartlar_karsilandi']]}.",
+        f"{_gpa_text(report)}; mezuniyet şartları {met[report['tum_sartlar_karsilandi']]}.",
         f"2) Bu dönem alınan dersler geçilirse: {report['devam_edenler_gecilirse_akts']} / {total['gereken']} AKTS; "
         f"zorunlu dersler {compulsory['devam_edenler_gecilirse']} / {compulsory['gereken']}; seçmeli "
         f"{s['devam_edenler_gecilirse_akts']} / {s['gereken_akts']} AKTS ({s['devam_edenler_gecilirse_acik_akts']} AKTS "
@@ -484,8 +494,8 @@ def summary_text(report, plan):
     lines += ["", "KURALLAR (şu an → bu dönem geçilirse)"]
     for r in report["kurallar"]:
         sources = "; ".join(f"{k['belge']}, {k['madde']}" for k in r["kaynak"])
-        lines.append(f"- {r['aciklama']} gereken {r['gereken']}, şu an {r['mevcut']}, "
-                     f"geçilirse {r['devam_edenler_gecilirse']}. [{sources}]")
+        lines.append(f"- {r['aciklama']} gereken {r['gereken']}, şu an {_value(r['mevcut'])}, "
+                     f"geçilirse {_value(r['devam_edenler_gecilirse'])}. [{sources}]")
     lines += ["", "EKSİK ZORUNLU DERSLER"]
     lines += [f"- {c['ad']} ({c['yariyil']}. yarıyıl, {c['akts']} AKTS, {STATUS_TEXT[c['durum']]})"
               for c in report["eksik_zorunlu"]]
@@ -518,7 +528,7 @@ def _if_passed_line(report):
     return (f"{report['devam_edenler_gecilirse_akts']} / {total['gereken']} AKTS; zorunlu dersler "
             f"{compulsory['devam_edenler_gecilirse']} / {compulsory['gereken']}; seçmeli "
             f"{s['devam_edenler_gecilirse_akts']} / {s['gereken_akts']} AKTS ({s['devam_edenler_gecilirse_acik_akts']} "
-            f"AKTS açık); GNO {report['gno']} (transkriptteki güncel değer)")
+            f"AKTS açık); {_gpa_text(report)} (transkriptteki güncel değer)")
 
 
 def _offer_status(offered):
@@ -570,7 +580,7 @@ def simulation_text(base, reports, plan, offered=None):
             if not r["devam_edenler_gecilirse_karsilandi"]:
                 sources = "; ".join(f"{k['belge']}, {k['madde']}" for k in r["kaynak"])
                 lines.append(f"- Karşılanmayan şart: {r['aciklama']} gereken {r['gereken']}, sonuç "
-                             f"{r['devam_edenler_gecilirse']}. [{sources}]")
+                             f"{_value(r['devam_edenler_gecilirse'])}. [{sources}]")
         missing = [c["ad"] for c in report["eksik_zorunlu"] if c["durum"] != "devam_ediyor"]
         if missing:
             lines.append(f"- Eksik kalan zorunlu dersler: {', '.join(missing)}")

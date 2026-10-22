@@ -838,3 +838,11 @@ def test_what_if_without_offered_electives_is_unchanged():
     assert "açılmıyor" not in graduation.simulation_text(
         graduation.evaluate(WHAT_IF_SAMPLE, BIG_PLAN), [graduation.simulate(WHAT_IF_SAMPLE, BIG_PLAN, ["Siber Güvenlik"])],
         BIG_PLAN)
+
+
+def test_llm_summary_states_missing_gpa_in_words():
+    # İlk dönem öğrencisinin notlu dersi yok; "GNO None" LLM'i şaşırtıyordu.
+    report = graduation.evaluate(transcript(course(2026, "Güz", "Z1", "Matematik I", 6, None), gpa=None), PLAN)
+    text = graduation.summary_text(report, PLAN)
+    assert "None" not in text
+    assert "GNO henüz yok (notlu ders yok)" in text
