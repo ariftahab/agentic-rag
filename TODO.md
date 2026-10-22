@@ -37,6 +37,11 @@ ikiye ayrıldı (gerekli tool, yan etkisiz). Spec #1 hikâye hikâye kontrol edi
   "kayıt yılınıza göre zorunlu, henüz alınmamış". Mezuniyet şartları (stajlar artık ayrı madde) ve GNO soruları
   doğru. "Alan dışı seçmeli almadım, engel olur mu?" (2023 girişli) düzelmedi: analyze_transcript yerine
   search_regulations çağırıyor, iki durumu anlatıp kayıt yılına bırakıyor. 2 deneme doldu; karar kullanıcıda.
+  Kullanıcı kararı: bu soru şimdilik bırakıldı; agent_v6 varsayılan yapılmadan commit'lendi.
+- **Anlık tool (#18 kapandı, 2026-10-22):** agent_v7 = v6 + request_new_tool (Claude Haiku 5.5, Anthropic sandbox).
+  Canlıda haftalık ders saati 97 sn, AA AKTS toplamı 43 sn sürdü: Haiku dosyaları uzun uzun inceliyor. Sonraki adımlar:
+  dosya şemasını görevle birlikte vermek (keşif turlarını azaltır); agent_v7'yi deneyle ölçmek (sorular_v1 bu yolu
+  kapsamıyor, mevcut tool'larla cevaplanamayan sorular sorular_v2'ye); run.py'nin make_agent'ı CodeRunner vermiyor.
 - **Spec #1 metnini güncelle:** seçmeliler yuva bazlı (her yuva kendi havuzundan, kendi AKTS'si kadar; kullanıcı kararı
   2026-10-22), tool sayısı 6 (+ `confirm_equivalence`, `get_offered_electives`), transkript kaynağı UBYS.
 - **Kalan agent hataları (EXP-003):** "Alan dışı seçmeli almadım, engel olur mu?" yalnız mevzuat arıyor (2023 girişliye
