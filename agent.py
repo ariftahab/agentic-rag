@@ -74,8 +74,24 @@ Kurallar:
 - Bugünün tarihi: {today}.
 - Kısa, net ve Türkçe cevap ver."""
 
-AGENT_PROMPTS = {"agent_v1": _AGENT_V1_SYSTEM}
-AGENT_PROMPT_VERSION = "agent_v1"
+# agent_v2: what-if kuralı (simulate_courses) eklendi; transkript UBYS'den indiriliyor (v1'de OBS yazıyordu).
+_AGENT_V2_SYSTEM = """Sen Bolu Abant İzzet Baysal Üniversitesi (BAİBÜ) Mühendislik Fakültesi için bir danışmanlık asistanısın. Sorulara danışman hocalar da öğrenciler de sorabilir.
+
+Kurallar:
+- Mevzuat sorularında (staj, ders kaydı, sınavlar, yatay geçiş, mezuniyet şartları vb.) search_regulations tool'unu kullan ve cevabı yalnız dönen parçalara dayandır.
+- Kullandığın her bilginin sonunda kaynağını köşeli parantezle belirt (parça etiketlerinde yazan belge adı ve madde).
+- Transkriptle ilgili sorularda (eksik dersler, tamamlanan AKTS, mezuniyet durumu) analyze_transcript tool'unu kullan; sayıları raporda yazdığı gibi aktar ve öğretim planını kaynak olarak göster.
+- "Şu dersleri alırsam AKTS tamamlanır mı?" gibi varsayımsal sorularda simulate_courses tool'unu kullan: dersleri öğretim planındaki adlarıyla ver, karşılaştırılacak her seçeneği ayrı bir küme olarak gönder. Her kümenin tamamlayıp tamamlamadığını ve neyin eksik kaldığını aktar; GNO'nun transkriptteki güncel değer olduğunu belirt.
+- Bütün sayıları tool sonuçlarından al ve olduğu gibi aktar; hesabı tool'lar yapar.
+- Transkript gerektiğinde, UBYS'den indirilen tarihsel transkripti yüklemesini iste; bu dönem alınan dersler (seçmeliler dahil) yalnız tarihsel transkriptte görünür.
+- Ders seçimi ve tercih sorularında kuralı ve hesabı ver, kararı için soranı danışman hocasına yönlendir.
+- Hitapta nötr ol: aynı cevap danışman hocaya da öğrenciye de uysun; transkriptten "transkriptteki öğrenci" gibi üçüncü kişi ifadeleriyle bahset.
+- Tool'lardan dönen bilgi soruyu cevaplamaya yetmiyorsa yalnızca "{no_answer}" yaz ve ilgili birime başvurmayı öner.
+- Bugünün tarihi: {today}.
+- Kısa, net ve Türkçe cevap ver."""
+
+AGENT_PROMPTS = {"agent_v1": _AGENT_V1_SYSTEM, "agent_v2": _AGENT_V2_SYSTEM}
+AGENT_PROMPT_VERSION = "agent_v2"
 
 NO_TRANSCRIPT = ("Bu oturumda yüklenmiş bir transkript yok. Kullanıcıdan UBYS'den indirdiği tarihsel transkripti "
                  "yüklemesini iste.")
@@ -131,6 +147,27 @@ def make_tools(retriever, plan, transcript, confirmations, today):
         saved = f"{course['ad']} → {target['ad']}" if target else f"{course['ad']}: plandaki bir derse karşılık gelmiyor"
         return f"Kaydedildi ({saved}). Güncel analiz:\n\n" + analyze_transcript()
 
+    def simulate_courses(course_sets: list[list[str]]) -> str:
+        """What-if: oturumdaki transkripte varsayımsal dersler ekleyip mezuniyet şartlarını yeniden hesaplar. Her küme
+        ayrı hesaplanır (bu dönemin dersleri ve kümedeki dersler geçilirse); hangi kümenin şartları tamamladığını,
+        hangisinin tamamlamadığını ve eksik kalanları döndürür. Yalnız AKTS ve ders şartları hesaplanır; GNO
+        transkriptteki güncel değerdir.
+
+        Args:
+            course_sets: Karşılaştırılacak ders kümeleri; her küme öğretim planındaki ders adlarının listesi
+                (ör. [["Yapay Zeka", "Siber Güvenlik"], ["Görüntü İşleme"]]). Tek seçenek için tek küme.
+        """
+        if transcript is None:
+            return NO_TRANSCRIPT
+        try:
+            reports = [graduation.simulate(transcript, plan, names, confirmations=confirmations)
+                       for names in course_sets]
+        except graduation.UnknownCourseError as e:
+            return (f"{e}. Dersleri öğretim planındaki adlarıyla ver (analiz raporundaki eksik dersler ya da seçmeli "
+                    "havuzlarındaki adlar); ad belirsizse kullanıcıya hangi dersi kastettiğini sor.")
+        return graduation.simulation_text(graduation.evaluate(transcript, plan, confirmations=confirmations),
+                                          reports, plan)
+
     def get_course_schedule(gun: str = "bugün", sinif: int = 0, dersler: list[str] | None = None) -> str:
         """Bilgisayar Mühendisliği bu dönemki haftalık ders programından bir günün derslerini saat, şube ve derslikle
         döndürür; resmi tatili, hafta sonunu ve ders dönemi dışını belirtir. Sınıf ve ders verilmezse transkriptteki
@@ -159,7 +196,7 @@ def make_tools(retriever, plan, transcript, confirmations, today):
                      "bütün şubeler listelendi.")
         return text
 
-    tools = (search_regulations, analyze_transcript, confirm_equivalence, get_course_schedule)
+    tools = (search_regulations, analyze_transcript, confirm_equivalence, simulate_courses, get_course_schedule)
     return [StructuredTool.from_function(f) for f in tools]
 
 

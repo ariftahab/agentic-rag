@@ -126,6 +126,46 @@ def test_confirm_equivalence_with_unknown_plan_course_is_not_recorded():
     assert "Kuantum Fiziği" in content and "bulunamadı" in content
 
 
+ELECTIVE_PLAN = {**PLAN, "secmeli_yuvalar": [
+    {"ad": "Seçmeli VII", "kod": "S7", "yariyil": 7, "akts": 8, "tur": "bolum",
+     "havuz": [{"kod": "YZ", "ad": "Yapay Zeka", "akts": 4}, {"kod": "YSA", "ad": "Yapay Sinir Ağları", "akts": 4}]}]}
+
+
+def simulate_reply(args, transcript):
+    llm = ScriptedChatModel([
+        AIMessage("", tool_calls=[{"name": "simulate_courses", "args": args, "id": "1"}]),
+        AIMessage("nihai cevap"),
+    ])
+    AdvisorAgent(retriever=None, llm=llm, plan=ELECTIVE_PLAN).ask("Bu dersleri alırsam AKTS tamamlanır mı?",
+                                                                  transcript=transcript)
+    return next(m for m in llm.received[-1] if isinstance(m, ToolMessage)).content
+
+
+def test_simulate_courses_evaluates_each_set_on_the_session_transcript():
+    sets = [["Yapay Zeka", "Yapay Sinir Ağları"], ["Yapay Zeka"]]
+    expected = graduation.simulation_text(
+        graduation.evaluate(SAMPLE, ELECTIVE_PLAN),
+        [graduation.simulate(SAMPLE, ELECTIVE_PLAN, names) for names in sets], ELECTIVE_PLAN)
+    assert simulate_reply({"course_sets": sets}, SAMPLE) == expected
+
+
+def test_simulate_courses_with_unknown_course_asks_for_plan_names():
+    content = simulate_reply({"course_sets": [["Kuantum Fiziği"]]}, SAMPLE)
+    assert "Kuantum Fiziği" in content and "öğretim planındaki adlarıyla" in content
+
+
+def test_simulate_courses_without_transcript_asks_for_historical():
+    assert simulate_reply({"course_sets": [["Yapay Zeka"]]}, None) == NO_TRANSCRIPT
+
+
+def test_default_prompt_knows_the_what_if_tool():
+    from agent import AGENT_PROMPTS, AGENT_PROMPT_VERSION
+
+    assert AGENT_PROMPT_VERSION == "agent_v2"
+    assert "simulate_courses" in AGENT_PROMPTS["agent_v2"] and "UBYS" in AGENT_PROMPTS["agent_v2"]
+    assert "OBS'den" in AGENT_PROMPTS["agent_v1"]          # eski sürüm değişmez
+
+
 def schedule_reply(args, transcript):
     llm = ScriptedChatModel([
         AIMessage("", tool_calls=[{"name": "get_course_schedule", "args": args, "id": "1"}]),
