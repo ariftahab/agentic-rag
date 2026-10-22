@@ -127,7 +127,7 @@ olmak için kaç kredi lazım" gibi tool calling). Belge ne kadar az o kadar iyi
   (2024-2025 öğretim planı, yönetmelik kuralları). Komut: `python graduation.py <pdf>`.
 - `agent.py` — elle yazılmış agent döngüsü (`bind_tools`, LangGraph yok), tool'lar `search_regulations`,
   `analyze_transcript`, `confirm_equivalence`, `simulate_courses` (what-if), `get_course_schedule`,
-  `get_offered_electives`; prompt `agent_v3` (v1, v2 korunur).
+  `get_offered_electives`; prompt `agent_v4` (EXP-003; v1-v3 korunur).
 - `schedule.py` — bu dönemin ders programı; günün dersleri ve yuva etiketlerinden açılan seçmeliler.
 - `chat.py` — CLI (`--agent --transkript <pdf>` agent yolu). `app/` — FastAPI (`api.py`), iş mantığı ve JSONL log'ları (`service.py`, `logs/`), vanilla JS frontend
   (`static/`: sohbet, belgeler, /admin değerlendirme), `main.py` (tek sunucu).

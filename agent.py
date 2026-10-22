@@ -101,7 +101,7 @@ Kurallar:
 
 AGENT_PROMPTS = {"agent_v1": _AGENT_V1_SYSTEM, "agent_v2": _AGENT_V2_SYSTEM, "agent_v3": _AGENT_V3_SYSTEM,
                  "agent_v4": _AGENT_V4_SYSTEM}
-AGENT_PROMPT_VERSION = "agent_v3"
+AGENT_PROMPT_VERSION = "agent_v4"
 
 # agent_v4'ten itibaren prompt'taki "Oturum durumu" satırı (eski sürümlerde yer tutucu yok, format onu yok sayar).
 TRANSCRIPT_LOADED = ("kullanıcının tarihsel transkripti bu oturumda yüklü; analyze_transcript, simulate_courses ve "

@@ -166,8 +166,8 @@ def test_simulate_courses_without_transcript_asks_for_historical():
 def test_default_prompt_knows_the_what_if_and_offered_electives_tools():
     from agent import AGENT_PROMPTS, AGENT_PROMPT_VERSION
 
-    assert AGENT_PROMPT_VERSION == "agent_v3"
-    assert "simulate_courses" in AGENT_PROMPTS["agent_v3"] and "get_offered_electives" in AGENT_PROMPTS["agent_v3"]
+    assert AGENT_PROMPT_VERSION == "agent_v4"  # EXP-003: transkript sorularında cevaplar düzeldi
+    assert "simulate_courses" in AGENT_PROMPTS[AGENT_PROMPT_VERSION] and "get_offered_electives" in AGENT_PROMPTS[AGENT_PROMPT_VERSION]
     assert "get_offered_electives" not in AGENT_PROMPTS["agent_v2"]      # eski sürümler değişmez
     assert "simulate_courses" in AGENT_PROMPTS["agent_v2"] and "UBYS" in AGENT_PROMPTS["agent_v2"]
     assert "OBS'den" in AGENT_PROMPTS["agent_v1"]
