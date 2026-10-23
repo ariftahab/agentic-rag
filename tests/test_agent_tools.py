@@ -589,3 +589,11 @@ def test_single_model_expected_code_tool_is_code_execution():
     assert run.expected_tools(expected, True) == [{"name": "analyze_transcript"}, {"name": "code_execution"}]
     row = {"tool_calls": [{"name": "code_execution", "args": {}}]}
     assert run.code_tool_values({"beklenen_tool_lar": expected}, row)["anlik_gerekli"] == 1
+
+
+def test_agent_h2_adds_only_the_arithmetic_rule():
+    from agent import AGENT_PROMPTS
+    h1, h2 = AGENT_PROMPTS["agent_h1"].splitlines(), AGENT_PROMPTS["agent_h2"].splitlines()
+    added = [line for line in h2 if line not in h1]
+    assert len(added) == 1 and "code_execution" in added[0] and "olduğu gibi aktar" in added[0]
+    assert [line for line in h1 if line not in h2] == []

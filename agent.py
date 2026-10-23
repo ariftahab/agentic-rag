@@ -225,6 +225,14 @@ assert _H1_OWN_STATUS_RULE != _V12_OWN_STATUS_RULE and _V12_HANDOFF_RULE in _AGE
 _AGENT_H1_SYSTEM = _AGENT_V12_SYSTEM.replace(_V12_OWN_STATUS_RULE, _H1_OWN_STATUS_RULE).replace(
     _V12_HANDOFF_RULE, _H1_CODE_RULE)
 assert "request_new_tool" not in _AGENT_H1_SYSTEM
+# agent_h2: EXP-010'da haftalık ders saati kod çalıştırılmadan, beş günün get_course_schedule sonuçları elle toplanarak
+# yanlış hesaplandı (14,5 saat, doğrusu 27; üç ders eksik). Bu sürümde çok değerli hesaplar kodda.
+_H2_ARITHMETIC_RULE = ("\n- Cevap, tool sonuçlarındaki birden fazla değerin toplanmasını, sayılmasını ya da karşılaştırılmasını "
+                       "gerektiriyorsa (ör. haftalık toplam ders saati, birkaç dersin ortalaması) hesabı code_execution ile "
+                       "sandbox'taki dosyalardan yap ve sayıları kodun çıktısından al. Raporda hazır yazan bir sayıyı (ör. "
+                       "dönem sayısı, harf notu dağılımı, kalan ders sayısı) olduğu gibi aktar.")
+_AGENT_H2_SYSTEM = _AGENT_H1_SYSTEM.replace(_H1_CODE_RULE, _H1_CODE_RULE + _H2_ARITHMETIC_RULE)
+assert _AGENT_H2_SYSTEM != _AGENT_H1_SYSTEM
 
 AGENT_PROMPTS = {"agent_v1": _AGENT_V1_SYSTEM, "agent_v2": _AGENT_V2_SYSTEM, "agent_v3": _AGENT_V3_SYSTEM,
                  "agent_v4": _AGENT_V4_SYSTEM, "agent_v5": _AGENT_V5_SYSTEM,
@@ -235,31 +243,32 @@ AGENT_PROMPTS = {"agent_v1": _AGENT_V1_SYSTEM, "agent_v2": _AGENT_V2_SYSTEM, "ag
                  # agent_v11: prompt v10 ile aynı; tool'lar yalnız mevzuattaki kuralları kullanır (REGULATION_RULES_PROMPTS).
                  "agent_v11": _AGENT_V10_SYSTEM, "agent_v12": _AGENT_V12_SYSTEM,
                  # agent_v13: prompt v12 ile aynı; rapora not tablosu, devir notunda katsayıların kaynağı (GRADE_TABLE_PROMPTS).
-                 "agent_v13": _AGENT_V12_SYSTEM, "agent_h1": _AGENT_H1_SYSTEM}
+                 "agent_v13": _AGENT_V12_SYSTEM, "agent_h1": _AGENT_H1_SYSTEM,
+                 "agent_h2": _AGENT_H2_SYSTEM}
 AGENT_PROMPT_VERSION = "agent_v4"
 # Sonradan eklenen tool yalnız onu anlatan sürümlerde açılır: eski sürümlerin deneyleri (EXP-002, EXP-003) aynı tool
 # listesiyle tekrar üretilebilsin.
-REQUIREMENTS_TOOL_PROMPTS = {"agent_v5", "agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1"}
+REQUIREMENTS_TOOL_PROMPTS = {"agent_v5", "agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2"}
 # Bu sürümlerde analyze_transcript kayıt yılını yazar, get_graduation_requirements transkript yüklüyse kişisel
 # sorular için analyze_transcript'e yönlendirir (EXP-004 aynı çıktılarla tekrar üretilebilsin).
-TRANSCRIPT_DETAIL_PROMPTS = {"agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1"}
+TRANSCRIPT_DETAIL_PROMPTS = {"agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2"}
 # Anlık tool (request_new_tool, codeact) yalnız bu sürümlerde açılır.
-CODE_TOOL_PROMPTS = {"agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1"}
+CODE_TOOL_PROMPTS = {"agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2"}
 # Bu sürümlerde request_new_tool tool olarak çalışmaz, devir sinyalidir (bkz. _AGENT_V9_SYSTEM).
 HANDOFF_PROMPTS = {"agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13"}
 # Not ortalaması tool'u (simulate_grades, gpa.py) yalnız bu sürümlerde açılır.
-GRADES_TOOL_PROMPTS = {"agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1"}
+GRADES_TOOL_PROMPTS = {"agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2"}
 # Bu sürümlerde mezuniyet kuralları yalnız mevzuattaki metinle (graduation.load_rules(regulation_only=True)): toplam
 # AKTS Madde 22/1'deki 240; eski kural dosyasındaki "planın toplamı bağlayıcıdır" eklemesi (244) mevzuatta yok.
-REGULATION_RULES_PROMPTS = {"agent_v11", "agent_v12", "agent_v13", "agent_h1"}
+REGULATION_RULES_PROMPTS = {"agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2"}
 # Bu sürümlerde analyze_transcript ders geçmişini de yazar (dönemler, notlar, başarısız ve tekrarlanan dersler, kalan ders
 # sayısı); tool açıklaması da raporun içeriğini sayar.
-TRANSCRIPT_HISTORY_PROMPTS = {"agent_v12", "agent_v13", "agent_h1"}
+TRANSCRIPT_HISTORY_PROMPTS = {"agent_v12", "agent_v13", "agent_h1", "agent_h2"}
 # Bu sürümlerde analyze_transcript yönetmelikteki harf notu tablosunu ve ortalama tanımını da yazar; devirde Haiku
 # katsayıları oradan alır (HANDOFF_NOTE_V13).
-GRADE_TABLE_PROMPTS = {"agent_v13", "agent_h1"}
+GRADE_TABLE_PROMPTS = {"agent_v13", "agent_h1", "agent_h2"}
 # Tek model (branch exp/haiku-agent): döngünün tamamı CodeRunner'ın modeliyle; LLM (Gemini) kullanılmaz.
-SINGLE_MODEL_PROMPTS = {"agent_h1"}
+SINGLE_MODEL_PROMPTS = {"agent_h1", "agent_h2"}
 ANALYZE_TRANSCRIPT_HISTORY_DOC = """Oturumda yüklü transkripti öğretim planıyla karşılaştırır: şu an geçilen AKTS, bu dönemin dersleri
         geçilirse ulaşılacak AKTS, eksik zorunlu dersler (durumlarıyla), açık seçmeli yuvaları ve transkriptin ders
         geçmişi: dönem dönem bütün dersler ve harf notları, dönem sayısı, yarıyıl ortalamaları, harf notu dağılımı,
