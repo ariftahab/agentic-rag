@@ -208,6 +208,23 @@ _V13_HANDOFF_RULES_LINE = ("- Harf notu katsayıları ve ortalama formülü içi
                            "search_regulations ile bul ve kaynağıyla kullan.")
 assert _HANDOFF_RULES_LINE in HANDOFF_NOTE
 HANDOFF_NOTE_V13 = HANDOFF_NOTE.replace(_HANDOFF_RULES_LINE, _V13_HANDOFF_RULES_LINE)
+# agent_h1 (branch exp/haiku-agent): tek model. Gemini yok; döngünün tamamı Claude Haiku'da (CodeRunner.handoff ilk
+# turdan): agent'ın tool'ları ve code_execution aynı modelde, devir sinyali (request_new_tool) yok. Tool'lar ve
+# raporlar agent_v13 ile aynı; prompt v13'ün kuralları, devir kuralı yerine code_execution kuralıyla.
+_H1_OWN_STATUS_RULE = _V12_OWN_STATUS_RULE.replace(
+    "verilerle ek bir hesap gerekiyorsa request_new_tool tool'unu çağır.",
+    "verilerle ek bir hesap gerekiyorsa code_execution ile hesapla.")
+_H1_CODE_RULE = ("- Soruyu cevaplamak için bir hesap ya da sorgu gerekiyor ve yukarıdaki tool'ların hiçbiri bunu yapmıyorsa (ör. "
+                 "ders programında bir sınıfın haftalık toplam ders saati, transkriptteki derslerden raporda hazır olmayan "
+                 "bir liste ya da toplam) code_execution ile Python kodu yaz ve çalıştır: sandbox'taki dosyaları (yolları ve "
+                 "yapıları ilk mesajda) oku ve bütün sayıları kodun çıktısından al. Koddaki harf notu katsayıları ve "
+                 "ortalama formülü için analyze_transcript raporundaki \"HARF NOTLARI, KATSAYILAR VE ORTALAMA\" tablosunu "
+                 "kullan; konuşmada bu rapor yoksa önce analyze_transcript'i çağır. Görevin belirsiz kaldığı noktada (ör. "
+                 "şube) yaptığın varsayımı açıkça yaz ve cevapta hesabın anlık üretildiğini belirt.")
+assert _H1_OWN_STATUS_RULE != _V12_OWN_STATUS_RULE and _V12_HANDOFF_RULE in _AGENT_V12_SYSTEM
+_AGENT_H1_SYSTEM = _AGENT_V12_SYSTEM.replace(_V12_OWN_STATUS_RULE, _H1_OWN_STATUS_RULE).replace(
+    _V12_HANDOFF_RULE, _H1_CODE_RULE)
+assert "request_new_tool" not in _AGENT_H1_SYSTEM
 
 AGENT_PROMPTS = {"agent_v1": _AGENT_V1_SYSTEM, "agent_v2": _AGENT_V2_SYSTEM, "agent_v3": _AGENT_V3_SYSTEM,
                  "agent_v4": _AGENT_V4_SYSTEM, "agent_v5": _AGENT_V5_SYSTEM,
@@ -218,29 +235,31 @@ AGENT_PROMPTS = {"agent_v1": _AGENT_V1_SYSTEM, "agent_v2": _AGENT_V2_SYSTEM, "ag
                  # agent_v11: prompt v10 ile aynı; tool'lar yalnız mevzuattaki kuralları kullanır (REGULATION_RULES_PROMPTS).
                  "agent_v11": _AGENT_V10_SYSTEM, "agent_v12": _AGENT_V12_SYSTEM,
                  # agent_v13: prompt v12 ile aynı; rapora not tablosu, devir notunda katsayıların kaynağı (GRADE_TABLE_PROMPTS).
-                 "agent_v13": _AGENT_V12_SYSTEM}
+                 "agent_v13": _AGENT_V12_SYSTEM, "agent_h1": _AGENT_H1_SYSTEM}
 AGENT_PROMPT_VERSION = "agent_v4"
 # Sonradan eklenen tool yalnız onu anlatan sürümlerde açılır: eski sürümlerin deneyleri (EXP-002, EXP-003) aynı tool
 # listesiyle tekrar üretilebilsin.
-REQUIREMENTS_TOOL_PROMPTS = {"agent_v5", "agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13"}
+REQUIREMENTS_TOOL_PROMPTS = {"agent_v5", "agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1"}
 # Bu sürümlerde analyze_transcript kayıt yılını yazar, get_graduation_requirements transkript yüklüyse kişisel
 # sorular için analyze_transcript'e yönlendirir (EXP-004 aynı çıktılarla tekrar üretilebilsin).
-TRANSCRIPT_DETAIL_PROMPTS = {"agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13"}
+TRANSCRIPT_DETAIL_PROMPTS = {"agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1"}
 # Anlık tool (request_new_tool, codeact) yalnız bu sürümlerde açılır.
-CODE_TOOL_PROMPTS = {"agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13"}
+CODE_TOOL_PROMPTS = {"agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1"}
 # Bu sürümlerde request_new_tool tool olarak çalışmaz, devir sinyalidir (bkz. _AGENT_V9_SYSTEM).
 HANDOFF_PROMPTS = {"agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13"}
 # Not ortalaması tool'u (simulate_grades, gpa.py) yalnız bu sürümlerde açılır.
-GRADES_TOOL_PROMPTS = {"agent_v10", "agent_v11", "agent_v12", "agent_v13"}
+GRADES_TOOL_PROMPTS = {"agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1"}
 # Bu sürümlerde mezuniyet kuralları yalnız mevzuattaki metinle (graduation.load_rules(regulation_only=True)): toplam
 # AKTS Madde 22/1'deki 240; eski kural dosyasındaki "planın toplamı bağlayıcıdır" eklemesi (244) mevzuatta yok.
-REGULATION_RULES_PROMPTS = {"agent_v11", "agent_v12", "agent_v13"}
+REGULATION_RULES_PROMPTS = {"agent_v11", "agent_v12", "agent_v13", "agent_h1"}
 # Bu sürümlerde analyze_transcript ders geçmişini de yazar (dönemler, notlar, başarısız ve tekrarlanan dersler, kalan ders
 # sayısı); tool açıklaması da raporun içeriğini sayar.
-TRANSCRIPT_HISTORY_PROMPTS = {"agent_v12", "agent_v13"}
+TRANSCRIPT_HISTORY_PROMPTS = {"agent_v12", "agent_v13", "agent_h1"}
 # Bu sürümlerde analyze_transcript yönetmelikteki harf notu tablosunu ve ortalama tanımını da yazar; devirde Haiku
 # katsayıları oradan alır (HANDOFF_NOTE_V13).
-GRADE_TABLE_PROMPTS = {"agent_v13"}
+GRADE_TABLE_PROMPTS = {"agent_v13", "agent_h1"}
+# Tek model (branch exp/haiku-agent): döngünün tamamı CodeRunner'ın modeliyle; LLM (Gemini) kullanılmaz.
+SINGLE_MODEL_PROMPTS = {"agent_h1"}
 ANALYZE_TRANSCRIPT_HISTORY_DOC = """Oturumda yüklü transkripti öğretim planıyla karşılaştırır: şu an geçilen AKTS, bu dönemin dersleri
         geçilirse ulaşılacak AKTS, eksik zorunlu dersler (durumlarıyla), açık seçmeli yuvaları ve transkriptin ders
         geçmişi: dönem dönem bütün dersler ve harf notları, dönem sayısı, yarıyıl ortalamaları, harf notu dağılımı,
@@ -501,6 +520,9 @@ class AdvisorAgent:
         self.with_history = prompt_version in TRANSCRIPT_HISTORY_PROMPTS
         self.with_grade_table = prompt_version in GRADE_TABLE_PROMPTS
         self.handoff_note = HANDOFF_NOTE_V13 if self.with_grade_table else HANDOFF_NOTE
+        self.single_model = prompt_version in SINGLE_MODEL_PROMPTS
+        if self.single_model:  # kurallar system prompt'ta; devir notu ("sana devredildi") yok
+            self.handoff_note = ""
         # Anlık tool yalnız v7'de ve bir çalıştırıcı verildiyse açılır (testler sahtesini verir).
         self.code_runner = code_runner if prompt_version in CODE_TOOL_PROMPTS else None
         self.documents = external_documents(plan, schedule.load_schedule())
@@ -516,8 +538,8 @@ class AdvisorAgent:
         store, chunks, _ = ingest.load_index(cfg)
         # timeout: tool sonucu içeren isteklerde API bazen dakikalarca cevap vermiyor (2026-10-21); süresiz beklemek
         # yerine hata verilir, chat.py bunu yakalayıp sohbete devam eder.
-        llm = ChatGoogleGenerativeAI(model=AGENT_LLM_MODEL, temperature=cfg.llm_temperature, max_retries=2,
-                                     timeout=REQUEST_TIMEOUT_S)
+        llm = None if prompt_version in SINGLE_MODEL_PROMPTS else ChatGoogleGenerativeAI(
+            model=AGENT_LLM_MODEL, temperature=cfg.llm_temperature, max_retries=2, timeout=REQUEST_TIMEOUT_S)
         import codeact  # anthropic paketi yalnız anlık tool'u kullanan sürümde gerekir
         return cls(Retriever(cfg, store, chunks), llm, graduation.load_plan(), prompt_version=prompt_version,
                    code_runner=codeact.CodeRunner() if prompt_version in CODE_TOOL_PROMPTS else None)
@@ -539,10 +561,13 @@ class AdvisorAgent:
                            with_grade_table=self.with_grade_table,
                            code_runner=self.code_runner, generated=generated, found=found)
         by_name = {t.name: t for t in tools}
-        llm = self.llm.bind_tools(tools)
         system = self.system.format(no_answer=config.NO_ANSWER, today=today.strftime("%d.%m.%Y"),
                                     transcript_state=TRANSCRIPT_LOADED if transcript else TRANSCRIPT_MISSING)
         messages = [SystemMessage(system), *_to_messages(history), HumanMessage(question)]
+        if self.single_model:
+            return self._ask_single(question, system, messages, tools, transcript, generated, found, documents,
+                                    on_tool_call)
+        llm = self.llm.bind_tools(tools)
 
         calls, usage = [], []
         for turn in range(1, MAX_TURNS + 1):
@@ -578,6 +603,22 @@ class AdvisorAgent:
                         "documents": list(documents.values())}
         return {"answer": TURN_LIMIT_ANSWER, "tool_calls": calls, "turns": MAX_TURNS, "usage": token_usage(usage),
                 "generated_code": generated, "sources": _unique_chunks(found), "documents": list(documents.values())}
+
+    def _ask_single(self, question, system, messages, tools, transcript, generated, found, documents, on_tool_call):
+        """Tek model (agent_h1): döngünün tamamı ilk turdan Haiku'da (devirle aynı yol: agent'ın tool'ları ve
+        code_execution). Haiku kod çalıştırdıysa tool çağrılarına "code_execution" eklenir ve kayıt anlık tool sayılır;
+        çalıştırmadıysa kayıt düşer (anlık tool metrikleri Gemini'li sürümlerle aynı anlamda kalsın)."""
+        calls = []
+        answer = self._hand_off({"args": {"gorev": question}}, system, messages, tools, transcript, calls, generated,
+                                found, documents, on_tool_call)
+        record = generated[-1]
+        if any(step["tip"] == "kod" for step in record["adimlar"]):
+            calls.append({"name": "code_execution", "args": {}})
+        else:
+            generated.pop()
+        return {"answer": answer, "tool_calls": calls, "turns": record["istek_sayisi"],
+                "usage": {**record["tokens"], "reasoning": 0}, "generated_code": generated,
+                "sources": _unique_chunks(found), "documents": list(documents.values())}
 
     def _hand_off(self, call, system, messages, tools, transcript, calls, generated, found, documents, on_tool_call):
         """Devir (agent_v9): döngü aynı mesaj listesiyle Haiku'yla devam eder; Haiku agent'ın tool'larını (devir tool'u

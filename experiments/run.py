@@ -258,13 +258,18 @@ def make_agent(exp_id, cfg):
     from langchain_google_genai import ChatGoogleGenerativeAI
     import graduation
     import ingest
-    from agent import CODE_TOOL_PROMPTS, REQUEST_TIMEOUT_S, AdvisorAgent
+    from agent import CODE_TOOL_PROMPTS, REQUEST_TIMEOUT_S, SINGLE_MODEL_PROMPTS, AdvisorAgent
     from rag import Retriever
     ensure_index(exp_id, cfg)
     store, chunks, manifest = ingest.load_index(cfg)
+    code_runner = None
+    if cfg.prompt_version in SINGLE_MODEL_PROMPTS:  # tek model (agent_h1): döngünün tamamı config'teki Claude modelinde
+        import codeact
+        agent = AdvisorAgent(Retriever(cfg, store, chunks), None, graduation.load_plan(),
+                             prompt_version=cfg.prompt_version, code_runner=codeact.CodeRunner(model=cfg.llm_model))
+        return agent, manifest
     llm = ChatGoogleGenerativeAI(model=cfg.llm_model, temperature=cfg.llm_temperature, max_retries=2,
                                  timeout=REQUEST_TIMEOUT_S)
-    code_runner = None
     if cfg.prompt_version in CODE_TOOL_PROMPTS:  # anlık tool (#18): production'daki gibi Claude Haiku sandbox'ı
         import codeact
         code_runner = codeact.CodeRunner()
@@ -284,6 +289,7 @@ def agent_rows(agent, items, wait, plan, transcripts_dir=None):
     import graduation
     # Anlık tool metrikleri yalnız tool'un açık olduğu koşularda: eski sürümlerde "çağrılmadı" bilgi taşımaz.
     code_tool = getattr(agent, "code_runner", None) is not None
+    single = getattr(agent, "single_model", False)
     transcripts = {}
     rows = []
     for n, item in enumerate(items):
@@ -313,7 +319,7 @@ def agent_rows(agent, items, wait, plan, transcripts_dir=None):
         if "beklenen" in item or item.get("cevapsiz"):
             row["answer_ok"] = int(answer_ok(item, row["answer"]))
         if "beklenen_tool_lar" in item:
-            row.update(ev.tool_selection(item["beklenen_tool_lar"], row["tool_calls"]))
+            row.update(ev.tool_selection(expected_tools(item["beklenen_tool_lar"], single), row["tool_calls"]))
         if code_tool:
             row.update(code_tool_values(item, row))
         if "beklenen_sayilar" in item:
@@ -332,6 +338,15 @@ def agent_rows(agent, items, wait, plan, transcripts_dir=None):
 
 
 CODE_TOOL = "request_new_tool"
+# Tek model (agent_h1): anlık tool, Haiku'nun code_execution kullanmasıdır (devir sinyali yok).
+SINGLE_MODEL_CODE_TOOL = "code_execution"
+
+
+def expected_tools(expected, single_model):
+    """Tek modelde beklenen request_new_tool, code_execution kullanımı demektir (argümanı yok); diğerleri aynı."""
+    if not single_model:
+        return expected
+    return [{"name": SINGLE_MODEL_CODE_TOOL} if e["name"] == CODE_TOOL else e for e in expected]
 
 
 def code_tool_values(item, row):
@@ -343,7 +358,7 @@ def code_tool_values(item, row):
     kelimeleri içeriyor mu; Gemini'nin son cevabından ayrı ölçülür: ikisi farklıysa hata aktarımda, aynıysa hesapta.
     """
     expected = any(e["name"] == CODE_TOOL for e in item.get("beklenen_tool_lar") or [])
-    called = any(c["name"] == CODE_TOOL for c in row["tool_calls"])
+    called = any(c["name"] in (CODE_TOOL, SINGLE_MODEL_CODE_TOOL) for c in row["tool_calls"])
     out = {"anlik_dogru": int(called == expected), ("anlik_gerekli" if expected else "anlik_gereksiz"): int(called)}
     answers = [r["haiku_cevabi"] for r in row.get("anlik_tool", []) if r.get("haiku_cevabi")]
     if expected and answers and ("beklenen" in item or "beklenen_sayilar" in item):

@@ -544,3 +544,48 @@ def test_plan_and_schedule_pdfs_become_document_sources():
                         transcript=SAMPLE)
     assert {d["source"] for d in result["documents"]} == {"öğretim planı.pdf", "2026_27_Güz_Lisans_v2.pdf"}
     assert all(d["title"].endswith(f"(data/{d['source']})") for d in result["documents"])
+
+
+# --- Tek model (agent_h1, branch exp/haiku-agent): döngünün tamamı Haiku'da ---
+
+class FakeSingleRunner(FakeHandoffRunner):
+    def __init__(self, code=False):
+        super().__init__()
+        self.code = code
+
+    def handoff(self, system, messages, tools, execute, files):
+        out = super().handoff(system, messages, tools, execute, files)
+        if self.code:
+            out["steps"] = [{"tip": "kod", "kod": "print(1)", "cikti": "1"}] + out["steps"]
+        return out
+
+
+def test_agent_h1_runs_the_whole_loop_on_the_code_model():
+    from agent import AGENT_PROMPTS
+    assert "request_new_tool" not in AGENT_PROMPTS["agent_h1"] and "code_execution" in AGENT_PROMPTS["agent_h1"]
+    runner = FakeSingleRunner()
+    result = AdvisorAgent(retriever=None, llm=None, plan=graduation.load_plan(), prompt_version="agent_h1",
+                          code_runner=runner).ask("Mezun olmak için neyim eksik?", transcript=SAMPLE)
+    assert result["answer"] == "Haiku cevabı" and result["turns"] == 2
+    assert [c["name"] for c in result["tool_calls"]] == ["analyze_transcript"]
+    assert result["generated_code"] == []                     # kod çalışmadı: anlık tool sayılmaz
+    assert "request_new_tool" not in runner.received["tools"] and "simulate_grades" in runner.received["tools"]
+    assert "DEVİR" not in runner.received["system"] and runner.received["system"].startswith("Sen")
+    assert set(runner.received["files"]) == {"ogretim_plani.json", "ders_programi.json", "transkript.json"}
+
+
+def test_agent_h1_marks_code_execution_as_the_code_tool():
+    result = AdvisorAgent(retriever=None, llm=None, plan=graduation.load_plan(), prompt_version="agent_h1",
+                          code_runner=FakeSingleRunner(code=True)).ask("Kaç dersi ilk denemede geçtim?",
+                                                                       transcript=SAMPLE)
+    assert [c["name"] for c in result["tool_calls"]] == ["analyze_transcript", "code_execution"]
+    assert len(result["generated_code"]) == 1 and result["generated_code"][0]["gorev"] == "Kaç dersi ilk denemede geçtim?"
+
+
+def test_single_model_expected_code_tool_is_code_execution():
+    from experiments import run
+    expected = [{"name": "analyze_transcript"}, {"name": "request_new_tool", "args": {"transkript_gerekli": True}}]
+    assert run.expected_tools(expected, False) == expected
+    assert run.expected_tools(expected, True) == [{"name": "analyze_transcript"}, {"name": "code_execution"}]
+    row = {"tool_calls": [{"name": "code_execution", "args": {}}]}
+    assert run.code_tool_values({"beklenen_tool_lar": expected}, row)["anlik_gerekli"] == 1
