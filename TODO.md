@@ -18,9 +18,9 @@ Durum: agent varsayılanı `agent_v4`; en yeni sürüm `agent_v7` (v6 + anlık t
   (3) tool çıktısını aktarırken uydurma (CC katsayısı 2,00, "koşullu geçer"). Production agent hâlâ agent_v4.
 - **240 düzeltmesi (2026-10-23, 5a7743b):** kural dosyasındaki "planın toplamı bağlayıcıdır" mevzuatta yoktu (244);
   agent_v11 yalnız Madde 22/1 alıntısını kullanır ("en az 240 AKTS"), eski sürümler değişmedi. Teşhis: mezuniyet
-  şartları ve "neyim eksik?" cevapları 240 + Madde 22, 244 yok. **Denetimde kalan, kullanıcı kararı bekleyen iki nokta:**
-  seçmeli yuva kuralı ("fazla AKTS başka yuvaya sayılmaz") Madde 35/1-a'da yok (2026-10-22 kullanıcı kararı);
-  gpa.py kesirli başarı puanını yuvarlıyor (yönetmelik belirtmiyor, çıktıda işaretli).
+  şartları ve "neyim eksik?" cevapları 240 + Madde 22, 244 yok. Denetimin kalan iki noktası (kullanıcı kararı,
+  d306c8a, 7b65790): yuva kuralı v11'de ayrı kural, kaynağı öğretim planı (bölüm uygulaması), Madde 35'e atfedilmiyor;
+  gpa.py puanı yuvarlamıyor (vize/final puanı kesirli olmaz).
 - **(Çözüldü, EXP-008) Sonraki iş adayı (EXP-005 bulgusu):** puan → harf notu → ortalama zinciri hiç kurulmuyor: yönetmelikteki katsayı
   tablosu (BB 3,50) ve GNO kuralları sandbox'ta yok, agent mevzuattan bulduğunu göreve aktarmıyor, Haiku standart YÖK
   tablosunu varsayıyor. Seçenekler: not tablosunu sandbox'a dosya olarak vermek ya da deterministik bir GNO what-if tool'u.
