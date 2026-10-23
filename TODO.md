@@ -41,6 +41,13 @@ Durum: agent varsayılanı `agent_v4`; en yeni sürüm `agent_v7` (v6 + anlık t
   GNO'yu 3,01 hesapladı (tutarsızlığı fark etti ama cevapladı); (3) şeref sorusunda analyze_transcript çağrılmadı
   (GNO yok), Oyun Programlama what-if'i tur sınırına takıldı (get_offered_electives ×4). Latency yorumlanamaz:
   kota dolarken tek tool'lu sorular bile 40-70 sn (ortalama 4,3 → 23,8 sn).
+- **agent_v13 (2026-10-23, commit'siz, working tree'de `agent.py`, `gpa.py`, `graduation.py`, testler; teşhis
+  bekliyor, kota doldu):** kullanıcı kararı: katsayıları rapordan çeksin. analyze_transcript raporuna Madde 27/1
+  tablosu (E/I, DZ/NA ve ortalamaya katılmayan notlar dahil) ve Madde 28 ortalama tanımı; Haiku'nun devir notu
+  "katsayıları bu tablodan al, rapor yoksa önce analyze_transcript". Ayrıca (kullanıcı kararı) gpa.py v13'te E/I ve
+  DZ/NA'yı ortalamaya 0,00 ile katar (Madde 27/2; eski sürümler katmıyordu, fixture'larda yok). Bitti tanımı:
+  "Erasmus dersleri sayılmasaydı ortalamam?" 3,49 ve katsayılar rapordan; diğer üç devir sorusu bozulmuyor.
+  Komut: `teshis_agent.py EXP-009 agent_v13 D01,D02,D03,D04`. Sonra EXP-009 tam koşusu ya da v13 deneyi (karar).
 - **(Çözüldü, EXP-008) Sonraki iş adayı (EXP-005 bulgusu):** puan → harf notu → ortalama zinciri hiç kurulmuyor: yönetmelikteki katsayı
   tablosu (BB 3,50) ve GNO kuralları sandbox'ta yok, agent mevzuattan bulduğunu göreve aktarmıyor, Haiku standart YÖK
   tablosunu varsayıyor. Seçenekler: not tablosunu sandbox'a dosya olarak vermek ya da deterministik bir GNO what-if tool'u.
