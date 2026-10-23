@@ -35,12 +35,12 @@ def letter(score):
 
 
 def exam_score(midterm, final, final_weight=DEFAULT_FINAL_WEIGHT):
-    """Ders başarı puanı. Yönetmelik kesirli puanın aralığa nasıl uyarlanacağını yazmıyor; en yakın tam sayıya
-    (yarım yukarı) yuvarlanır ve raporda varsayım olarak belirtilir."""
+    """Ders başarı puanı (Madde 26): vize ve finalin ağırlıklı toplamı; Madde 27'deki aralıkla doğrudan karşılaştırılır."""
     low, high = FINAL_WEIGHT_RANGE
     if not low <= final_weight <= high:
         raise ValueError(f"Dönem sonu sınavının etkisi %{low} ile %{high} arasında olmalı (Madde 26/1).")
-    return math.floor(midterm * (100 - final_weight) / 100 + final * final_weight / 100 + 0.5)
+    score = (midterm * (100 - final_weight) + final * final_weight) / 100
+    return int(score) if score == int(score) else score
 
 
 def _truncate(value):
@@ -94,8 +94,7 @@ def _known_grade(course, final_weight):
             raise ValueError(f"Geçersiz harf notu: {course['harf']} (geçerli: {', '.join(COEFF)}).")
         return None, grade
     if course.get("puan") is not None:
-        score = math.floor(course["puan"] + 0.5)
-        return score, letter(score)
+        return course["puan"], letter(course["puan"])
     if course.get("vize") is not None and course.get("final") is not None:
         score = exam_score(course["vize"], course["final"], final_weight)
         return score, letter(score)
@@ -182,8 +181,7 @@ def report_text(report):
             lines.append(f"- {name} ({_num(r['akts'])} AKTS{given}): notu bilinmiyor; seçenekler aşağıda.")
     if any(r["vize"] is not None for r in report["dersler"]):
         lines.append(f"Başarı puanı = vize × %{100 - report['final_agirligi']} + final × %{report['final_agirligi']}; "
-                     f"dersin hocası başka oran duyurmadıysa varsayılan budur [{SOURCES['agirlik']}]. Kesirli puan en "
-                     "yakın tam sayıya yuvarlandı (yönetmelik yuvarlamayı belirtmiyor).")
+                     f"dersin hocası başka oran duyurmadıysa varsayılan budur [{SOURCES['agirlik']}].")
     if report["transkript"]:
         current = report["mevcut_gno"]
         note = "" if report["ozet_gno"] in (None, current) else f" (UBYS özetinde {report['ozet_gno']})"

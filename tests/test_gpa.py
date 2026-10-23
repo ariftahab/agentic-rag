@@ -22,11 +22,10 @@ def test_score_to_letter_follows_article_27(score, letter):
     assert gpa.letter(score) == letter
 
 
-def test_exam_score_uses_default_weights_and_rounds_half_up():
+def test_exam_score_uses_default_weights():
     assert gpa.exam_score(50, 60) == 56
-    assert gpa.exam_score(40, 64) == 54  # 54,4
-    assert gpa.exam_score(41, 64) == 55  # 54,8
     assert gpa.exam_score(50, 60, final_weight=70) == 57
+    assert gpa.exam_score(40, 65) == 55
 
 
 def test_final_weight_outside_article_26_limits_is_rejected():
