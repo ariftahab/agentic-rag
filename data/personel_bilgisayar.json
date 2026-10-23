@@ -1,0 +1,106 @@
+{
+  "kaynak": "https://muhendislik.ibu.edu.tr/tr/akademikpersonel",
+  "bolum": "Bilgisayar Mühendisliği",
+  "guncelleme": "2026-10-23",
+  "not": "Personel sayfasından bir kez alındı; e-postalar sitede resim olduğu için elle girildi. Değişiklikler elle yapılır.",
+  "personel": [
+    {
+      "ad": "Arş. Gör. Alperen Akgül",
+      "gorevler": [
+        "Araştırma Görevlisi (Bilgisayar Mühendisliği Bölümü Başkanlığı)"
+      ],
+      "dahili": null,
+      "eposta": "alperen.akgul@ibu.edu.tr"
+    },
+    {
+      "ad": "Doç. Dr. Ali Yılmaz",
+      "gorevler": [
+        "Öğretim Üyesi (Bilgisayar Yazılımı Ana Bilim Dalı Başkanlığı)"
+      ],
+      "dahili": "5840",
+      "eposta": "ali.yilmaz@ibu.edu.tr"
+    },
+    {
+      "ad": "Doç. Dr. Ali Çalım",
+      "gorevler": [
+        "Bölüm Başkan Yardımcısı (Bilgisayar Mühendisliği Bölümü Başkanlığı)",
+        "Öğretim Üyesi (Bilgisayar Bilimleri Ana Bilim Dalı Başkanlığı)"
+      ],
+      "dahili": null,
+      "eposta": "ali.calim@ibu.edu.tr"
+    },
+    {
+      "ad": "Doç. Dr. Mehmet Dinçer Erbaş",
+      "gorevler": [
+        "Ana Bilim Dalı Başkanı (Bilgisayar Donanımı Ana Bilim Dalı Başkanlığı)"
+      ],
+      "dahili": "5889",
+      "eposta": "dincer.erbas@ibu.edu.tr"
+    },
+    {
+      "ad": "Doç. Dr. Önder Eyecioğlu",
+      "gorevler": [
+        "Ana Bilim Dalı Başkanı (Bilgisayar Bilimleri Ana Bilim Dalı Başkanlığı)"
+      ],
+      "dahili": "5826",
+      "eposta": "onder.eyecioglu@ibu.edu.tr"
+    },
+    {
+      "ad": "Doç. Dr. Ümit Şentürk",
+      "gorevler": [
+        "Öğretim Üyesi (Bilgisayar Yazılımı Ana Bilim Dalı Başkanlığı)"
+      ],
+      "dahili": null,
+      "eposta": "umit.senturk@ibu.edu.tr"
+    },
+    {
+      "ad": "Dr. Öğr. Üyesi Mehmet Milli",
+      "gorevler": [
+        "Öğretim Üyesi (Bilgisayar Donanımı Ana Bilim Dalı Başkanlığı)"
+      ],
+      "dahili": "5894",
+      "eposta": "mehmetmilli@ibu.edu.tr"
+    },
+    {
+      "ad": "Dr. Öğr. Üyesi İsmail Hakkı Parlak",
+      "gorevler": [
+        "Öğretim Üyesi (Bilgisayar Yazılımı Ana Bilim Dalı Başkanlığı)"
+      ],
+      "dahili": "5895",
+      "eposta": "ismail.parlak@ibu.edu.tr"
+    },
+    {
+      "ad": "Prof. Dr. Ferhat Demiray",
+      "gorevler": [
+        "Öğretim Üyesi (Bilgisayar Yazılımı Ana Bilim Dalı Başkanlığı)"
+      ],
+      "dahili": "5891",
+      "eposta": "ferhatdemiray@ibu.edu.tr"
+    },
+    {
+      "ad": "Prof. Dr. Hünkar Kayhan",
+      "gorevler": [
+        "Bölüm Başkanı (Bilgisayar Mühendisliği Bölümü Başkanlığı)",
+        "Ana Bilim Dalı Başkanı (Bilgisayar Yazılımı Ana Bilim Dalı Başkanlığı)"
+      ],
+      "dahili": null,
+      "eposta": "hunkar_k@ibu.edu.tr"
+    },
+    {
+      "ad": "Prof. Dr. Murat Beken",
+      "gorevler": [
+        "Öğretim Üyesi (Bilgisayar Bilimleri Ana Bilim Dalı Başkanlığı)"
+      ],
+      "dahili": "5841",
+      "eposta": "murat.beken@ibu.edu.tr"
+    },
+    {
+      "ad": "Prof. Dr. Mustafa Alper Akkaş",
+      "gorevler": [
+        "Öğretim Üyesi (Bilgisayar Yazılımı Ana Bilim Dalı Başkanlığı)"
+      ],
+      "dahili": "5893",
+      "eposta": "alperakkas@ibu.edu.tr"
+    }
+  ]
+}

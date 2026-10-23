@@ -1,5 +1,8 @@
 # Proje
 vectorstore/
+# Duyuru ve personel deposu (scrape_site.py her gece yeniden üretir)
+data/duyurular.db
+data/duyurular/
 node_modules/
 # Sohbet kayıtları (gerçek kullanıcı soruları) repoya girmez
 logs/

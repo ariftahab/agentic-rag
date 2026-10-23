@@ -20,6 +20,17 @@ PLAN_PATH = DATA_DIR / "plan" / "bilgisayar_2024-2025.json"  # öğretim planı 
 INDEX_ROOT = ROOT / "vectorstore"  # her yapılandırma kendi alt klasöründe
 EXPERIMENTS_DIR = ROOT / "experiments"
 
+# Duyurular (scrape_site.py yazar, agent'ın get_announcements tool'u okur) ve Bilgisayar Mühendisliği akademik
+# personeli (sabit liste, get_academic_staff). Corpus'a ve index'e girmez.
+ANNOUNCEMENTS_DB = DATA_DIR / "duyurular.db"
+ANNOUNCEMENTS_EXPORT_DIR = DATA_DIR / "duyurular"  # kaynak başına okunabilir JSON kopyası
+ANNOUNCEMENTS_URL = "https://muhendislik.ibu.edu.tr/tr/news"
+GENERAL_ANNOUNCEMENTS_URL = "https://www.ibu.edu.tr/Website/Contents.aspx?PageID=1349&LangID=1"
+STAFF_URL = "https://muhendislik.ibu.edu.tr/tr/akademikpersonel"  # personel listesinin kaynağı (taranmaz)
+STAFF_PATH = DATA_DIR / "personel_bilgisayar.json"
+# Duyuru özetleme modeli: "claude-..." Anthropic API'siyle, "gemini-..." Gemini'yle (agent'ın ücretsiz kotasından düşer).
+ANNOUNCEMENT_SUMMARY_MODEL = "claude-haiku-5-5"
+
 # Sohbet uygulamasının kullandığı deney. Yeni bir deney üretime alınacaksa burası değişir.
 PRODUCTION_EXPERIMENT = "EXP-007"  # EXP-001 (campus-chatbot EXP-038 hattı, corpus v1) + gemini-3.5-flash-lite (EXP-006)
 
