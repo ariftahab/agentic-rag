@@ -111,3 +111,59 @@ def test_task_message_describes_each_file_so_haiku_skips_exploring():
     assert "$INPUT_DIR/ders_programi.json" in message
     assert '"donem": "2026-2027 Güz"' in message                       # kısa değerler olduğu gibi
     assert "dersler: 2 kayıtlı liste" in message and '{"gun": "Pazartesi", "sinif": 1}' in message  # ilk kayıt örnek
+
+
+# --- Devir (agent_v9): döngü aynı mesaj listesiyle Haiku'yla devam eder ---
+
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage  # noqa: E402
+
+
+def tool_use(name, args, id_="tu_1"):
+    return NS(type="tool_use", id=id_, name=name, input=args)
+
+
+class SearchTool:
+    name = "search_regulations"
+    description = "Mevzuatta arama."
+    args_schema = NS(model_json_schema=lambda: {"type": "object", "properties": {"query": {"type": "string"}}})
+
+
+CONVERSATION = [
+    SystemMessage("system"), HumanMessage("62 aldım, ortalamam?"),
+    AIMessage("", tool_calls=[{"name": "search_regulations", "args": {"query": "not tablosu"}, "id": "a/b 1"}]),
+    ToolMessage("Madde 27 tablosu", tool_call_id="a/b 1"),
+    AIMessage("", tool_calls=[{"name": "request_new_tool", "args": {"gorev": "ortalama"}, "id": "c2"}]),
+    ToolMessage("Soru devredildi.", tool_call_id="c2"),
+]
+
+
+def test_handoff_continues_the_same_conversation_with_agent_tools():
+    client = FakeClient([response(tool_use("search_regulations", {"query": "katsayılar"}), stop_reason="tool_use"),
+                         response(code_call("python3 hesap.py"), code_result("3.06\n"), text("GNO 3,06."))])
+    executed = []
+    result = codeact.CodeRunner(client).handoff(
+        "kurallar", CONVERSATION, [SearchTool()], lambda name, args: executed.append((name, args)) or "tablo",
+        {"transkript.json": '{"dersler": []}'})
+    first = client.requests[0]
+    assert first["system"] == "kurallar"
+    roles = [m["role"] for m in first["messages"]]
+    assert roles == ["user", "assistant", "user", "assistant", "user"]   # system ayrı, roller sırayla
+    uses = [b for m in first["messages"] for b in m["content"] if b["type"] == "tool_use"]
+    assert [u["id"] for u in uses] == ["a_b_1", "c2"]                    # Anthropic'in kabul ettiği id biçimi
+    last = first["messages"][-1]["content"]
+    assert [b["type"] for b in last] == ["tool_result", "text", "container_upload"]
+    assert {t["name"] for t in first["tools"]} == {"search_regulations", "code_execution"}
+    assert executed == [("search_regulations", {"query": "katsayılar"})]
+    assert client.requests[1]["container"] == "cnt_1"
+    assert client.requests[1]["messages"][-1]["content"][0]["content"] == "tablo"
+    assert result["answer"] == "GNO 3,06." and result["tool_calls"] == [{"name": "search_regulations",
+                                                                         "args": {"query": "katsayılar"}}]
+    assert [s["tip"] for s in result["steps"]] == ["tool", "kod", "metin"] and result["steps"][1]["cikti"] == "3.06\n"
+    assert client.deleted == ["file_1"]
+
+
+def test_handoff_stops_after_the_request_limit():
+    client = FakeClient([response(tool_use("search_regulations", {"query": "x"}), stop_reason="tool_use")
+                         for _ in range(codeact.MAX_HANDOFF_REQUESTS)])
+    result = codeact.CodeRunner(client).handoff("s", CONVERSATION, [SearchTool()], lambda n, a: "r", {})
+    assert result["answer"] == codeact.UNFINISHED and len(client.requests) == codeact.MAX_HANDOFF_REQUESTS

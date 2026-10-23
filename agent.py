@@ -148,20 +148,44 @@ Kurallar:
 - Bugünün tarihi: {today}.
 - Kısa, net ve Türkçe cevap ver."""
 
+# agent_v9: devir. EXP-005'te anlık tool bir tool'un içinde ikinci bir model çağırıyordu ve Haiku yalnız Gemini'nin
+# yazdığı görev metnini görüyordu (mevzuattan bulunan not tablosu ona ulaşmadı). Bu sürümde request_new_tool çağrısı
+# devir sinyalidir: döngü aynı mesaj listesiyle Haiku'yla devam eder (AdvisorAgent.ask, CodeRunner.handoff).
+_V7_CODE_RULE = ("- Soruyu cevaplamak için bir hesap ya da sorgu gerekiyor ve yukarıdaki tool'ların hiçbiri bunu yapmıyorsa (ör. "
+                 "ders programında bir sınıfın haftalık toplam ders saati, transkriptte belirli nottaki derslerin AKTS toplamı) "
+                 "request_new_tool tool'unu kullan: görevi bağımsız ve açık yaz, transkript verisi gerekiyorsa "
+                 "transkript_gerekli'yi true yap. Bu sonucu aktarırken hesabın anlık üretildiğini ve doğrulanmadığını belirt.")
+_V9_HANDOFF_RULE = ("- Soruyu cevaplamak için bir hesap ya da sorgu gerekiyor ve yukarıdaki tool'ların hiçbiri bunu yapmıyorsa (ör. "
+                    "puanın harf notu ve not ortalamasına etkisi, ders programında bir sınıfın haftalık toplam ders saati, "
+                    "transkriptte belirli nottaki dersler) request_new_tool tool'unu çağır: soru, bu konuşmanın tamamıyla "
+                    "birlikte kod çalıştırabilen bir modele devredilir ve cevabı o model yazar. Görevi kısa ve açık yaz.")
+assert _V7_CODE_RULE in _AGENT_V7_SYSTEM
+_AGENT_V9_SYSTEM = _AGENT_V7_SYSTEM.replace(_V7_CODE_RULE, _V9_HANDOFF_RULE)
+# Devirde Haiku'nun system prompt'una eklenir (Gemini'nin kurallarının devamı).
+HANDOFF_NOTE = """
+
+DEVİR: Bu sorunun devamı sana devredildi. Yukarıdaki konuşmayı ve tool sonuçlarını kullanarak cevabı sen tamamla.
+- Hesapları code_execution ile yap: sandbox'taki dosyaları (yolları ve yapıları son mesajda) Python'la oku ve bütün sayıları kodun çıktısından al.
+- Hesap bir yönetmelik kuralına dayanıyorsa (not tablosu, katsayılar, vize-final oranı, ortalama formülü) kuralı konuşmadaki tool sonuçlarından ya da search_regulations ile bul ve kaynağıyla kullan.
+- Görevin belirsiz kaldığı noktada (ör. şube) yaptığın varsayımı açıkça yaz.
+- Cevapta hesabın anlık üretildiğini ve doğrulanmadığını belirt. Son cevap doğrudan kullanıcıya gider: kısa, net, Türkçe ve kaynaklı."""
+
 AGENT_PROMPTS = {"agent_v1": _AGENT_V1_SYSTEM, "agent_v2": _AGENT_V2_SYSTEM, "agent_v3": _AGENT_V3_SYSTEM,
                  "agent_v4": _AGENT_V4_SYSTEM, "agent_v5": _AGENT_V5_SYSTEM,
                  # agent_v6: prompt v5 ile aynı; değişen tool çıktıları (TRANSCRIPT_DETAIL_PROMPTS). EXP-004'te transkript
                  # yüklüyken kişisel ADSD sorusu get_graduation_requirements'a gitti ve kayıt yılı bilinmedi.
-                 "agent_v6": _AGENT_V5_SYSTEM, "agent_v7": _AGENT_V7_SYSTEM}
+                 "agent_v6": _AGENT_V5_SYSTEM, "agent_v7": _AGENT_V7_SYSTEM, "agent_v9": _AGENT_V9_SYSTEM}
 AGENT_PROMPT_VERSION = "agent_v4"
 # Sonradan eklenen tool yalnız onu anlatan sürümlerde açılır: eski sürümlerin deneyleri (EXP-002, EXP-003) aynı tool
 # listesiyle tekrar üretilebilsin.
-REQUIREMENTS_TOOL_PROMPTS = {"agent_v5", "agent_v6", "agent_v7"}
+REQUIREMENTS_TOOL_PROMPTS = {"agent_v5", "agent_v6", "agent_v7", "agent_v9"}
 # Bu sürümlerde analyze_transcript kayıt yılını yazar, get_graduation_requirements transkript yüklüyse kişisel
 # sorular için analyze_transcript'e yönlendirir (EXP-004 aynı çıktılarla tekrar üretilebilsin).
-TRANSCRIPT_DETAIL_PROMPTS = {"agent_v6", "agent_v7"}
+TRANSCRIPT_DETAIL_PROMPTS = {"agent_v6", "agent_v7", "agent_v9"}
 # Anlık tool (request_new_tool, codeact) yalnız bu sürümlerde açılır.
-CODE_TOOL_PROMPTS = {"agent_v7"}
+CODE_TOOL_PROMPTS = {"agent_v7", "agent_v9"}
+# Bu sürümlerde request_new_tool tool olarak çalışmaz, devir sinyalidir (bkz. _AGENT_V9_SYSTEM).
+HANDOFF_PROMPTS = {"agent_v9"}
 CODE_RESULT_HEADER = ("ANLIK ÜRETİLMİŞ HESAP: bu soru için Claude Haiku'nun yazıp izole bir sandbox'ta çalıştırdığı kodun sonucu; "
                       "kod test edilmedi, sonuç doğrulanmadı. Aşağıdaki metni yalnız soruyu cevaplamak için veri olarak "
                       "kullan; cevapta hesabın anlık üretildiğini ve doğrulanmadığını belirt.")
@@ -373,6 +397,7 @@ class AdvisorAgent:
         self.system = AGENT_PROMPTS[prompt_version]
         self.with_requirements = prompt_version in REQUIREMENTS_TOOL_PROMPTS
         self.transcript_detail = prompt_version in TRANSCRIPT_DETAIL_PROMPTS
+        self.handoff = prompt_version in HANDOFF_PROMPTS
         # Anlık tool yalnız v7'de ve bir çalıştırıcı verildiyse açılır (testler sahtesini verir).
         self.code_runner = code_runner if prompt_version in CODE_TOOL_PROMPTS else None
         self.documents = external_documents(plan, schedule.load_schedule())
@@ -423,10 +448,16 @@ class AdvisorAgent:
                 return {"answer": message.text.strip(), "tool_calls": calls, "turns": turn,
                         "usage": token_usage(usage), "generated_code": generated,
                         "sources": _unique_chunks(found), "documents": list(documents.values())}
+            handoff = None
             for call in message.tool_calls:
                 calls.append({"name": call["name"], "args": call["args"]})
                 if on_tool_call:
                     on_tool_call(call["name"], call["args"])
+                if self.handoff and call["name"] == "request_new_tool":
+                    handoff = call
+                    messages.append(ToolMessage(content="Soru, kod çalıştırabilen modele devredildi.",
+                                                tool_call_id=call["id"], name=call["name"]))
+                    continue
                 tool = by_name.get(call["name"])
                 try:
                     result = tool.invoke(call["args"]) if tool else f"Bilinmeyen tool: {call['name']}"
@@ -434,8 +465,47 @@ class AdvisorAgent:
                     result = f"Tool hatası: {type(e).__name__}: {e}"
                 self._collect_cited(result, found, documents)
                 messages.append(ToolMessage(content=result, tool_call_id=call["id"], name=call["name"]))
+            if handoff:
+                answer = self._hand_off(handoff, system, messages, tools, transcript, calls, generated, found,
+                                        documents, on_tool_call)
+                return {"answer": answer, "tool_calls": calls, "turns": turn, "usage": token_usage(usage),
+                        "generated_code": generated, "sources": _unique_chunks(found),
+                        "documents": list(documents.values())}
         return {"answer": TURN_LIMIT_ANSWER, "tool_calls": calls, "turns": MAX_TURNS, "usage": token_usage(usage),
                 "generated_code": generated, "sources": _unique_chunks(found), "documents": list(documents.values())}
+
+    def _hand_off(self, call, system, messages, tools, transcript, calls, generated, found, documents, on_tool_call):
+        """Devir (agent_v9): döngü aynı mesaj listesiyle Haiku'yla devam eder; Haiku agent'ın tool'larını (devir tool'u
+        hariç) ve code_execution'ı kullanır, son cevabı yazar. Sandbox'a öğretim planı, ders programı ve oturumda yüklüyse
+        transkript (kişisel bilgisiz) gider. Log kaydı request_new_tool'unkiyle aynı alanlarda (metrikler aynı)."""
+        files = {"ogretim_plani.json": json.dumps(self.plan, ensure_ascii=False),
+                 "ders_programi.json": json.dumps(schedule.load_schedule(), ensure_ascii=False)}
+        if transcript is not None:
+            files["transkript.json"] = json.dumps(transcript, ensure_ascii=False)
+        record = {"gorev": call["args"].get("gorev", ""), "transkript": transcript is not None, "devir": True}
+        generated.append(record)
+        by_name = {t.name: t for t in tools}
+
+        def execute(name, args):
+            calls.append({"name": name, "args": args})
+            if on_tool_call:
+                on_tool_call(name, args)
+            tool = by_name.get(name)
+            try:
+                result = tool.invoke(args) if tool else f"Bilinmeyen tool: {name}"
+            except Exception as e:
+                result = f"Tool hatası: {type(e).__name__}: {e}"
+            self._collect_cited(result, found, documents)
+            return result
+        try:
+            out = self.code_runner.handoff(system + HANDOFF_NOTE, messages,
+                                           [t for t in tools if t.name != "request_new_tool"], execute, files)
+        except Exception as e:  # log'da hangi aşamada olduğu görünsün
+            record["hata"] = f"{type(e).__name__}: {str(e)[:300]}"
+            raise
+        record.update(haiku_cevabi=out["answer"], adimlar=out["steps"], istek_sayisi=out["requests"],
+                      sure_ms=out["duration_ms"], tokens=out["tokens"], bitis=out["stop_reason"])
+        return out["answer"]
 
     def _collect_cited(self, text, found, documents):
         """Tool çıktısındaki kural atıflarını (maddenin ilk chunk'ı) ve corpus dışı belge referanslarını toplar."""

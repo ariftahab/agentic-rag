@@ -340,6 +340,55 @@ def test_agent_v7_prompt_adds_only_the_new_tool_rule():
     assert [line for line in v6 if line not in v7] == []
 
 
+class FakeHandoffRunner:
+    """CodeRunner.handoff yerine: devredilen konuşmayı, tool'ları ve dosyaları kaydeder; Haiku bir tool çağırmış gibi
+    execute'u bir kez kullanır."""
+
+    def __init__(self):
+        self.received = None
+
+    def handoff(self, system, messages, tools, execute, files):
+        self.received = {"system": system, "messages": list(messages), "tools": [t.name for t in tools], "files": files}
+        execute("analyze_transcript", {})
+        return {"answer": "Haiku cevabı", "steps": [{"tip": "metin", "metin": "Haiku cevabı"}], "requests": 2,
+                "duration_ms": 7, "tokens": {"input": 30, "output": 5}, "stop_reason": "end_turn", "tool_calls": []}
+
+
+def handoff_reply(transcript):
+    runner = FakeHandoffRunner()
+    llm = ScriptedChatModel([AIMessage("", tool_calls=[{"name": "request_new_tool", "args": {"gorev": "ortalama"},
+                                                        "id": "1"}])])
+    result = AdvisorAgent(retriever=None, llm=llm, plan=graduation.load_plan(), prompt_version="agent_v9",
+                          code_runner=runner).ask("62 aldım, ortalamam kaç olur?", transcript=transcript)
+    return llm, runner, result
+
+
+def test_agent_v9_hands_the_whole_conversation_to_the_code_model():
+    from agent import HANDOFF_NOTE
+    llm, runner, result = handoff_reply(SAMPLE)
+    assert len(llm.received) == 1                                   # devirden sonra Gemini çağrılmaz
+    got = runner.received
+    assert got["system"].endswith(HANDOFF_NOTE)
+    assert isinstance(got["messages"][-1], ToolMessage) and "devredildi" in got["messages"][-1].content
+    assert "request_new_tool" not in got["tools"] and "analyze_transcript" in got["tools"]
+    assert json.loads(got["files"]["transkript.json"]) == SAMPLE
+    assert result["answer"] == "Haiku cevabı"
+    assert [c["name"] for c in result["tool_calls"]] == ["request_new_tool", "analyze_transcript"]
+    [record] = result["generated_code"]
+    assert record["devir"] is True and record["haiku_cevabi"] == "Haiku cevabı" and record["transkript"] is True
+
+
+def test_handoff_without_a_transcript_sends_no_transcript_file():
+    _, runner, _ = handoff_reply(None)
+    assert sorted(runner.received["files"]) == ["ders_programi.json", "ogretim_plani.json"]
+
+
+def test_agent_v9_prompt_replaces_only_the_new_tool_rule():
+    from agent import AGENT_PROMPTS
+    v7, v9 = AGENT_PROMPTS["agent_v7"].splitlines(), AGENT_PROMPTS["agent_v9"].splitlines()
+    assert [line for line in v9 if line not in v7] == [next(l for l in v9 if "devredilir" in l)]
+
+
 # --- Kaynaklar (#16, #17): cevabın dayandığı chunk'lar ve corpus dışı belgeler ---
 
 from langchain_core.documents import Document  # noqa: E402
