@@ -16,6 +16,36 @@ Durum: agent varsayılanı `agent_v4`; en yeni sürüm `agent_v7` (v6 + anlık t
   tablosu (BB 3,50) ve GNO kuralları sandbox'ta yok, agent mevzuattan bulduğunu göreve aktarmıyor, Haiku standart YÖK
   tablosunu varsayıyor. Seçenekler: not tablosunu sandbox'a dosya olarak vermek ya da deterministik bir GNO what-if tool'u.
   Ayrıca "Hangi derslerden kaldım?" analyze_transcript'le "kalan ders yok" diyor (rapor geçmiş FF/FD'yi göstermiyor).
+- **Hesap zinciri teşhis 1 (2026-10-23, commit'siz, working tree'de `agent.py` + `codeact.py`):** agent_v8 = v7 + zincir
+  kuralı ("kurala dayanan hesapta önce search_regulations, sonra request_new_tool") + aynı sorudaki tool sonuçlarının
+  Haiku'ya kodla aktarımı (transkriptten türeyenler yalnız transkript_gerekli iken). Bitti tanımı: 5 ortalama sorusundan
+  en az 4'ü mevzuat katsayılarıyla doğru, 3 kontrol bozulmuyor. Sonuç 2/5 (EXP-005'te 0/5): "3,00'ün altına düşmesin"
+  (55 puan, DD, 3,03) ve üç dersin puanlarıyla ortalama (2,91) düzeldi; aktarılan Madde 27 tablosunu Haiku kullandı ve
+  lisansüstü tabloyu bilerek eledi. Kalan hatalar: "62 aldım, ortalamam?" yine anlık tool'a gitmedi ve yüklü transkripti
+  istedi; vize 50 / final 60 sorusunda harf notu doğru (56, DD) ama transkript_gerekli false, ortalama hesaplanmadı;
+  vize 40 sorusunda Gemini göreve yanlış barajlar yazdı (DD 60) ve Haiku aktarılan tablo yerine görevi izledi (doğrusu
+  65). Kontrol: DD sayısı ve Algoritma Analizi kaç kez doğru; haftalık saat 27 ders saati yerine 20,25 saat (45 dk'lık
+  dilimleri 60 dk'ya çevirdi; tanım belirsizliği, v8'e özgü değil ama bozulma sayıldı). v8 kodu working tree'den
+  kaldırıldı (kullanıcı devir yolunu seçti).
+- **Hesap zinciri teşhis 2 (aynı gün, commit'siz, working tree'de):** agent_v9 = devir (kullanıcı önerisi): Gemini
+  request_new_tool çağırınca döngü aynı mesaj listesiyle Haiku'ya geçer; Haiku konuşmanın tamamını görür, agent'ın
+  tool'larını ve code_execution'ı kullanır, cevabı kendisi yazar (`codeact.CodeRunner.handoff`, `AdvisorAgent._hand_off`).
+  Sonuç 2,5/5, bitti tanımı tutmadı (2 deneme doldu): "62 aldım, ortalamam?" ilk kez doğru (DC, 3,06; lisansüstü
+  tabloyu gerekçeyle eledi); vize 40 sorusunu Gemini devretmeden doğru çözdü (65); vize 50 / final 60'ta DD doğru,
+  2,02'yi "kesin değil" diye verdi (Haiku transkriptten GNO'yu yeniden hesaplayınca 1,97'yi tutturamadı); üç dersin
+  puanlarıyla ortalamada Haiku "AKTS dosyalarda yok" dedi (planda var) ve düz ortalama verdi; 3,00 eşiği sorusunda
+  mevzuat aradı ama standart YÖK katsayılarını kullandı (DC 1,5), kendi hesabının 3,08'i tutmadığını fark edip
+  düzeltmedi. Kontroller üçü de doğru (haftalık saat 27 ders saati). Devir başına 21-86k girdi token (eski tool 10-28k).
+  Ortak kök neden: GNO formülünü (Madde 27-28) her seferinde LLM yeniden kuruyor ve tutturamıyor.
+- **Hesap zinciri teşhis 3 (aynı gün, commit'siz):** agent_v10 = v9 (devir) + `simulate_grades` (`gpa.py`, testli:
+  Madde 26 vize/final ve %40-70 sınırı, Madde 27 tablo, Madde 28 AKTS ağırlıklı GNO, son not, kesme; AKTS transkript ve
+  plandan; notsuz bir ders için harf başına eşik/final ve GNO, hedef_gno, başarısız notla sağlanan hedef ayrımı).
+  Sonuç **5/5, bitti tanımı tuttu**: 62 → DC, 3,06; vize 50/final 60 → 56, DD, 2,02 hedef sağlanır; üç ders → 2,91;
+  3,00 eşiği → DD 55 puan, 3,03 (FD 2,99); vize 40 → final 65 (tool doğru çağrıldı ama Gemini ardından gereksiz yere
+  devretti; Haiku 65'i doğru verdi, ağırlık için yanlış madde atfı). Ortalama soruları 2-3 sn (devirde 14-31 sn).
+  Kontroller (DD sayısı, Algoritma Analizi kaç kez, haftalık saat 27, "Genel not ortalamam kaç?" analyze_transcript)
+  bozulmadı. sorular_v2'de bu sorularda beklenen tool request_new_tool: tam koşuda tool metriği bunları hata sayar
+  (yeni set sürümü ya da anlamca okuma). Tam koşu kararı kullanıcıda.
 - **#14 teşhis 1 (2026-10-22, agent_v5 = v4 + "genel mezuniyet şartlarında get_graduation_requirements", commit'siz):**
   "Bilgisayar Mühendisliğinden mezun olabilmek için hangi şartlar gerekiyor?" düzeldi (tek tool çağrısı; 244 AKTS,
   zorunlu/seçmeli, yuva kuralı, GNO 2,00, geçer notlar, ADSD ve 2023 istisnası, hepsi kaynaklı; staj ayrıca yazılmadı).
