@@ -70,6 +70,14 @@ def _gpa(grades):
     return _truncate(sum(a * COEFF[g] for a, g in grades.values()) / total) if total else None
 
 
+def term_average(courses):
+    """Yarıyıl ağırlıklı not ortalaması (Madde 28/2): o dönem kayıtlanılan derslerin AKTS ağırlıklı katsayı
+    ortalaması; Madde 27'deki harf notları esas (B ve notu henüz girilmemiş dersler dışarıda)."""
+    graded = [c for c in courses if c["not"] in COEFF]
+    total = sum(c["akts"] for c in graded)
+    return _truncate(sum(c["akts"] * COEFF[c["not"]] for c in graded) / total) if total else None
+
+
 def _credits(course, transcript, plan):
     """AKTS: kullanıcı verdiyse o; yoksa transkriptteki aynı ders, yoksa öğretim planı. (ders adı, akts)"""
     name = course.get("ad", "").strip()

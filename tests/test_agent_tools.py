@@ -424,6 +424,47 @@ def test_agent_v11_uses_only_the_regulation_total():
     assert "Her seçmeli yuvası" not in tool_reply("agent_v10", "get_graduation_requirements", None)
 
 
+def load_fixture(name):
+    return json.loads((Path(__file__).parents[1] / "eval" / "transkriptler" / f"{name}.json").read_text(encoding="utf-8"))
+
+
+def test_agent_v12_report_adds_the_transcript_history():
+    # EXP-008: özette olmayan bilgi "yok" diye okundu (kaldığın ders yok, kayıt yılından tahmin edilen dönem).
+    third, extended = load_fixture("ucuncu_sinif_2024"), load_fixture("uzatma_2021")
+    report = tool_reply("agent_v12", "analyze_transcript", third)
+    assert report.startswith(tool_reply("agent_v11", "analyze_transcript", third))   # v11 raporu aynen, sonuna ek
+    assert "- Fizik II: FF (2024-2025 Bahar) → 2025-2026 Bahar döneminde DC ile geçildi" in report
+    assert "- Diferansiyel Denklemler: FD (2025-2026 Güz) → bu dönem tekrar alınıyor" in report
+    assert "DD: 2" in report
+    assert "- Bu dönem alınan dersler geçilirse: 9 zorunlu + 12 seçmeli = 21 ders" in report
+    assert "- 1. dönem, 2024-2025 Güz, YANO 3.17:" in report
+    extended_report = tool_reply("agent_v12", "analyze_transcript", extended)
+    assert "Şu anki dönem: 11. dönem" in extended_report
+    assert "- Algoritma Analizi: 4 kez (FF, FD, FF, bu dönem)" in extended_report
+    assert "Biyoenformatik: FF (2024-2025 Bahar) → hâlâ başarısız" in extended_report
+    # İsteğe bağlı Alan Dışı Seçmeli Ders (2021 kaydı) kalan ders sayısına girmez.
+    assert "- Şu an: 2 zorunlu + 1 seçmeli = 3 ders (Seçmeli VIII 1)" in extended_report
+    assert "DERS GEÇMİŞİ" not in tool_reply("agent_v11", "analyze_transcript", third)
+
+
+def test_agent_v12_prompt_lists_the_report_and_keeps_the_handoff():
+    from agent import AGENT_PROMPTS
+    v11, v12 = AGENT_PROMPTS["agent_v11"].splitlines(), AGENT_PROMPTS["agent_v12"].splitlines()
+    added = [line for line in v12 if line not in v11]
+    assert len(added) == 2 and len([line for line in v11 if line not in v12]) == 2
+    own_status = next(line for line in added if line.startswith("- Soran kendi durumunu"))
+    assert "başarısız olunan ve tekrarlanan dersler" in own_status and "request_new_tool" in own_status
+    assert "transkriptte belirli nottaki dersler" not in AGENT_PROMPTS["agent_v12"]
+
+
+def test_history_on_a_first_term_transcript():
+    t = load_fixture("birinci_sinif_2026")
+    plan, rules = graduation.load_plan(), graduation.load_rules(regulation_only=True)
+    text = graduation.history_text(t, graduation.evaluate(t, plan, rules), plan, rules)
+    assert "Şu anki dönem: 1. dönem" in text and "Notlu ders yok." in text
+    assert "- Başarısız olunan ders yok." in text and "- Tekrarlanan ders yok." in text
+
+
 # --- Kaynaklar (#16, #17): cevabın dayandığı chunk'lar ve corpus dışı belgeler ---
 
 from langchain_core.documents import Document  # noqa: E402

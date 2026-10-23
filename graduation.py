@@ -7,6 +7,7 @@ Komut satırı (gerçek transkriptle elle doğrulamak için):
     python graduation.py <tarihsel_transkript.pdf>
 """
 import json
+import math
 import re
 import sys
 
@@ -607,6 +608,103 @@ def summary_text(report, plan, enrollment=False):
         lines += [f"- {m['ad']} ({m['akts']} AKTS) → {m['plan_ad']}: {how[m['yontem']]}"
                   + (f" (eşdeğerlik tablosu: {m['kaynak']})" if m["yontem"] == "tablo" else "")
                   for m in report["eslesmeler"]]
+    return "\n".join(lines)
+
+
+def _remaining_electives(report, plan, transcript, later):
+    """Açık seçmeli yuvalarını dolduracak ders sayısı, yuva başına (en az, en çok): açık AKTS havuzdaki derslerin en
+    yüksek ve en düşük AKTS'sine bölünür. İsteğe bağlı Alan Dışı Seçmeli Ders yuvası sayılmaz."""
+    ects_of = {c["ad"]: c["akts"] for c in transcript["dersler"]}
+    pools = {s["ad"]: [m["akts"] for m in s["havuz"]] for s in plan.get("secmeli_yuvalar", [])}
+    done, taken = ("devam_edenler_gecilirse_doldu", "devam_edenler_gecilirse_dersler") if later else ("doldu", "dersler")
+    out = []
+    for y in report["secmeli"]["yuvalar"]:
+        if y[done] or not y["zorunlu"]:
+            continue
+        open_ects = y["akts"] - sum(ects_of.get(name, 0) for name in y[taken])
+        out.append((y["ad"], math.ceil(open_ects / max(pools[y["ad"]])), math.ceil(open_ects / min(pools[y["ad"]]))))
+    return out
+
+
+def _count_text(low, high):
+    return str(low) if low == high else f"{low}-{high}"
+
+
+def history_text(transcript, report, plan, rules=None):
+    """analyze_transcript'e eklenen ders geçmişi (agent_v12): dönem dönem bütün dersler ve harf notları, yarıyıl
+    ortalamaları, harf notu dağılımı, başarısız olunan ve tekrarlanan dersler, mezuniyete kalan ders sayısı. EXP-008'de
+    özette olmayan bilgiyi agent "yok" diye okudu ("kaldığın ders yok", kayıt yılından tahmin edilen dönem)."""
+    import gpa  # gpa graduation'ı içe aktarır
+
+    rules = rules or load_rules()
+    passing = set(_rule(rules, "gecer_notlar")["deger"])
+    courses = sorted(transcript["dersler"], key=_term_key)
+    terms = {}
+    for c in courses:
+        terms.setdefault((c["yil"], c["donem"]), []).append(c)
+    regular = [t for t in terms if t[1] != "Yaz"]
+    current = report["bu_donem"] and max(terms)
+    number = {t: i for i, t in enumerate(regular, 1)}
+
+    lines = ["", "DERS GEÇMİŞİ (transkriptteki bütün dersler, dönem dönem harf notlarıyla; YANO: yarıyıl ağırlıklı not "
+                 f"ortalaması) [{gpa.SOURCES['ortalama']}]",
+             f"Transkriptte ders alınan dönem sayısı: {len(regular)} (güz ve bahar; yaz okulu ayrı yazılır)."]
+    if current and current in number:
+        lines.append(f"Şu anki dönem: {number[current]}. dönem ({current[0]}-{current[0] + 1} {current[1]}; notlar "
+                     "henüz girilmedi).")
+    for term, items in terms.items():
+        label = f"{number[term]}. dönem" if term in number else "Yaz okulu"
+        avg = gpa.term_average(items)
+        head = f"- {label}, {term[0]}-{term[0] + 1} {term[1]}" + (f", YANO {avg:.2f}" if avg is not None else "")
+        if term == current:
+            head += " (bu dönem)"
+        lines.append(head + ": " + ", ".join(f"{c['ad']} {c['not'] or 'not yok'}" for c in items))
+
+    attempts = {}
+    for c in courses:
+        attempts.setdefault(c["kod"], []).append(c)
+    last = [a[-1] for a in attempts.values() if a[-1]["not"] is not None]
+    counts = {}
+    for c in last:
+        counts[c["not"]] = counts.get(c["not"], 0) + 1
+    order = [g for _, g, _ in gpa.GRADES]
+    keys = [g for g in order if g in counts] + sorted(g for g in counts if g not in order)
+    lines += ["", "HARF NOTU DAĞILIMI (her dersin son notu)",
+              ", ".join(f"{g}: {counts[g]}" for g in keys) or "Notlu ders yok."]
+
+    failed = [a for a in attempts.values() if any(c["not"] is not None and c["not"] not in passing for c in a)]
+    lines += ["", "BAŞARISIZ OLUNAN DERSLER (geçer not dışındaki notlar; şu anki durumuyla)"]
+    for a in failed:
+        fails = ", ".join(f"{c['not']} ({c['yil']}-{c['yil'] + 1} {c['donem']})" for c in a
+                          if c["not"] is not None and c["not"] not in passing)
+        end = a[-1]
+        if end["not"] is None:
+            status = "bu dönem tekrar alınıyor"
+        elif end["not"] in passing:
+            status = f"{end['yil']}-{end['yil'] + 1} {end['donem']} döneminde {end['not']} ile geçildi"
+        else:
+            status = "hâlâ başarısız"
+        lines.append(f"- {end['ad']}: {fails} → {status}")
+    if not failed:
+        lines.append("- Başarısız olunan ders yok.")
+
+    repeated = [a for a in attempts.values() if len(a) > 1]
+    lines += ["", "TEKRARLANAN DERSLER (kaç kez alındığı ve notları)"]
+    lines += [f"- {a[-1]['ad']}: {len(a)} kez ({', '.join(c['not'] or 'bu dönem' for c in a)})" for a in repeated]
+    if not repeated:
+        lines.append("- Tekrarlanan ders yok.")
+
+    compulsory_now = len(report["eksik_zorunlu"])
+    compulsory_later = sum(c["durum"] != "devam_ediyor" for c in report["eksik_zorunlu"])
+    lines += ["", "MEZUNİYETE KALAN DERS SAYISI (eksik zorunlu dersler + açık seçmeli yuvalarını dolduracak dersler; "
+                  "seçmeli sayısı havuzdaki derslerin AKTS'sine göre)"]
+    for title, n, later in (("Şu an", compulsory_now, False),
+                            ("Bu dönem alınan dersler geçilirse", compulsory_later, True)):
+        slots = _remaining_electives(report, plan, transcript, later)
+        low, high = sum(s[1] for s in slots), sum(s[2] for s in slots)
+        detail = ", ".join(f"{name} {_count_text(lo, hi)}" for name, lo, hi in slots)
+        lines.append(f"- {title}: {n} zorunlu + {_count_text(low, high)} seçmeli = {_count_text(n + low, n + high)} "
+                     "ders" + (f" ({detail})" if detail else ""))
     return "\n".join(lines)
 
 

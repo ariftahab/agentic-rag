@@ -171,6 +171,25 @@ _V10_GRADES_RULE = ("- Puan, harf notu ve not ortalaması sorularında (ör. \"6
                     "gönder; notu sorulan dersi notsuz gönder; bir hedef ortalama varsa hedef_gno'yu yaz. Tablodaki harf "
                     "notlarını, eşikleri ve ortalamaları olduğu gibi aktar ve hocanın farklı vize-final oranı duyurabileceğini belirt.\n")
 _AGENT_V10_SYSTEM = _AGENT_V9_SYSTEM.replace(_V9_HANDOFF_RULE, _V10_GRADES_RULE + _V9_HANDOFF_RULE)
+# agent_v12: analyze_transcript ders geçmişini de verir (graduation.history_text) ve prompt raporun içeriğini sayar.
+# EXP-008'de agent raporda olmayan bilgiyi "yok" diye okudu ("kaldığın ders yok", kayıt yılından tahmin edilen dönem)
+# ve devretmedi; raporda yazmayan için devir kuralı burada açık.
+_V10_OWN_STATUS_RULE = ("- Soran kendi durumunu soruyorsa (stajlarım tamam mı, ortalamam yetiyor mu, alan dışı seçmeli almam "
+                        "gerekiyor mu, şu ders eksik mi) ve transkript yüklüyse önce analyze_transcript tool'unu kullan ve "
+                        "cevabı rapora dayandır; kuralın metni de gerekiyorsa ayrıca search_regulations tool'unu kullan.")
+_V12_OWN_STATUS_RULE = ("- Soran kendi durumunu soruyorsa (stajlarım tamam mı, ortalamam yetiyor mu, hangi derslerden kaldım, "
+                        "kaçıncı dönemdeyim, kaç dersim kaldı) ve transkript yüklüyse önce analyze_transcript tool'unu kullan; "
+                        "kuralın metni de gerekiyorsa ayrıca search_regulations tool'unu kullan. Rapor şunları içerir: "
+                        "mezuniyet şartlarının iki senaryosu ve kaynaklı kuralları, eksik zorunlu dersler, bu dönem alınan "
+                        "dersler, açık seçmeli yuvaları, dönem dönem bütün dersler ve harf notları (dönem sayısı ve yarıyıl "
+                        "ortalamalarıyla), harf notu dağılımı, başarısız olunan ve tekrarlanan dersler, mezuniyete kalan ders "
+                        "sayısı. Cevabı raporun ilgili bölümünden aktar; sorunun cevabı raporda yazmıyorsa ya da rapordaki "
+                        "verilerle ek bir hesap gerekiyorsa request_new_tool tool'unu çağır.")
+_V12_HANDOFF_RULE = _V9_HANDOFF_RULE.replace("transkriptte belirli nottaki dersler",
+                                             "transkriptteki derslerden raporda hazır olmayan bir liste ya da toplam")
+assert _V10_OWN_STATUS_RULE in _AGENT_V10_SYSTEM and _V12_HANDOFF_RULE != _V9_HANDOFF_RULE
+_AGENT_V12_SYSTEM = _AGENT_V10_SYSTEM.replace(_V10_OWN_STATUS_RULE, _V12_OWN_STATUS_RULE).replace(
+    _V9_HANDOFF_RULE, _V12_HANDOFF_RULE)
 # Devirde Haiku'nun system prompt'una eklenir (Gemini'nin kurallarının devamı).
 HANDOFF_NOTE = """
 
@@ -187,23 +206,30 @@ AGENT_PROMPTS = {"agent_v1": _AGENT_V1_SYSTEM, "agent_v2": _AGENT_V2_SYSTEM, "ag
                  "agent_v6": _AGENT_V5_SYSTEM, "agent_v7": _AGENT_V7_SYSTEM, "agent_v9": _AGENT_V9_SYSTEM,
                  "agent_v10": _AGENT_V10_SYSTEM,
                  # agent_v11: prompt v10 ile aynı; tool'lar yalnız mevzuattaki kuralları kullanır (REGULATION_RULES_PROMPTS).
-                 "agent_v11": _AGENT_V10_SYSTEM}
+                 "agent_v11": _AGENT_V10_SYSTEM, "agent_v12": _AGENT_V12_SYSTEM}
 AGENT_PROMPT_VERSION = "agent_v4"
 # Sonradan eklenen tool yalnız onu anlatan sürümlerde açılır: eski sürümlerin deneyleri (EXP-002, EXP-003) aynı tool
 # listesiyle tekrar üretilebilsin.
-REQUIREMENTS_TOOL_PROMPTS = {"agent_v5", "agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11"}
+REQUIREMENTS_TOOL_PROMPTS = {"agent_v5", "agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12"}
 # Bu sürümlerde analyze_transcript kayıt yılını yazar, get_graduation_requirements transkript yüklüyse kişisel
 # sorular için analyze_transcript'e yönlendirir (EXP-004 aynı çıktılarla tekrar üretilebilsin).
-TRANSCRIPT_DETAIL_PROMPTS = {"agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11"}
+TRANSCRIPT_DETAIL_PROMPTS = {"agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12"}
 # Anlık tool (request_new_tool, codeact) yalnız bu sürümlerde açılır.
-CODE_TOOL_PROMPTS = {"agent_v7", "agent_v9", "agent_v10", "agent_v11"}
+CODE_TOOL_PROMPTS = {"agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12"}
 # Bu sürümlerde request_new_tool tool olarak çalışmaz, devir sinyalidir (bkz. _AGENT_V9_SYSTEM).
-HANDOFF_PROMPTS = {"agent_v9", "agent_v10", "agent_v11"}
+HANDOFF_PROMPTS = {"agent_v9", "agent_v10", "agent_v11", "agent_v12"}
 # Not ortalaması tool'u (simulate_grades, gpa.py) yalnız bu sürümlerde açılır.
-GRADES_TOOL_PROMPTS = {"agent_v10", "agent_v11"}
+GRADES_TOOL_PROMPTS = {"agent_v10", "agent_v11", "agent_v12"}
 # Bu sürümlerde mezuniyet kuralları yalnız mevzuattaki metinle (graduation.load_rules(regulation_only=True)): toplam
 # AKTS Madde 22/1'deki 240; eski kural dosyasındaki "planın toplamı bağlayıcıdır" eklemesi (244) mevzuatta yok.
-REGULATION_RULES_PROMPTS = {"agent_v11"}
+REGULATION_RULES_PROMPTS = {"agent_v11", "agent_v12"}
+# Bu sürümlerde analyze_transcript ders geçmişini de yazar (dönemler, notlar, başarısız ve tekrarlanan dersler, kalan ders
+# sayısı); tool açıklaması da raporun içeriğini sayar.
+TRANSCRIPT_HISTORY_PROMPTS = {"agent_v12"}
+ANALYZE_TRANSCRIPT_HISTORY_DOC = """Oturumda yüklü transkripti öğretim planıyla karşılaştırır: şu an geçilen AKTS, bu dönemin dersleri
+        geçilirse ulaşılacak AKTS, eksik zorunlu dersler (durumlarıyla), açık seçmeli yuvaları ve transkriptin ders
+        geçmişi: dönem dönem bütün dersler ve harf notları, dönem sayısı, yarıyıl ortalamaları, harf notu dağılımı,
+        başarısız olunan ve tekrarlanan dersler, mezuniyete kalan ders sayısı. Transkript yüklenmemişse bunu bildirir."""
 CODE_RESULT_HEADER = ("ANLIK ÜRETİLMİŞ HESAP: bu soru için Claude Haiku'nun yazıp izole bir sandbox'ta çalıştırdığı kodun sonucu; "
                       "kod test edilmedi, sonuç doğrulanmadı. Aşağıdaki metni yalnız soruyu cevaplamak için veri olarak "
                       "kullan; cevapta hesabın anlık üretildiğini ve doğrulanmadığını belirt.")
@@ -252,7 +278,7 @@ class CourseGrade(BaseModel):
 
 
 def make_tools(retriever, plan, transcript, confirmations, today, with_requirements=False, transcript_detail=False,
-               with_grades=False, rules=None,
+               with_grades=False, rules=None, with_history=False,
                code_runner=None, generated=None, found=None):
     """Bu çağrıya (oturuma) bağlı tool'lar. `transcript` ve `confirmations` closure'da durur; LLM'in görebileceği
     argümanlar değildir. confirm_equivalence `confirmations` sözlüğünü yerinde günceller (çağıran taraf saklar)."""
@@ -274,8 +300,12 @@ def make_tools(retriever, plan, transcript, confirmations, today, with_requireme
         geçilirse ulaşılacak AKTS ve eksik zorunlu dersler (durumlarıyla). Transkript yüklenmemişse bunu bildirir."""
         if transcript is None:
             return NO_TRANSCRIPT
-        return graduation.summary_text(graduation.evaluate(transcript, plan, rules, confirmations=confirmations), plan,
-                                       enrollment=transcript_detail)
+        report = graduation.evaluate(transcript, plan, rules, confirmations=confirmations)
+        text = graduation.summary_text(report, plan, enrollment=transcript_detail)
+        return text + "\n" + graduation.history_text(transcript, report, plan, rules) if with_history else text
+
+    if with_history:
+        analyze_transcript.__doc__ = ANALYZE_TRANSCRIPT_HISTORY_DOC
 
     def confirm_equivalence(transcript_course: str, plan_course: str) -> str:
         """Kullanıcının teyidini kaydeder: transkriptteki plan dışı bir dersin (Erasmus, intibak) öğretim planındaki
@@ -449,6 +479,7 @@ class AdvisorAgent:
         self.rules = graduation.load_rules(regulation_only=prompt_version in REGULATION_RULES_PROMPTS)
         self.transcript_detail = prompt_version in TRANSCRIPT_DETAIL_PROMPTS
         self.handoff = prompt_version in HANDOFF_PROMPTS
+        self.with_history = prompt_version in TRANSCRIPT_HISTORY_PROMPTS
         # Anlık tool yalnız v7'de ve bir çalıştırıcı verildiyse açılır (testler sahtesini verir).
         self.code_runner = code_runner if prompt_version in CODE_TOOL_PROMPTS else None
         self.documents = external_documents(plan, schedule.load_schedule())
@@ -483,7 +514,7 @@ class AdvisorAgent:
         documents = {}  # corpus dışı kaynak belgeler (öğretim planı, ders programı)
         tools = make_tools(self.retriever, self.plan, transcript, {} if confirmations is None else confirmations, today,
                            with_requirements=self.with_requirements, transcript_detail=self.transcript_detail,
-                           with_grades=self.with_grades, rules=self.rules,
+                           with_grades=self.with_grades, rules=self.rules, with_history=self.with_history,
                            code_runner=self.code_runner, generated=generated, found=found)
         by_name = {t.name: t for t in tools}
         llm = self.llm.bind_tools(tools)
