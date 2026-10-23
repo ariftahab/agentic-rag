@@ -48,6 +48,7 @@ Durum: agent varsayılanı `agent_v4`; en yeni sürüm `agent_v7` (v6 + anlık t
   DZ/NA'yı ortalamaya 0,00 ile katar (Madde 27/2; eski sürümler katmıyordu, fixture'larda yok). Bitti tanımı:
   "Erasmus dersleri sayılmasaydı ortalamam?" 3,49 ve katsayılar rapordan; diğer üç devir sorusu bozulmuyor.
   Komut: `teshis_agent.py EXP-009 agent_v13 D01,D02,D03,D04`. Sonra EXP-009 tam koşusu ya da v13 deneyi (karar).
+- **Branch exp/haiku-agent (2026-10-23, kullanıcı kararı: main'e alınmaz, test için):** EXP-010 = agent_h1, tek model Haiku 5.5 (Gemini yok; v13 tool'ları). Cevaplar 56/56, hesap anlamca 24/26, gereksiz devirler kalktı, ~0,27 $/koşu, gecikme 10,5 sn (kullanıcı: gecikme önemli değil). Prompt caching (codeact.handoff: system sonunda breakpoint + otomatik) commit'li: 4 soruda maliyet %37 düştü (cache okuma 0,1x, yazma 1,25x varsayımıyla). Teşhis (commit'siz, agent.py): agent_h2 = h1 + "birden fazla değeri toplayan/sayan hesap code_execution'da, raporda hazır sayı olduğu gibi"; haftalık ders saati 14,5 → 27 (kodla), DD sayısı, kalan ders sayısı ve Cuma boş kontrolleri kod yazmadan doğru.
 - **(Çözüldü, EXP-008) Sonraki iş adayı (EXP-005 bulgusu):** puan → harf notu → ortalama zinciri hiç kurulmuyor: yönetmelikteki katsayı
   tablosu (BB 3,50) ve GNO kuralları sandbox'ta yok, agent mevzuattan bulduğunu göreve aktarmıyor, Haiku standart YÖK
   tablosunu varsayıyor. Seçenekler: not tablosunu sandbox'a dosya olarak vermek ya da deterministik bir GNO what-if tool'u.
