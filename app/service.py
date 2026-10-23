@@ -32,9 +32,10 @@ import transcript as transcript_parser
 import codeact
 from agent import AdvisorAgent
 
-# Branch exp/haiku-agent: web'deki agent tek model Claude Haiku (agent_h2, EXP-011): döngünün tamamı, hazır tool'lar ve
-# anlık kod (code_execution) aynı modelde, Gemini yok. Klasik RAG (RagBot) production config'iyle aynı kalır.
-WEB_AGENT_PROMPT_VERSION = "agent_h2"
+# Branch exp/haiku-agent: web'deki agent tek model Claude Haiku: döngünün tamamı, hazır tool'lar ve anlık kod
+# (code_execution) aynı modelde, Gemini yok. agent_h3 = agent_h2 (EXP-011) + duyuru ve akademik personel tool'ları.
+# Klasik RAG (RagBot) production config'iyle aynı kalır.
+WEB_AGENT_PROMPT_VERSION = "agent_h3"
 from rag import RagBot, source_label
 
 LOG_DIR = config.ROOT / "logs"
