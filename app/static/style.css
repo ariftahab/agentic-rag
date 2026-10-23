@@ -140,6 +140,16 @@ a.cite {
 }
 a.cite:hover { text-decoration: underline; }
 
+/* Satır içindeki atıf numarası ve cevabın sonundaki kaynak listesi */
+sup.cite-ref { color: var(--accent); font-size: 0.72em; margin-left: 1px; }
+.answer .citations {
+  margin-top: 12px; padding-top: 8px; border-top: 1px solid var(--border);
+  font-size: 0.86em; color: var(--text-muted);
+}
+.answer .citations-head { font-weight: 600; margin-bottom: 4px; }
+.answer .citations ol { margin: 0; padding-left: 22px; }
+.answer .citations li { margin: 2px 0; }
+
 .sources { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
 .source-chip {
   background: var(--surface); border: 1px solid var(--border); border-radius: 6px;

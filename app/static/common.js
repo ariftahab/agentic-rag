@@ -76,22 +76,33 @@ function matchSource(part, sources) {
   return best;
 }
 
-// Cevap metnindeki [ ... ] atıflarını link'e çevirir. Markdown link'lerine ([metin](url)) dokunmaz.
-// Bir köşeli parantezde ";" ile ayrılmış birden fazla atıf olabilir.
-function linkCitations(text, sources) {
-  return text.replace(/\[([^\]\n]{3,300})\](?!\()/g, (whole, inner) => {
-    const parts = inner.split(";").map((part) => {
-      const s = matchSource(part, sources);
-      if (!s) return escapeHtml(part);
-      if (s.chunk_id == null) { // corpus dışı belge (öğretim planı, ders programı): PDF yeni sekmede
-        return `<a class="cite" href="${pdfUrl(s.source)}" target="_blank" rel="noopener">${escapeHtml(part.trim())}</a>`;
-      }
-      const fikra = citedFikra(part);
-      return `<a href="#" class="cite" data-chunk="${s.chunk_id}"${fikra ? ` data-fikra="${fikra}"` : ""}>` +
-        `${escapeHtml(part.trim())}</a>`;
+// Tek atıf → kaynağa giden link (eşleşmezse düz metin).
+function citationHtml(part, sources) {
+  const s = matchSource(part, sources);
+  const label = escapeHtml(part.replace(/\s*\(data\/[^)]*\)/g, "")); // dosya yolu okuyucuya bilgi taşımıyor
+  if (!s) return label;
+  if (s.chunk_id == null) { // corpus dışı belge (öğretim planı, ders programı): PDF yeni sekmede
+    return `<a class="cite" href="${pdfUrl(s.source)}" target="_blank" rel="noopener">${label}</a>`;
+  }
+  const fikra = citedFikra(part);
+  return `<a href="#" class="cite" data-chunk="${s.chunk_id}"${fikra ? ` data-fikra="${fikra}"` : ""}>${label}</a>`;
+}
+
+// Cevap metnindeki [ ... ] atıflarını satır içinden çıkarır, yerine küçük bir numara koyar (satır sonundaki uzun
+// atıflar okumayı zorlaştırıyordu). Aynı atıf tekrar geçerse aynı numarayı alır. Markdown link'lerine
+// ([metin](url)) dokunmaz; bir köşeli parantezde ";" ile ayrılmış birden fazla atıf olabilir.
+// Dönüş: { text: numaralı metin, cited: [atıf metni, ...] } (numara = indeks + 1).
+function extractCitations(text) {
+  const cited = [];
+  const out = text.replace(/[ \t]*\[([^\]\n]{3,300})\](?!\()/g, (whole, inner) => {
+    const nums = inner.split(";").map((p) => p.trim()).filter(Boolean).map((part) => {
+      let i = cited.findIndex((c) => norm(c) === norm(part));
+      if (i < 0) { cited.push(part); i = cited.length - 1; }
+      return i + 1;
     });
-    return `[${parts.join("; ")}]`;
+    return nums.length ? `<sup class="cite-ref">${nums.join(",")}</sup>` : whole;
   });
+  return { text: out, cited };
 }
 
 // Kaynak düğmesi: chunk'lı kaynak panelde açılır; corpus dışı belge (chunk_id null) PDF olarak yeni sekmede.
@@ -105,8 +116,14 @@ function sourceChip(s) {
 
 // Markdown → güvenli HTML. LLM'in ürettiği metin HTML içerebilir; DOMPurify, sayfaya eklenmeden önce
 // <script>, onclick=... gibi çalıştırılabilir her şeyi temizler (XSS koruması).
+// Atıflar cevabın sonunda numaralı, tıklanabilir bir liste olarak durur.
 function renderAnswer(text, sources = []) {
-  const html = marked.parse(linkCitations(text, sources), { breaks: true });
+  const { text: body, cited } = extractCitations(text);
+  let html = marked.parse(body, { breaks: true });
+  if (cited.length) {
+    html += `<div class="citations"><div class="citations-head">Kaynaklar</div><ol>` +
+      cited.map((part) => `<li>${citationHtml(part, sources)}</li>`).join("") + `</ol></div>`;
+  }
   return DOMPurify.sanitize(html);
 }
 
