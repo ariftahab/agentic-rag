@@ -310,6 +310,63 @@ def test_real_agent_receives_the_fixture_transcript():
     assert rows[0]["tool_dogru"] == 1 and rows[0]["hesap_dogru"] == 1
 
 
+# --- Anlık tool metrikleri (#19) ---
+
+CODE_ITEM = {"id": "X01", "soru": "Kaç tane DD dersim var?", "beklenen": ["Kimya"], "beklenen_sayilar": {"dd": 2},
+             "beklenen_tool_lar": [{"name": "request_new_tool", "args": {"transkript_gerekli": True}}]}
+PLAIN_ITEM = {"id": "X02", "soru": "Genel not ortalamam kaç?", "beklenen_tool_lar": [{"name": "analyze_transcript"}]}
+
+
+def code_row(tool_calls, haiku=None, answer=""):
+    row = {"id": "X", "answer": answer, "tool_calls": tool_calls}
+    if haiku is not None:
+        row["anlik_tool"] = [{"gorev": "DD dersleri", "transkript": True, "haiku_cevabi": haiku, "sure_ms": 9000,
+                              "tokens": {"input": 3000, "output": 400}}]
+    return row
+
+
+def test_expected_code_tool_that_is_called_counts_as_hit_and_scores_haiku_separately():
+    row = code_row(calls(("request_new_tool", {"gorev": "DD", "transkript_gerekli": True})), haiku="2 ders: Kimya, Fizik")
+    assert run.code_tool_values(CODE_ITEM, row) == {"anlik_dogru": 1, "anlik_gerekli": 1, "haiku_dogru": 1}
+
+
+def test_haiku_answer_with_wrong_number_is_wrong_even_if_the_final_answer_is_right():
+    row = code_row(calls(("request_new_tool", {"gorev": "DD"})), haiku="3 ders: Kimya", answer="2 ders: Kimya")
+    assert run.code_tool_values(CODE_ITEM, row)["haiku_dogru"] == 0
+
+
+def test_missing_code_tool_call_is_a_miss_without_haiku_score():
+    assert run.code_tool_values(CODE_ITEM, code_row(calls(("analyze_transcript", {})))) == {
+        "anlik_dogru": 0, "anlik_gerekli": 0}
+
+
+def test_unexpected_code_tool_call_is_counted_as_unnecessary():
+    row = code_row(calls(("analyze_transcript", {}), ("request_new_tool", {"gorev": "GNO"})), haiku="3,08")
+    assert run.code_tool_values(PLAIN_ITEM, row) == {"anlik_dogru": 0, "anlik_gereksiz": 1}
+    # Beklenen tool'u yazılmayan (çekimser) sorularda da anlık tool beklenmez.
+    assert run.code_tool_values({"id": "C", "soru": "?"}, code_row([])) == {"anlik_dogru": 1, "anlik_gereksiz": 0}
+
+
+def test_agent_rows_record_code_tool_runs_only_when_the_tool_is_enabled():
+    class CodeAgent(FakeAgent):
+        code_runner = object()
+
+        def ask(self, question, history=None, **kwargs):
+            return {"answer": "2 ders: Kimya", "tool_calls": calls(("request_new_tool", {"gorev": "DD",
+                                                                                          "transkript_gerekli": True})),
+                    "turns": 2, "generated_code": code_row([], haiku="2 ders: Kimya")["anlik_tool"]}
+
+    item = {k: v for k, v in CODE_ITEM.items() if k != "beklenen_sayilar"}  # sayılar transkript fixture'ı ister
+    rows, _ = run.agent_rows(CodeAgent({}), [item], wait=0, plan=graduation.load_plan())
+    assert rows[0]["anlik_tool"][0]["haiku_cevabi"] == "2 ders: Kimya"
+    assert rows[0]["anlik_dogru"] == 1 and rows[0]["haiku_dogru"] == 1
+    m = run.agent_metrics(rows)
+    assert m["anlik_tool_isabeti"] == 1.0 and m["anlik_cagri"] == 1 and m["anlik_ms"] == 9000
+    # Tool'un kapalı olduğu sürümde (FakeAgent'ta code_runner yok) metrikler yazılmaz.
+    _, plain_rows, _ = run_trial()
+    assert all("anlik_dogru" not in r for r in plain_rows.values())
+
+
 # --- Uçtan uca: config → koşu → sonuç dosyası → rapor ---
 
 AGENT_EXP = {

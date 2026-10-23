@@ -258,13 +258,18 @@ def make_agent(exp_id, cfg):
     from langchain_google_genai import ChatGoogleGenerativeAI
     import graduation
     import ingest
-    from agent import REQUEST_TIMEOUT_S, AdvisorAgent
+    from agent import CODE_TOOL_PROMPTS, REQUEST_TIMEOUT_S, AdvisorAgent
     from rag import Retriever
     ensure_index(exp_id, cfg)
     store, chunks, manifest = ingest.load_index(cfg)
     llm = ChatGoogleGenerativeAI(model=cfg.llm_model, temperature=cfg.llm_temperature, max_retries=2,
                                  timeout=REQUEST_TIMEOUT_S)
-    agent = AdvisorAgent(Retriever(cfg, store, chunks), llm, graduation.load_plan(), prompt_version=cfg.prompt_version)
+    code_runner = None
+    if cfg.prompt_version in CODE_TOOL_PROMPTS:  # anlık tool (#18): production'daki gibi Claude Haiku sandbox'ı
+        import codeact
+        code_runner = codeact.CodeRunner()
+    agent = AdvisorAgent(Retriever(cfg, store, chunks), llm, graduation.load_plan(), prompt_version=cfg.prompt_version,
+                         code_runner=code_runner)
     return agent, manifest
 
 
@@ -277,6 +282,8 @@ def agent_rows(agent, items, wait, plan, transcripts_dir=None):
     agent_ms: ask() çağrısının tamamı (LLM turları + tool'ların çalışması), sorular arası bekleme hariç.
     """
     import graduation
+    # Anlık tool metrikleri yalnız tool'un açık olduğu koşularda: eski sürümlerde "çağrılmadı" bilgi taşımaz.
+    code_tool = getattr(agent, "code_runner", None) is not None
     transcripts = {}
     rows = []
     for n, item in enumerate(items):
@@ -294,6 +301,8 @@ def agent_rows(agent, items, wait, plan, transcripts_dir=None):
                    "agent_ms": round((time.perf_counter() - started) * 1000, 1)}
             if out.get("usage"):
                 row["tokens"] = out["usage"]
+            if out.get("generated_code"):  # anlık tool kayıtları: görev, Haiku'nun adımları ve cevabı, süre, token
+                row["anlik_tool"] = out["generated_code"]
         except Exception as e:  # kota dolarsa kalan soruları boşuna deneme
             print(f"  Agent hatası ({item['id']}): {type(e).__name__}: {str(e)[:200]}")
             if "ResourceExhausted" in type(e).__name__ or "429" in str(e):
@@ -305,6 +314,8 @@ def agent_rows(agent, items, wait, plan, transcripts_dir=None):
             row["answer_ok"] = int(answer_ok(item, row["answer"]))
         if "beklenen_tool_lar" in item:
             row.update(ev.tool_selection(item["beklenen_tool_lar"], row["tool_calls"]))
+        if code_tool:
+            row.update(code_tool_values(item, row))
         if "beklenen_sayilar" in item:
             reference = graduation.evaluate(transcript, plan, confirmations=dict(item.get("teyitler") or {}))
             calc = ev.calculation(item["beklenen_sayilar"], row["answer"], reference)
@@ -320,11 +331,49 @@ def agent_rows(agent, items, wait, plan, transcripts_dir=None):
     return rows, True
 
 
+CODE_TOOL = "request_new_tool"
+
+
+def code_tool_values(item, row):
+    """Anlık tool metrikleri (#19), soru başına.
+
+    anlik_dogru: anlık tool beklendiği soruda çağrıldı, beklenmediği soruda çağrılmadı (bütün sorular; beklenen tool
+    yazılmayan çekimser sorularda da beklenmez). anlik_gerekli yalnız beklenen sorularda (duyarlılık), anlik_gereksiz
+    yalnız beklenmeyenlerde (gereksiz kod üretimi). haiku_dogru: Haiku'nun cevabı beklenen sayıları ve anahtar
+    kelimeleri içeriyor mu; Gemini'nin son cevabından ayrı ölçülür: ikisi farklıysa hata aktarımda, aynıysa hesapta.
+    """
+    expected = any(e["name"] == CODE_TOOL for e in item.get("beklenen_tool_lar") or [])
+    called = any(c["name"] == CODE_TOOL for c in row["tool_calls"])
+    out = {"anlik_dogru": int(called == expected), ("anlik_gerekli" if expected else "anlik_gereksiz"): int(called)}
+    answers = [r["haiku_cevabi"] for r in row.get("anlik_tool", []) if r.get("haiku_cevabi")]
+    if expected and answers and ("beklenen" in item or "beklenen_sayilar" in item):
+        text = "\n".join(answers)
+        ok = answer_ok(item, text) if "beklenen" in item else True
+        if "beklenen_sayilar" in item:
+            ok = ok and bool(ev.calculation(item["beklenen_sayilar"], text)["hesap_dogru"])
+        out["haiku_dogru"] = int(ok)
+    return out
+
+
+def code_tool_summary(rows):
+    """Anlık tool çağrılarının süre ve token ortalamaları (çağrı başına) ve toplam çağrı sayısı."""
+    records = [r for row in rows for r in row.get("anlik_tool", []) if "sure_ms" in r]
+    out = {"anlik_cagri": sum(len(row.get("anlik_tool", [])) for row in rows)}
+    if records:
+        out.update(anlik_ms=round(statistics.mean(r["sure_ms"] for r in records), 1),
+                   anlik_token_input=round(statistics.mean(r["tokens"]["input"] for r in records), 1),
+                   anlik_token_output=round(statistics.mean(r["tokens"]["output"] for r in records), 1))
+    return out
+
+
 # Agent özet metrikleri: ad -> soru başına anahtar (yalnız anahtarı olan sorular üzerinden ortalama)
 AGENT_METRICS = (("answer_acc", "answer_ok", "answer_n"), ("tool_secimi_dogrulugu", "tool_dogru", "tool_secimi_n"),
                  ("tool_adi_dogrulugu", "tool_adi_dogru", None), ("hesap_dogrulugu", "hesap_dogru", "hesap_n"),
                  ("arac_hesap_dogrulugu", "arac_hesap_dogru", "arac_hesap_n"),
-                 ("gerekli_tool_dogrulugu", "gerekli_tool_dogru", None), ("yan_etkisiz_orani", "yan_etkisiz", None))
+                 ("gerekli_tool_dogrulugu", "gerekli_tool_dogru", None), ("yan_etkisiz_orani", "yan_etkisiz", None),
+                 ("anlik_tool_isabeti", "anlik_dogru", None), ("anlik_tool_duyarliligi", "anlik_gerekli", "anlik_gerekli_n"),
+                 ("anlik_tool_gereksiz_orani", "anlik_gereksiz", "anlik_gereksiz_n"),
+                 ("haiku_dogrulugu", "haiku_dogru", "haiku_n"))
 DERIVED_TOOL_METRICS = {"gerekli_tool_dogrulugu": "gerekli_tool_dogru", "yan_etkisiz_orani": "yan_etkisiz"}
 
 
@@ -357,6 +406,8 @@ def agent_metrics(rows):
     used = [r["tokens"] for r in rows if r.get("tokens")]
     if used:
         out.update({f"token_{k}": round(statistics.mean(t[k] for t in used), 1) for k in ("input", "output", "reasoning")})
+    if any("anlik_dogru" in r for r in rows):
+        out.update(code_tool_summary(rows))
     return out
 
 
@@ -425,7 +476,8 @@ def run_agent(exp_id, exp, cfg, diff, dataset, dataset_hash, wait):
     (RESULTS_DIR / f"{exp_id}.json").write_text(json.dumps(result, ensure_ascii=False, indent=1), encoding="utf-8")
     m = result["llm"]["metrics"]
     print("  " + " ".join(f"{k}={m[k]:.3f}" for k in ("tool_secimi_dogrulugu", "tool_adi_dogrulugu", "gerekli_tool_dogrulugu", "yan_etkisiz_orani", "hesap_dogrulugu",
-                                                      "arac_hesap_dogrulugu", "answer_acc") if k in m))
+                                                      "arac_hesap_dogrulugu", "anlik_tool_isabeti", "anlik_tool_duyarliligi",
+                                                      "anlik_tool_gereksiz_orani", "haiku_dogrulugu", "answer_acc") if k in m))
     if result["karsilastirma"] and "karar" in result["karsilastirma"]:
         k = result["karsilastirma"]["karar"]
         print(f"  Karar ({k['metrik']}): {k['sonuc']} | Hipotez: {k['hipotez']}")

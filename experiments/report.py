@@ -28,12 +28,16 @@ SHORT_VALUES = {
 }
 METRIC_NAMES = {"mrr@10": "MRR@10", "context_chars": "context chars", "answer_acc": "answer acc.",
                 "tool_secimi_dogrulugu": "tool seçimi", "tool_adi_dogrulugu": "tool adı", "hesap_dogrulugu": "hesap",
-                "gerekli_tool_dogrulugu": "gerekli tool", "yan_etkisiz_orani": "yan etkisiz"}
+                "gerekli_tool_dogrulugu": "gerekli tool", "yan_etkisiz_orani": "yan etkisiz",
+                "anlik_tool_isabeti": "anlık tool isabeti", "anlik_tool_duyarliligi": "anlık tool duyarlılığı",
+                "anlik_tool_gereksiz_orani": "gereksiz anlık tool", "haiku_dogrulugu": "Haiku hesabı"}
 # Agent tablosu: başlık -> llm.metrics anahtarı
 AGENT_COLUMNS = [("Answer acc.", "answer_acc"), ("Tool seçimi", "tool_secimi_dogrulugu"),
                  ("Tool adı", "tool_adi_dogrulugu"), ("Gerekli tool", "gerekli_tool_dogrulugu"),
                  ("Yan etkisiz", "yan_etkisiz_orani"), ("Hesap (cevap)", "hesap_dogrulugu"),
-                 ("Hesap (tool)", "arac_hesap_dogrulugu"), ("Ort. tool çağrısı", "ort_tool_cagrisi"),
+                 ("Hesap (tool)", "arac_hesap_dogrulugu"), ("Anlık tool isabeti", "anlik_tool_isabeti"),
+                 ("Gereksiz anlık tool", "anlik_tool_gereksiz_orani"), ("Haiku hesabı", "haiku_dogrulugu"),
+                 ("Ort. tool çağrısı", "ort_tool_cagrisi"),
                  ("Ort. tur", "ort_tur")]
 
 

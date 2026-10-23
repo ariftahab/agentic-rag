@@ -26,6 +26,11 @@ Agent metrikleri (params.mod = "agent"; yalnız ilgili alanı tanımlı sorular 
                     hesap_dogrulugu ('beklenen_sayilar', transkript senaryoları), bkz. calculation
   arac_hesap_dogru: elle hesaplanan sayılar deterministik modülün (graduation.evaluate) sonucuyla aynı (0/1);
                     LLM'den bağımsız kontrol, ortalaması arac_hesap_dogrulugu
+  anlik_dogru     : anlık tool (request_new_tool) beklendiği soruda çağrıldı, beklenmediğinde çağrılmadı (0/1);
+                    ortalaması anlik_tool_isabeti. anlik_gerekli (beklenen sorularda) ortalaması anlik_tool_duyarliligi,
+                    anlik_gereksiz (beklenmeyenlerde) ortalaması anlik_tool_gereksiz_orani. Yalnız tool'un açık olduğu
+                    sürümlerde (agent_v7), bkz. run.code_tool_values
+  haiku_dogru     : Haiku'nun hesap cevabı beklenen sayıları/anahtar kelimeleri içeriyor (0/1); ortalaması haiku_dogrulugu
 """
 import hashlib
 import importlib.metadata
@@ -53,6 +58,7 @@ METRIC_DIRECTION = {
     "fikra_atif_orani": +1, "fikra_dogrulugu": +1,
     "tool_secimi_dogrulugu": +1, "tool_adi_dogrulugu": +1, "hesap_dogrulugu": +1,
     "gerekli_tool_dogrulugu": +1, "yan_etkisiz_orani": +1,
+    "anlik_tool_isabeti": +1, "anlik_tool_duyarliligi": +1, "anlik_tool_gereksiz_orani": -1, "haiku_dogrulugu": +1,
 }
 PER_QUESTION_KEY = {  # özet metrik -> soru başına değer anahtarı
     "mrr@10": "rr", "hit@1": "hit@1", "hit@3": "hit@3", "hit@5": "hit@5", "hit@10": "hit@10",
@@ -66,13 +72,17 @@ PER_QUESTION_KEY = {  # özet metrik -> soru başına değer anahtarı
     "tool_secimi_dogrulugu": "tool_dogru", "tool_adi_dogrulugu": "tool_adi_dogru", "hesap_dogrulugu": "hesap_dogru",
     # Eski sonuçlarda alan yok; soru başına değer eksik/fazla tool listelerinden türetilir (run.per_question_value).
     "gerekli_tool_dogrulugu": None, "yan_etkisiz_orani": None,
+    "anlik_tool_isabeti": "anlik_dogru", "anlik_tool_duyarliligi": "anlik_gerekli",
+    "anlik_tool_gereksiz_orani": "anlik_gereksiz", "haiku_dogrulugu": "haiku_dogru",
 }
 LLM_METRICS = {"answer_acc", "cevap_uzunlugu", "netlestirme_uzunlugu", "birlestirme_isabeti", "fikra_atif_orani",
                "fikra_dogrulugu", "tool_secimi_dogrulugu", "tool_adi_dogrulugu", "hesap_dogrulugu",
-               "gerekli_tool_dogrulugu", "yan_etkisiz_orani"}
+               "gerekli_tool_dogrulugu", "yan_etkisiz_orani", "anlik_tool_isabeti", "anlik_tool_duyarliligi",
+               "anlik_tool_gereksiz_orani", "haiku_dogrulugu"}
 BINARY_METRICS = {"hit@1", "hit@3", "hit@5", "hit@10", "context_hit", "answer_acc", "rerank_input_recall",
                   "birlestirme_isabeti", "tool_secimi_dogrulugu", "tool_adi_dogrulugu", "hesap_dogrulugu",
-                  "gerekli_tool_dogrulugu", "yan_etkisiz_orani"}
+                  "gerekli_tool_dogrulugu", "yan_etkisiz_orani", "anlik_tool_isabeti", "anlik_tool_duyarliligi",
+                  "anlik_tool_gereksiz_orani", "haiku_dogrulugu"}
 NO_CHANGE_EPS = 1e-9
 
 
