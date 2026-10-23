@@ -263,12 +263,16 @@ def _rule_results(report, plan, rules, adsd_required):
     """Her mezuniyet şartı için sonuç ve kaynağı; iki senaryo ayrı ayrı."""
     results = []
 
-    # Toplam AKTS: yönetmelikteki alt sınır ile öğretim planının toplamından büyük olanı bağlayıcıdır.
+    # Toplam AKTS: Madde 22/1'deki alt sınır. Eski kurallarda (plan_toplami_bagla) öğretim planının toplamı daha büyükse
+    # o kullanılıyordu; bu mevzuatta yok, yalnız eski sürümler için duruyor (load_rules(regulation_only=True)).
     rule = _rule(rules, "toplam_akts")
-    required = max(rule["deger"], _plan_total(plan, adsd_required))
+    sources = rule["kaynak"]
+    required = rule["deger"]
+    if rule.get("plan_toplami_bagla"):
+        required = max(required, _plan_total(plan, adsd_required))
+        sources = sources + [_plan_source(plan, "yarıyıl toplamları")]
     now, later = report["gecilen_akts"], report["devam_edenler_gecilirse_akts"]
-    results.append(_result(rule, rule["kaynak"] + [_plan_source(plan, "yarıyıl toplamları")],
-                           required, now, later, now >= required, later >= required))
+    results.append(_result(rule, sources, required, now, later, now >= required, later >= required))
 
     rule = _rule(rules, "zorunlu_dersler")
     missing = report["eksik_zorunlu"]
@@ -311,11 +315,10 @@ def graduation_requirements(plan=None, rules=None):
     rules = rules or load_rules()
     slots = sorted(plan.get("secmeli_yuvalar", []), key=lambda s: s["yariyil"])
     adsd = _rule(rules, "alan_disi_secmeli")
-    return {
+    summary = {
         "bolum": plan["bolum"],
         "katalog_yili": plan["katalog_yili"],
         "ogretim_plani": plan["kaynak"],
-        "plan_toplam_akts": _plan_total(plan, True),
         "zorunlu_akts": sum(c["akts"] for c in plan["zorunlu_dersler"]),
         "zorunlu_ders_sayisi": len(plan["zorunlu_dersler"]),
         "stajlar": [{k: c[k] for k in ("ad", "yariyil", "akts")} for c in plan["zorunlu_dersler"]
@@ -332,6 +335,9 @@ def graduation_requirements(plan=None, rules=None):
             {"id": "alan_disi_secmeli_istisna", **adsd["istisna"]},
         ],
     }
+    if _rule(rules, "toplam_akts").get("plan_toplami_bagla"):  # eski kurallar: planın toplamı da yazılır
+        summary["plan_toplam_akts"] = _plan_total(plan, True)
+    return summary
 
 
 SLOT_KIND_TEXT = {"bolum": "bölüm seçmelisi", "rektorluk": "rektörlük seçmelisi", "alan_disi": "alan dışı seçmeli"}
@@ -345,7 +351,9 @@ def requirements_text(summary):
         f"Öğretim planı: {summary['ogretim_plani']}",
         "",
         f"MEZUNİYET ŞARTLARI ({summary['bolum']}, {summary['katalog_yili']} öğretim planı)",
-        f"Öğretim planının toplamı {summary['plan_toplam_akts']} AKTS: {summary['zorunlu_ders_sayisi']} zorunlu ders "
+        (f"Öğretim planının toplamı {summary['plan_toplam_akts']} AKTS: " if "plan_toplam_akts" in summary
+         else "Öğretim planındaki dersler: ") +
+        f"{summary['zorunlu_ders_sayisi']} zorunlu ders "
         f"{summary['zorunlu_akts']} AKTS (stajlar dahil), bölüm ve rektörlük seçmelileri {summary['secmeli_akts']} AKTS, "
         f"Alan Dışı Seçmeli Ders {adsd['akts']} AKTS.",
         "",
@@ -451,7 +459,19 @@ def load_plan(path=config.PLAN_PATH):
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def load_rules(path=RULES_PATH):
+def load_rules(path=RULES_PATH, regulation_only=False):
+    """regulation_only=True: kuralların mevzuattan alıntısı ('alinti') kullanılır, mevzuatta olmayan eklemeler
+    ('plan_toplami_bagla') çıkarılır (agent_v11 ve sonrası). Varsayılan eski davranış (eski deneyler için)."""
+    rules = _load_rules(path)
+    if regulation_only:
+        for r in rules["kurallar"]:
+            if "alinti" in r:
+                r["aciklama"] = r["alinti"]
+            r.pop("plan_toplami_bagla", None)
+    return rules
+
+
+def _load_rules(path):
     return json.loads(path.read_text(encoding="utf-8"))
 
 

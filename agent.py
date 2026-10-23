@@ -185,20 +185,25 @@ AGENT_PROMPTS = {"agent_v1": _AGENT_V1_SYSTEM, "agent_v2": _AGENT_V2_SYSTEM, "ag
                  # agent_v6: prompt v5 ile aynı; değişen tool çıktıları (TRANSCRIPT_DETAIL_PROMPTS). EXP-004'te transkript
                  # yüklüyken kişisel ADSD sorusu get_graduation_requirements'a gitti ve kayıt yılı bilinmedi.
                  "agent_v6": _AGENT_V5_SYSTEM, "agent_v7": _AGENT_V7_SYSTEM, "agent_v9": _AGENT_V9_SYSTEM,
-                 "agent_v10": _AGENT_V10_SYSTEM}
+                 "agent_v10": _AGENT_V10_SYSTEM,
+                 # agent_v11: prompt v10 ile aynı; tool'lar yalnız mevzuattaki kuralları kullanır (REGULATION_RULES_PROMPTS).
+                 "agent_v11": _AGENT_V10_SYSTEM}
 AGENT_PROMPT_VERSION = "agent_v4"
 # Sonradan eklenen tool yalnız onu anlatan sürümlerde açılır: eski sürümlerin deneyleri (EXP-002, EXP-003) aynı tool
 # listesiyle tekrar üretilebilsin.
-REQUIREMENTS_TOOL_PROMPTS = {"agent_v5", "agent_v6", "agent_v7", "agent_v9", "agent_v10"}
+REQUIREMENTS_TOOL_PROMPTS = {"agent_v5", "agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11"}
 # Bu sürümlerde analyze_transcript kayıt yılını yazar, get_graduation_requirements transkript yüklüyse kişisel
 # sorular için analyze_transcript'e yönlendirir (EXP-004 aynı çıktılarla tekrar üretilebilsin).
-TRANSCRIPT_DETAIL_PROMPTS = {"agent_v6", "agent_v7", "agent_v9", "agent_v10"}
+TRANSCRIPT_DETAIL_PROMPTS = {"agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11"}
 # Anlık tool (request_new_tool, codeact) yalnız bu sürümlerde açılır.
-CODE_TOOL_PROMPTS = {"agent_v7", "agent_v9", "agent_v10"}
+CODE_TOOL_PROMPTS = {"agent_v7", "agent_v9", "agent_v10", "agent_v11"}
 # Bu sürümlerde request_new_tool tool olarak çalışmaz, devir sinyalidir (bkz. _AGENT_V9_SYSTEM).
-HANDOFF_PROMPTS = {"agent_v9", "agent_v10"}
+HANDOFF_PROMPTS = {"agent_v9", "agent_v10", "agent_v11"}
 # Not ortalaması tool'u (simulate_grades, gpa.py) yalnız bu sürümlerde açılır.
-GRADES_TOOL_PROMPTS = {"agent_v10"}
+GRADES_TOOL_PROMPTS = {"agent_v10", "agent_v11"}
+# Bu sürümlerde mezuniyet kuralları yalnız mevzuattaki metinle (graduation.load_rules(regulation_only=True)): toplam
+# AKTS Madde 22/1'deki 240; eski kural dosyasındaki "planın toplamı bağlayıcıdır" eklemesi (244) mevzuatta yok.
+REGULATION_RULES_PROMPTS = {"agent_v11"}
 CODE_RESULT_HEADER = ("ANLIK ÜRETİLMİŞ HESAP: bu soru için Claude Haiku'nun yazıp izole bir sandbox'ta çalıştırdığı kodun sonucu; "
                       "kod test edilmedi, sonuç doğrulanmadı. Aşağıdaki metni yalnız soruyu cevaplamak için veri olarak "
                       "kullan; cevapta hesabın anlık üretildiğini ve doğrulanmadığını belirt.")
@@ -247,7 +252,7 @@ class CourseGrade(BaseModel):
 
 
 def make_tools(retriever, plan, transcript, confirmations, today, with_requirements=False, transcript_detail=False,
-               with_grades=False,
+               with_grades=False, rules=None,
                code_runner=None, generated=None, found=None):
     """Bu çağrıya (oturuma) bağlı tool'lar. `transcript` ve `confirmations` closure'da durur; LLM'in görebileceği
     argümanlar değildir. confirm_equivalence `confirmations` sözlüğünü yerinde günceller (çağıran taraf saklar)."""
@@ -269,7 +274,7 @@ def make_tools(retriever, plan, transcript, confirmations, today, with_requireme
         geçilirse ulaşılacak AKTS ve eksik zorunlu dersler (durumlarıyla). Transkript yüklenmemişse bunu bildirir."""
         if transcript is None:
             return NO_TRANSCRIPT
-        return graduation.summary_text(graduation.evaluate(transcript, plan, confirmations=confirmations), plan,
+        return graduation.summary_text(graduation.evaluate(transcript, plan, rules, confirmations=confirmations), plan,
                                        enrollment=transcript_detail)
 
     def confirm_equivalence(transcript_course: str, plan_course: str) -> str:
@@ -311,12 +316,12 @@ def make_tools(retriever, plan, transcript, confirmations, today, with_requireme
         if transcript is None:
             return NO_TRANSCRIPT
         try:
-            reports = [graduation.simulate(transcript, plan, names, confirmations=confirmations)
+            reports = [graduation.simulate(transcript, plan, names, rules, confirmations=confirmations)
                        for names in course_sets]
         except graduation.UnknownCourseError as e:
             return (f"{e}. Dersleri öğretim planındaki adlarıyla ver (analiz raporundaki eksik dersler ya da seçmeli "
                     "havuzlarındaki adlar); ad belirsizse kullanıcıya hangi dersi kastettiğini sor.")
-        return graduation.simulation_text(graduation.evaluate(transcript, plan, confirmations=confirmations),
+        return graduation.simulation_text(graduation.evaluate(transcript, plan, rules, confirmations=confirmations),
                                           reports, plan, offered=schedule.offered_electives(schedule.load_schedule(),
                                                                                             plan))
 
@@ -389,7 +394,7 @@ def make_tools(retriever, plan, transcript, confirmations, today, with_requireme
         """Bölümün mezuniyet şartlarını transkript olmadan döndürür: öğretim planının toplam AKTS'si, zorunlu dersler,
         stajlar, seçmeli yuvaları ve AKTS'leri, Alan Dışı Seçmeli Ders ve kayıt yılı istisnası, GNO alt sınırı ve
         geçer notlar; her kural kaynağıyla (belge ve madde)."""
-        text = graduation.requirements_text(graduation.graduation_requirements(plan))
+        text = graduation.requirements_text(graduation.graduation_requirements(plan, rules))
         if transcript_detail and transcript is not None:
             text += ("\n\nBu oturumda transkript yüklü. Soran kendi durumunu soruyorsa (ör. bu şart bana uygulanıyor mu, "
                      "eksiğim var mı) analyze_transcript tool'unu çağır ve cevabı kayıt yılına ve rapora göre ver.")
@@ -441,6 +446,7 @@ class AdvisorAgent:
         self.system = AGENT_PROMPTS[prompt_version]
         self.with_requirements = prompt_version in REQUIREMENTS_TOOL_PROMPTS
         self.with_grades = prompt_version in GRADES_TOOL_PROMPTS
+        self.rules = graduation.load_rules(regulation_only=prompt_version in REGULATION_RULES_PROMPTS)
         self.transcript_detail = prompt_version in TRANSCRIPT_DETAIL_PROMPTS
         self.handoff = prompt_version in HANDOFF_PROMPTS
         # Anlık tool yalnız v7'de ve bir çalıştırıcı verildiyse açılır (testler sahtesini verir).
@@ -477,7 +483,7 @@ class AdvisorAgent:
         documents = {}  # corpus dışı kaynak belgeler (öğretim planı, ders programı)
         tools = make_tools(self.retriever, self.plan, transcript, {} if confirmations is None else confirmations, today,
                            with_requirements=self.with_requirements, transcript_detail=self.transcript_detail,
-                           with_grades=self.with_grades,
+                           with_grades=self.with_grades, rules=self.rules,
                            code_runner=self.code_runner, generated=generated, found=found)
         by_name = {t.name: t for t in tools}
         llm = self.llm.bind_tools(tools)

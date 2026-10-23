@@ -405,6 +405,20 @@ def test_prompt_versions_v9_and_v10_change_one_rule_each():
     assert len(added) == 1 and "simulate_grades" in added[0] and [line for line in v9 if line not in v10] == []
 
 
+def test_agent_v11_uses_only_the_regulation_total():
+    # Madde 22/1: en az 240 AKTS. Planın toplamı (244) mevzuatta bir kural değil; v11 onu yazmaz.
+    from agent import AGENT_PROMPTS
+    assert AGENT_PROMPTS["agent_v11"] == AGENT_PROMPTS["agent_v10"]           # fark yalnız tool çıktılarında
+    third = json.loads((Path(__file__).parents[1] / "eval" / "transkriptler" / "ucuncu_sinif_2024.json")
+                       .read_text(encoding="utf-8"))
+    for name, transcript in (("get_graduation_requirements", None), ("analyze_transcript", third)):
+        new = tool_reply("agent_v11", name, transcript)
+        assert "244" not in new and "bağlayıcı" not in new
+        assert "en az 240 AKTS'yi tamamlamak zorundadır" in new
+        assert "244" in tool_reply("agent_v10", name, transcript)           # eski sürümler değişmez (EXP-008)
+    assert "117 / 240 AKTS" in tool_reply("agent_v11", "analyze_transcript", third)
+
+
 # --- Kaynaklar (#16, #17): cevabın dayandığı chunk'lar ve corpus dışı belgeler ---
 
 from langchain_core.documents import Document  # noqa: E402

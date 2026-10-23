@@ -4,6 +4,9 @@
     {
       "id": "toplam_akts",
       "aciklama": "Lisans programlarında mezuniyet için en az 240 AKTS tamamlanır; öğretim planının toplamı daha büyükse bağlayıcı olan plandır.",
+      "alinti": "Öğrenciler mezuniyet için kayıtlı oldukları lisans programlarında en az 240 AKTS'yi tamamlamak zorundadır.",
+      "plan_toplami_bagla": true,
+      "not": "'plan_toplami_bagla' ve aciklama'nın ikinci cümlesi mevzuatta yok (agent_v10 ve öncesi, eski deneyler tekrar üretilebilsin diye duruyor); load_rules(regulation_only=True) yalnız 'alinti'yı kullanır.",
       "deger": 240,
       "kaynak": [
         {"belge": "BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği", "madde": "Madde 22, fıkra 1"}
