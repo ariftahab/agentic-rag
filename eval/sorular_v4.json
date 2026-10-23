@@ -1,0 +1,1348 @@
+{
+ "surum": "v4",
+ "aciklama": "sorular_v3 + iki değişiklik (agent_v12: analyze_transcript ders geçmişini de verir). (1) Cevabı artık raporda olan 5 transkript sorusunun (DD sayısı, kaldığım dersler, kaç kez aldım, kaçıncı dönem, kalan ders sayısı) beklenen tool'u analyze_transcript, grup 'transkript'; beklenen sayılar ve anahtar kelimeler v3 ile aynı. (2) Raporda olmayan, transkriptin notlarıyla ek hesap isteyen 4 yeni soru (D01-D04, grup 'anlik_tool', kategori 'devir_transkript'): beklenen önce analyze_transcript, sonra request_new_tool (devir). Sayılar tests/test_sorular_v4.py'de veriden yeniden hesaplanır. Ders programı soruları v1 gibi 2026-2027 güz ders dönemi içinde (en geç 18 Aralık) koşulmalı.",
+ "sorular": [
+  {
+   "id": "M01",
+   "grup": "mevzuat",
+   "kategori": "mevzuat_bulma",
+   "soru": "Mühendislik Fakültesinde zorunlu staj toplam kaç iş günü?",
+   "beklenen_tool_lar": [
+    {
+     "name": "search_regulations"
+    }
+   ],
+   "beklenen": [
+    "40"
+   ],
+   "kaynaklar": [
+    {
+     "belge": "mühendislik fakültesi staj yönergesi.pdf",
+     "kanit": [
+      "zorunlu staj süresi toplam 40 (kırk) iş günüdür"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "M02",
+   "grup": "mevzuat",
+   "kategori": "mevzuat_bulma",
+   "soru": "Staj raporunu en geç ne zamana kadar teslim etmem gerekiyor?",
+   "beklenen_tool_lar": [
+    {
+     "name": "search_regulations"
+    }
+   ],
+   "beklenen": [
+    "15 gün|on beş gün"
+   ],
+   "kaynaklar": [
+    {
+     "belge": "mühendislik fakültesi staj yönergesi.pdf",
+     "kanit": [
+      "stajı takip eden eğitim döneminin başından itibaren en geç 15 gün içinde"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "M03",
+   "grup": "mevzuat",
+   "kategori": "mevzuat_bulma",
+   "soru": "Mazeretim yüzünden ders kaydını kaçırdım; en geç ne zamana kadar ders ekleyip silebilirim?",
+   "beklenen_tool_lar": [
+    {
+     "name": "search_regulations"
+    }
+   ],
+   "beklenen": [
+    "üç hafta|3 hafta"
+   ],
+   "kaynaklar": [
+    {
+     "belge": "önlisans lisans eğitim öğretim.pdf",
+     "kanit": [
+      "derslerin başladığı ilk üç hafta sonuna kadar ders kaydı ve ders kaydına ders ekleme veya ders silme işlemi yapabilirler"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "M04",
+   "grup": "mevzuat",
+   "kategori": "mevzuat_bulma",
+   "soru": "Devamsızlıktan kaldığım dersin bütünleme sınavına girebilir miyim?",
+   "beklenen_tool_lar": [
+    {
+     "name": "search_regulations"
+    }
+   ],
+   "beklenen": [
+    "giremez"
+   ],
+   "kaynaklar": [
+    {
+     "belge": "önlisans lisans eğitim öğretim.pdf",
+     "kanit": [
+      "olan öğrenci o dersin bütünleme sınavına giremez"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "M05",
+   "grup": "mevzuat",
+   "kategori": "mevzuat_bulma",
+   "soru": "Hastalık yüzünden ara sınava giremedim; mazeret sınavı için kaç gün içinde başvurmalıyım?",
+   "beklenen_tool_lar": [
+    {
+     "name": "search_regulations"
+    }
+   ],
+   "beklenen": [
+    "3 iş günü|üç iş günü"
+   ],
+   "kaynaklar": [
+    {
+     "belge": "önlisans lisans eğitim öğretim.pdf",
+     "kanit": [
+      "itibaren 3 iş günü içerisinde başvurması"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "M06",
+   "grup": "mevzuat",
+   "kategori": "mevzuat_bulma",
+   "soru": "Teorik derslerde devam zorunluluğu yüzde kaç?",
+   "beklenen_tool_lar": [
+    {
+     "name": "search_regulations"
+    }
+   ],
+   "beklenen": [
+    "70"
+   ],
+   "kaynaklar": [
+    {
+     "belge": "önlisans lisans eğitim öğretim.pdf",
+     "kanit": [
+      "Devam zorunluluğu teorik dersler için % 70"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "M07",
+   "grup": "mevzuat",
+   "kategori": "mevzuat_bulma",
+   "soru": "Başka bir üniversiteye kurumlar arası yatay geçiş yapmak için not ortalamamın en az kaç olması gerekir?",
+   "beklenen_tool_lar": [
+    {
+     "name": "search_regulations"
+    }
+   ],
+   "beklenen": [
+    "60"
+   ],
+   "kaynaklar": [
+    {
+     "belge": "yatay-gecis-yonergesi.pdf",
+     "kanit": [
+      "genel not ortalamasının en az 100 üzerinden 60 olması şarttır"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "M08",
+   "grup": "mevzuat",
+   "kategori": "mevzuat_bulma",
+   "soru": "Lisansüstü öğrencisi bir dönemde en fazla kaç AKTS ders alabilir?",
+   "beklenen_tool_lar": [
+    {
+     "name": "search_regulations"
+    }
+   ],
+   "beklenen": [
+    "30"
+   ],
+   "kaynaklar": [
+    {
+     "belge": "lisansüstü eğitim öğretim.pdf",
+     "kanit": [
+      "azami (uzmanlık alan dersi ve tez çalışması hariç) 30 AKTS"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "M09",
+   "grup": "mevzuat",
+   "kategori": "mevzuat_bulma",
+   "soru": "Çift anadal programına başvurmak için not ortalaması şartı nedir?",
+   "beklenen_tool_lar": [
+    {
+     "name": "search_regulations"
+    }
+   ],
+   "beklenen": [
+    "70"
+   ],
+   "kaynaklar": [
+    {
+     "belge": "çift anadal program yönergesi.pdf",
+     "kanit": [
+      "genel not ortalaması 100 üzerinden en az 70"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "M10",
+   "grup": "mevzuat",
+   "kategori": "alan_disi_kayit_yili",
+   "soru": "2023-2024 eğitim-öğretim yılında kayıt olan öğrenciler için Alan Dışı Seçmeli Ders almak zorunlu mu?",
+   "beklenen_tool_lar": [
+    {
+     "name": "search_regulations"
+    }
+   ],
+   "beklenen": [
+    "isteğe bağlı"
+   ],
+   "kaynaklar": [
+    {
+     "belge": "alan dışı seçmeli ders yönergesi.pdf",
+     "kanit": [
+      "2023-2024 eğitim-öğretim yılı ve öncesinde Üniversiteye kaydolan öğrencilerin"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "B01",
+   "grup": "birlestirme",
+   "kategori": "kural_birlestirme",
+   "soru": "Bilgisayar Mühendisliğinden mezun olabilmek için hangi şartları sağlamak gerekiyor?",
+   "beklenen_tool_lar": [
+    {
+     "name": "get_graduation_requirements"
+    }
+   ],
+   "beklenen": [
+    "240",
+    "2,00|2.00"
+   ],
+   "kaynaklar": [
+    {
+     "belge": "önlisans lisans eğitim öğretim.pdf",
+     "kanit": [
+      "lisans programlarında en az 240 AKTS",
+      "En az 2,00 genel ağırlıklı not ortalamasını sağlamak"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "B02",
+   "grup": "birlestirme",
+   "kategori": "kural_birlestirme",
+   "soru": "Bir zorunlu dersten kaldım ve bütünlemede de geçemezsem dersi ne zaman tekrar almam gerekir, not ortalamama hangi not sayılır?",
+   "beklenen_tool_lar": [
+    {
+     "name": "search_regulations"
+    }
+   ],
+   "beklenen": [
+    "ilk dönem",
+    "son not"
+   ],
+   "kaynaklar": [
+    {
+     "belge": "önlisans lisans eğitim öğretim.pdf",
+     "kanit": [
+      "bu dersi tekrar verildiği ilk dönemde almak zorundadırlar",
+      "tekrar edilen derslerden alınan son not katılır"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "B03",
+   "grup": "birlestirme",
+   "kategori": "kural_birlestirme",
+   "soru": "Staj dersinin bütünleme sınavı var mı, stajda başarısız olursam ne olur?",
+   "beklenen_tool_lar": [
+    {
+     "name": "search_regulations"
+    }
+   ],
+   "beklenen": [
+    "bütünleme",
+    "tekrar"
+   ],
+   "kaynaklar": [
+    {
+     "belge": "önlisans lisans eğitim öğretim.pdf",
+     "kanit": [
+      "bitirme çalışması, staj ve benzeri"
+     ]
+    },
+    {
+     "belge": "mühendislik fakültesi staj yönergesi.pdf",
+     "kanit": [
+      "stajını takip eden ilk staj döneminde tekrar yapmak zorundadır"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C01",
+   "grup": "cekimser",
+   "kategori": "cekimser_kalma",
+   "soru": "Erasmus hibesi aylık kaç avro?",
+   "cevapsiz": true
+  },
+  {
+   "id": "C02",
+   "grup": "cekimser",
+   "kategori": "cekimser_kalma",
+   "soru": "Mühendislik Fakültesi yemekhanesinde öğle yemeği kaç lira?",
+   "cevapsiz": true
+  },
+  {
+   "id": "C03",
+   "grup": "cekimser",
+   "kategori": "cekimser_kalma",
+   "soru": "Bilgisayar Mühendisliği bölüm başkanı kim?",
+   "cevapsiz": true
+  },
+  {
+   "id": "T01",
+   "grup": "transkript",
+   "kategori": "transkript_hesap",
+   "soru": "Şu an kaç AKTS'm var, bu dönem aldığım bütün dersleri geçersem kaç AKTS'm olur?",
+   "transkript": "birinci_sinif_2026",
+   "beklenen_tool_lar": [
+    {
+     "name": "analyze_transcript"
+    }
+   ],
+   "beklenen_sayilar": {
+    "gecilen_akts": 0,
+    "devam_edenler_gecilirse_akts": 32
+   }
+  },
+  {
+   "id": "T02",
+   "grup": "transkript",
+   "kategori": "transkript_hesap",
+   "soru": "Mezun olmak için neyim eksik?",
+   "transkript": "ucuncu_sinif_2024",
+   "beklenen_tool_lar": [
+    {
+     "name": "analyze_transcript"
+    }
+   ],
+   "beklenen_sayilar": {
+    "gecilen_akts": 117,
+    "devam_edenler_gecilirse_akts": 152,
+    "gno": 3.08
+   }
+  },
+  {
+   "id": "T03",
+   "grup": "transkript",
+   "kategori": "erasmus_eslesmeyen",
+   "soru": "Mezuniyet durumum nedir, kaç AKTS tamamladım?",
+   "transkript": "erasmus_2023",
+   "beklenen_tool_lar": [
+    {
+     "name": "analyze_transcript"
+    }
+   ],
+   "beklenen": [
+    "Microcontroller Programming"
+   ],
+   "beklenen_sayilar": {
+    "gecilen_akts": 176,
+    "devam_edenler_gecilirse_akts": 206,
+    "gno": 3.5
+   }
+  },
+  {
+   "id": "T04",
+   "grup": "transkript",
+   "kategori": "transkript_hesap",
+   "soru": "Bu dönem Algoritma Analizi'ni geçersem mezun olabilir miyim?",
+   "transkript": "uzatma_2021",
+   "beklenen_tool_lar": [
+    {
+     "name": "analyze_transcript"
+    }
+   ],
+   "beklenen": [
+    "Staj II",
+    "Seçmeli VIII"
+   ],
+   "beklenen_sayilar": {
+    "gecilen_akts": 231,
+    "devam_edenler_gecilirse_akts": 237,
+    "gno": 1.97
+   }
+  },
+  {
+   "id": "T05",
+   "grup": "transkript",
+   "kategori": "eksik_zorunlu",
+   "soru": "Stajlarımı tamamlamış mıyım?",
+   "transkript": "uzatma_2021",
+   "beklenen_tool_lar": [
+    {
+     "name": "analyze_transcript"
+    }
+   ],
+   "beklenen": [
+    "Staj II"
+   ]
+  },
+  {
+   "id": "T06",
+   "grup": "transkript",
+   "kategori": "secmeli_yuva",
+   "soru": "Seçmeli VII'den altı ders geçtim; fazla olan ders Seçmeli VIII'deki eksiğimi kapatmıyor mu?",
+   "transkript": "uzatma_2021",
+   "beklenen_tool_lar": [
+    {
+     "name": "analyze_transcript"
+    }
+   ],
+   "beklenen": [
+    "Seçmeli VIII"
+   ],
+   "beklenen_sayilar": {
+    "secmeli_gecilen_akts": 60,
+    "secmeli_acik_akts": 4
+   }
+  },
+  {
+   "id": "T07",
+   "grup": "transkript",
+   "kategori": "gno_siniri",
+   "soru": "Genel not ortalamam mezun olmaya yetiyor mu?",
+   "transkript": "uzatma_2021",
+   "beklenen_tool_lar": [
+    {
+     "name": "analyze_transcript"
+    }
+   ],
+   "beklenen": [
+    "2,00|2.00"
+   ],
+   "beklenen_sayilar": {
+    "gno": 1.97
+   }
+  },
+  {
+   "id": "T08",
+   "grup": "transkript",
+   "kategori": "bu_donem_dersleri",
+   "soru": "Bu dönem hangi seçmeli dersleri alıyorum, her biri kaç AKTS?",
+   "transkript": "erasmus_2023",
+   "beklenen_tool_lar": [
+    {
+     "name": "analyze_transcript"
+    }
+   ],
+   "beklenen": [
+    "Yapay Zeka",
+    "Veri Madenciliği",
+    "Nesnelerin İnterneti",
+    "Bilişim Hukuku",
+    "Yapay Sinir Ağları"
+   ]
+  },
+  {
+   "id": "T09",
+   "grup": "transkript",
+   "kategori": "erasmus_otomatik",
+   "soru": "Erasmus'ta aldığım Software Engineering dersi Yazılım Mühendisliği yerine sayılmış mı?",
+   "transkript": "erasmus_2023",
+   "beklenen_tool_lar": [
+    {
+     "name": "analyze_transcript"
+    }
+   ],
+   "beklenen": [
+    "Yazılım Mühendisliği"
+   ]
+  },
+  {
+   "id": "T10",
+   "grup": "transkript",
+   "kategori": "erasmus_teyit",
+   "soru": "Gömülü Sistemler yerine sayıldı.",
+   "gecmis": [
+    {
+     "role": "user",
+     "content": "Mezuniyet durumum nedir, kaç AKTS tamamladım?"
+    },
+    {
+     "role": "assistant",
+     "content": "Transkriptteki öğrenci şu an 176 AKTS tamamlamış; bu dönem alınan dersler geçilirse 206 AKTS olur. Eksik zorunlu dersler: Sistem Programlama, Gömülü Sistemler, Veri İletişimi ve Bilgisayar Ağları, Bitirme Projesi II; Bitirme Projesi I ve Staj II bu dönem alınıyor. Erasmus'ta alınan Microcontroller Programming dersi öğretim planındaki hiçbir dersle otomatik eşlenemedi. Microcontroller Programming öğretim planındaki hangi derse sayıldı?"
+    }
+   ],
+   "transkript": "erasmus_2023",
+   "beklenen_tool_lar": [
+    {
+     "name": "confirm_equivalence",
+     "args": {
+      "transcript_course": "Microcontroller Programming",
+      "plan_course": "Gömülü Sistemler"
+     }
+    }
+   ],
+   "beklenen_sayilar": {
+    "tamamlanan_zorunlu_ders": 35
+   }
+  },
+  {
+   "id": "T11",
+   "grup": "transkript",
+   "kategori": "erasmus_teyit",
+   "soru": "Peki şimdi mezun olmak için hangi zorunlu derslerim kaldı?",
+   "gecmis": [
+    {
+     "role": "user",
+     "content": "Mezuniyet durumum nedir, kaç AKTS tamamladım?"
+    },
+    {
+     "role": "assistant",
+     "content": "Transkriptteki öğrenci şu an 176 AKTS tamamlamış; bu dönem alınan dersler geçilirse 206 AKTS olur. Microcontroller Programming öğretim planındaki hangi derse sayıldı?"
+    },
+    {
+     "role": "user",
+     "content": "Gömülü Sistemler yerine sayıldı."
+    },
+    {
+     "role": "assistant",
+     "content": "Kaydedildi: Microcontroller Programming, Gömülü Sistemler yerine sayıldı. Kesin eşdeğerlik intibak komisyonu kararına bağlıdır."
+    }
+   ],
+   "transkript": "erasmus_2023",
+   "teyitler": {
+    "2FI0631204": "1906003062015"
+   },
+   "beklenen_tool_lar": [
+    {
+     "name": "analyze_transcript"
+    }
+   ],
+   "beklenen": [
+    "Sistem Programlama",
+    "Veri İletişimi",
+    "Bitirme Projesi II"
+   ]
+  },
+  {
+   "id": "T12",
+   "grup": "transkript",
+   "kategori": "alan_disi_kayit_yili",
+   "soru": "Alan dışı seçmeli ders almam gerekiyor mu?",
+   "transkript": "ucuncu_sinif_2024",
+   "beklenen_tool_lar": [
+    {
+     "name": "analyze_transcript"
+    }
+   ],
+   "beklenen": [
+    "zorunlu"
+   ]
+  },
+  {
+   "id": "T13",
+   "grup": "transkript",
+   "kategori": "alan_disi_kayit_yili",
+   "soru": "Alan dışı seçmeli ders almadım, bu mezuniyetime engel olur mu?",
+   "transkript": "erasmus_2023",
+   "beklenen_tool_lar": [
+    {
+     "name": "analyze_transcript"
+    }
+   ],
+   "beklenen": [
+    "isteğe bağlı"
+   ]
+  },
+  {
+   "id": "T14",
+   "grup": "transkript",
+   "kategori": "transkript_yok",
+   "soru": "Mezun olmak için kaç AKTS'm eksik?",
+   "beklenen_tool_lar": [],
+   "beklenen": [
+    "UBYS",
+    "transkript"
+   ]
+  },
+  {
+   "id": "W01",
+   "grup": "what_if",
+   "kategori": "what_if_acilmayan",
+   "soru": "İleri Makine Öğrenmesi dersini alırsam Seçmeli VI tamamlanır mı?",
+   "transkript": "ucuncu_sinif_2024",
+   "beklenen_tool_lar": [
+    {
+     "name": "simulate_courses",
+     "args": {
+      "course_sets": [
+       [
+        "İleri Makine Öğrenmesi"
+       ]
+      ]
+     }
+    }
+   ],
+   "beklenen": [
+    "açılmıyor"
+   ],
+   "beklenen_sayilar": {
+    "kume1_akts": 156
+   }
+  },
+  {
+   "id": "W02",
+   "grup": "what_if",
+   "kategori": "what_if_etkisiz_ders",
+   "soru": "Web Programlama ve Algoritma Analizi derslerini alsam toplam AKTS'm ne kadar artar?",
+   "transkript": "ucuncu_sinif_2024",
+   "beklenen_tool_lar": [
+    {
+     "name": "simulate_courses",
+     "args": {
+      "course_sets": [
+       [
+        "Web Programlama",
+        "Algoritma Analizi"
+       ]
+      ]
+     }
+    }
+   ],
+   "beklenen": [
+    "zaten"
+   ],
+   "beklenen_sayilar": {
+    "kume1_akts": 152
+   }
+  },
+  {
+   "id": "W03",
+   "grup": "what_if",
+   "kategori": "what_if_bilinmeyen_ders",
+   "soru": "Oyun Programlama dersini alırsam seçmeli AKTS'm tamamlanır mı?",
+   "transkript": "ucuncu_sinif_2024",
+   "beklenen_tool_lar": [
+    {
+     "name": "simulate_courses"
+    }
+   ],
+   "beklenen": [
+    "plan"
+   ]
+  },
+  {
+   "id": "W04",
+   "grup": "what_if",
+   "kategori": "what_if_karsilastirma",
+   "soru": "Seçmeli VIII için Görüntü İşleme, Bulut Bilişim, Bilgisayarlı Görme, Uzman Sistemler ve Veri Bilimine Giriş'i alırsam mı, yoksa yalnız Görüntü İşleme ile Bulut Bilişim'i alırsam mı seçmeli şartım tamamlanır?",
+   "transkript": "erasmus_2023",
+   "beklenen_tool_lar": [
+    {
+     "name": "simulate_courses",
+     "args": {
+      "course_sets": [
+       [
+        "Görüntü İşleme",
+        "Bulut Bilişim",
+        "Bilgisayarlı Görme",
+        "Uzman Sistemler",
+        "Veri Bilimine Giriş"
+       ],
+       [
+        "Görüntü İşleme",
+        "Bulut Bilişim"
+       ]
+      ]
+     }
+    }
+   ],
+   "beklenen_sayilar": {
+    "kume1_akts": 226,
+    "kume2_akts": 214
+   }
+  },
+  {
+   "id": "W05",
+   "grup": "what_if",
+   "kategori": "what_if_acilmayan",
+   "soru": "Veri Bilimine Giriş dersini alırsam mezuniyet şartlarım tamamlanır mı?",
+   "transkript": "uzatma_2021",
+   "beklenen_tool_lar": [
+    {
+     "name": "simulate_courses",
+     "args": {
+      "course_sets": [
+       [
+        "Veri Bilimine Giriş"
+       ]
+      ]
+     }
+    }
+   ],
+   "beklenen": [
+    "açılmıyor",
+    "Staj II"
+   ],
+   "beklenen_sayilar": {
+    "kume1_akts": 241
+   }
+  },
+  {
+   "id": "P01",
+   "grup": "ders_programi",
+   "kategori": "ders_programi_transkript",
+   "soru": "Pazartesi günü hangi derslerim var?",
+   "transkript": "birinci_sinif_2026",
+   "beklenen_tool_lar": [
+    {
+     "name": "get_course_schedule",
+     "args": {
+      "gun": "pazartesi"
+     }
+    }
+   ],
+   "beklenen": [
+    "Matematik I",
+    "Bilgisayar Mühendisliğine Giriş"
+   ]
+  },
+  {
+   "id": "P02",
+   "grup": "ders_programi",
+   "kategori": "ders_programi_sinif",
+   "soru": "3. sınıfın salı günü hangi dersleri var?",
+   "beklenen_tool_lar": [
+    {
+     "name": "get_course_schedule",
+     "args": {
+      "gun": "salı",
+      "sinif": 3
+     }
+    }
+   ],
+   "beklenen": [
+    "İşletim Sistemleri I",
+    "Mikroişlemciler"
+   ]
+  },
+  {
+   "id": "P03",
+   "grup": "ders_programi",
+   "kategori": "ders_programi_sinif",
+   "soru": "2. sınıf öğrencileri cuma günü hangi derslere giriyor?",
+   "beklenen_tool_lar": [
+    {
+     "name": "get_course_schedule",
+     "args": {
+      "gun": "cuma",
+      "sinif": 2
+     }
+    }
+   ],
+   "beklenen": [
+    "Veri Yapıları",
+    "Mühendislik Ekonomisi"
+   ]
+  },
+  {
+   "id": "P04",
+   "grup": "ders_programi",
+   "kategori": "ders_programi_sinif_sor",
+   "soru": "Pazartesi günü hangi derslerim var?",
+   "beklenen_tool_lar": [
+    {
+     "name": "get_course_schedule",
+     "args": {
+      "gun": "pazartesi"
+     }
+    }
+   ],
+   "beklenen": [
+    "sınıf"
+   ]
+  },
+  {
+   "id": "P05",
+   "grup": "ders_programi",
+   "kategori": "ders_programi_ders",
+   "soru": "Yapay Zeka dersi bu dönem hangi gün ve saatte?",
+   "beklenen_tool_lar": [
+    {
+     "name": "get_offered_electives"
+    }
+   ],
+   "beklenen": [
+    "çarşamba",
+    "15:30"
+   ]
+  },
+  {
+   "id": "S01",
+   "grup": "acilan_secmeli",
+   "kategori": "acilan_secmeli",
+   "soru": "Bu dönem Seçmeli III için hangi dersler açılıyor?",
+   "beklenen_tool_lar": [
+    {
+     "name": "get_offered_electives",
+     "args": {
+      "yuva": "Seçmeli III"
+     }
+    }
+   ],
+   "beklenen": [
+    "Programlama Dilleri Temelleri",
+    "Mühendislik Ekonomisi",
+    "Kablosuz Algılayıcı Ağlar",
+    "Web Programlama"
+   ]
+  },
+  {
+   "id": "S02",
+   "grup": "acilan_secmeli",
+   "kategori": "acilan_secmeli_acilmayan",
+   "soru": "Seçmeli VIII'den bu dönem hangi dersleri alabilirim?",
+   "beklenen_tool_lar": [
+    {
+     "name": "get_offered_electives",
+     "args": {
+      "yuva": "Seçmeli VIII"
+     }
+    }
+   ],
+   "beklenen": [
+    "açılmıyor"
+   ]
+  },
+  {
+   "id": "S03",
+   "grup": "acilan_secmeli",
+   "kategori": "acilan_secmeli_rektorluk",
+   "soru": "Bu dönem rektörlük seçmelisi olarak hangi dersler var?",
+   "beklenen_tool_lar": [
+    {
+     "name": "get_offered_electives"
+    }
+   ],
+   "beklenen": [
+    "Mühendislik Etiği",
+    "birim"
+   ]
+  },
+  {
+   "id": "F01",
+   "grup": "takip",
+   "kategori": "takip_rewrite",
+   "soru": "Peki bunu tek seferde yapabilir miyim?",
+   "gecmis": [
+    {
+     "role": "user",
+     "content": "Mühendislik Fakültesinde zorunlu staj toplam kaç iş günü?"
+    },
+    {
+     "role": "assistant",
+     "content": "Zorunlu staj süresi toplam 40 iş günüdür ve her biri en az 20 iş günü olan iki ayrı dönemde yapılır [Mühendislik Fakültesi Staj Yönergesi, Madde 10]."
+    }
+   ],
+   "beklenen_tool_lar": [
+    {
+     "name": "search_regulations"
+    }
+   ],
+   "beklenen": [
+    "Staj Komisyonu"
+   ],
+   "kaynaklar": [
+    {
+     "belge": "mühendislik fakültesi staj yönergesi.pdf",
+     "kanit": [
+      "birleştirilerek tek seferde aralıksız 40 (kırk) iş günü"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "F02",
+   "grup": "takip",
+   "kategori": "takip_rewrite",
+   "soru": "Bu şartı sağlamıyorsam başvuramaz mıyım?",
+   "gecmis": [
+    {
+     "role": "user",
+     "content": "Kurumlar arası yatay geçiş için not ortalaması şartı nedir?"
+    },
+    {
+     "role": "assistant",
+     "content": "Kayıtlı olunan programda bitirilen dönemlere ait genel not ortalamasının 100 üzerinden en az 60 olması gerekir [Yatay Geçiş Yönergesi, Madde 8]."
+    }
+   ],
+   "beklenen_tool_lar": [
+    {
+     "name": "search_regulations"
+    }
+   ],
+   "beklenen": [
+    "taban puan"
+   ],
+   "kaynaklar": [
+    {
+     "belge": "yatay-gecis-yonergesi.pdf",
+     "kanit": [
+      "geçiş yapmak istediği diploma programının taban puanına eşit veya yüksek olan adaylar"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "A01",
+   "grup": "not_ortalamasi",
+   "kategori": "ortalama_tool",
+   "soru": "Algoritma Analizi'nden 62 aldım, harf notum ne olur, ortalamam kaç olur?",
+   "transkript": "ucuncu_sinif_2024",
+   "beklenen_tool_lar": [
+    {
+     "name": "simulate_grades"
+    }
+   ],
+   "beklenen": [
+    "DC"
+   ],
+   "beklenen_sayilar": {
+    "ortalama": 3.06
+   }
+  },
+  {
+   "id": "A02",
+   "grup": "not_ortalamasi",
+   "kategori": "ortalama_tool",
+   "soru": "Bir dersin vizesinden 40 aldım, geçmek için finalden en az kaç almam lazım?",
+   "beklenen_tool_lar": [
+    {
+     "name": "simulate_grades"
+    }
+   ],
+   "beklenen": [
+    "65"
+   ]
+  },
+  {
+   "id": "A03",
+   "grup": "not_ortalamasi",
+   "kategori": "ortalama_tool",
+   "soru": "Algoritma Analizi'nden vizeden 50, finalden 60 aldım; harf notum ne olur, ortalamam 2,00'yi geçer mi?",
+   "transkript": "uzatma_2021",
+   "beklenen_tool_lar": [
+    {
+     "name": "simulate_grades"
+    }
+   ],
+   "beklenen": [
+    "DD"
+   ],
+   "beklenen_sayilar": {
+    "ortalama": 2.02
+   }
+  },
+  {
+   "id": "A04",
+   "grup": "not_ortalamasi",
+   "kategori": "ortalama_tool",
+   "soru": "Matematik I'den 85, Fizik I'den 72, Kimya'dan 58 aldım; ortalamam kaç olur?",
+   "transkript": "birinci_sinif_2026",
+   "beklenen_tool_lar": [
+    {
+     "name": "simulate_grades"
+    }
+   ],
+   "beklenen_sayilar": {
+    "ortalama": 2.91
+   }
+  },
+  {
+   "id": "A05",
+   "grup": "not_ortalamasi",
+   "kategori": "ortalama_tool",
+   "soru": "Ortalamam 3,00'ün altına düşmesin diye Algoritma Analizi'nden en az kaç puan almalıyım?",
+   "transkript": "ucuncu_sinif_2024",
+   "beklenen_tool_lar": [
+    {
+     "name": "simulate_grades"
+    }
+   ],
+   "beklenen_sayilar": {
+    "puan": 55
+   }
+  },
+  {
+   "id": "A06",
+   "grup": "transkript",
+   "kategori": "rapor_gecmis",
+   "soru": "Kaç tane DD dersim var?",
+   "transkript": "ucuncu_sinif_2024",
+   "beklenen_tool_lar": [
+    {
+     "name": "analyze_transcript"
+    }
+   ],
+   "beklenen": [
+    "Kimya",
+    "Elektrik Devreleri"
+   ],
+   "beklenen_sayilar": {
+    "dd_ders": 2
+   }
+  },
+  {
+   "id": "A07",
+   "grup": "transkript",
+   "kategori": "rapor_gecmis",
+   "soru": "Hangi derslerden kaldım?",
+   "transkript": "ucuncu_sinif_2024",
+   "beklenen_tool_lar": [
+    {
+     "name": "analyze_transcript"
+    }
+   ],
+   "beklenen": [
+    "Fizik II",
+    "Diferansiyel Denklemler"
+   ]
+  },
+  {
+   "id": "A08",
+   "grup": "transkript",
+   "kategori": "rapor_gecmis",
+   "soru": "Algoritma Analizi'ni kaç kez aldım?",
+   "transkript": "uzatma_2021",
+   "beklenen_tool_lar": [
+    {
+     "name": "analyze_transcript"
+    }
+   ],
+   "beklenen": [
+    "FD"
+   ],
+   "beklenen_sayilar": {
+    "alis": 4
+   }
+  },
+  {
+   "id": "A09",
+   "grup": "transkript",
+   "kategori": "rapor_gecmis",
+   "soru": "Kaçıncı dönemimdeyim?",
+   "transkript": "uzatma_2021",
+   "beklenen_tool_lar": [
+    {
+     "name": "analyze_transcript"
+    }
+   ],
+   "beklenen_sayilar": {
+    "donem": 11
+   }
+  },
+  {
+   "id": "A10",
+   "grup": "transkript",
+   "kategori": "rapor_gecmis",
+   "soru": "Bu dönemki derslerimi geçersem mezun olmak için daha kaç ders almam gerekir?",
+   "transkript": "ucuncu_sinif_2024",
+   "beklenen_tool_lar": [
+    {
+     "name": "analyze_transcript"
+    }
+   ],
+   "beklenen_sayilar": {
+    "ders": 21
+   }
+  },
+  {
+   "id": "A11",
+   "grup": "anlik_tool",
+   "kategori": "anlik_program",
+   "soru": "Cuma günü boş kalsın istiyorum, derslerimin hangi şubelerini seçmeliyim?",
+   "transkript": "ucuncu_sinif_2024",
+   "beklenen_tool_lar": [
+    {
+     "name": "request_new_tool",
+     "args": {
+      "transkript_gerekli": true
+     }
+    }
+   ],
+   "beklenen": [
+    "Makine Öğrenmesine Giriş",
+    "A şube"
+   ]
+  },
+  {
+   "id": "A12",
+   "grup": "anlik_tool",
+   "kategori": "anlik_program",
+   "soru": "İşletim Sistemleri I'i B şubesinden alırsam hangi dersimle çakışır?",
+   "transkript": "ucuncu_sinif_2024",
+   "beklenen_tool_lar": [
+    {
+     "name": "request_new_tool",
+     "args": {
+      "transkript_gerekli": true
+     }
+    }
+   ],
+   "beklenen": [
+    "Mikroişlemciler"
+   ]
+  },
+  {
+   "id": "A13",
+   "grup": "anlik_tool",
+   "kategori": "anlik_program",
+   "soru": "Bu dönem haftada kaç saat derse giriyorum?",
+   "transkript": "birinci_sinif_2026",
+   "beklenen_tool_lar": [
+    {
+     "name": "request_new_tool",
+     "args": {
+      "transkript_gerekli": true
+     }
+    }
+   ],
+   "beklenen_sayilar": {
+    "saat": 27
+   }
+  },
+  {
+   "id": "A14",
+   "grup": "anlik_tool",
+   "kategori": "anlik_program",
+   "soru": "327 numaralı derslikte pazartesi hangi dersler var?",
+   "beklenen_tool_lar": [
+    {
+     "name": "request_new_tool"
+    }
+   ],
+   "beklenen": [
+    "Algoritma Analizi"
+   ]
+  },
+  {
+   "id": "A15",
+   "grup": "anlik_tool",
+   "kategori": "transkript_yok",
+   "soru": "Algoritma Analizi'nden 70 aldım, ortalamam kaç olur?",
+   "beklenen_tool_lar": [],
+   "beklenen": [
+    "UBYS",
+    "transkript"
+   ]
+  },
+  {
+   "id": "D01",
+   "grup": "anlik_tool",
+   "kategori": "devir_transkript",
+   "soru": "Matematik I, Matematik II ve Lineer Cebir derslerinden not ortalamam kaç?",
+   "transkript": "ucuncu_sinif_2024",
+   "beklenen_tool_lar": [
+    {
+     "name": "analyze_transcript"
+    },
+    {
+     "name": "request_new_tool",
+     "args": {
+      "transkript_gerekli": true
+     }
+    }
+   ],
+   "beklenen_sayilar": {
+    "ortalama": 2.9
+   }
+  },
+  {
+   "id": "D02",
+   "grup": "anlik_tool",
+   "kategori": "devir_transkript",
+   "soru": "Birinci sınıfın sonunda genel not ortalamam kaçtı?",
+   "transkript": "erasmus_2023",
+   "beklenen_tool_lar": [
+    {
+     "name": "analyze_transcript"
+    },
+    {
+     "name": "request_new_tool",
+     "args": {
+      "transkript_gerekli": true
+     }
+    }
+   ],
+   "beklenen_sayilar": {
+    "ortalama": 3.48
+   }
+  },
+  {
+   "id": "D03",
+   "grup": "anlik_tool",
+   "kategori": "devir_transkript",
+   "soru": "Kaç dersi ilk denemede geçtim?",
+   "transkript": "uzatma_2021",
+   "beklenen_tool_lar": [
+    {
+     "name": "analyze_transcript"
+    },
+    {
+     "name": "request_new_tool",
+     "args": {
+      "transkript_gerekli": true
+     }
+    }
+   ],
+   "beklenen_sayilar": {
+    "ders": 53
+   }
+  },
+  {
+   "id": "D04",
+   "grup": "anlik_tool",
+   "kategori": "devir_transkript",
+   "soru": "Erasmus'ta aldığım dersler sayılmasaydı genel not ortalamam kaç olurdu?",
+   "transkript": "erasmus_2023",
+   "beklenen_tool_lar": [
+    {
+     "name": "analyze_transcript"
+    },
+    {
+     "name": "request_new_tool",
+     "args": {
+      "transkript_gerekli": true
+     }
+    }
+   ],
+   "beklenen_sayilar": {
+    "ortalama": 3.49
+   }
+  },
+  {
+   "id": "G01",
+   "grup": "sinir_tool",
+   "kategori": "sinir_transkript",
+   "soru": "Genel not ortalamam kaç?",
+   "transkript": "ucuncu_sinif_2024",
+   "beklenen_tool_lar": [
+    {
+     "name": "analyze_transcript"
+    }
+   ],
+   "beklenen_sayilar": {
+    "gno": 3.08
+   }
+  },
+  {
+   "id": "G02",
+   "grup": "sinir_tool",
+   "kategori": "sinir_transkript",
+   "soru": "Şeref listesine girebilir miyim?",
+   "transkript": "ucuncu_sinif_2024",
+   "beklenen_tool_lar": [
+    {
+     "name": "analyze_transcript"
+    },
+    {
+     "name": "search_regulations"
+    }
+   ],
+   "beklenen": [
+    "şeref"
+   ],
+   "beklenen_sayilar": {
+    "gno": 3.08
+   }
+  },
+  {
+   "id": "G03",
+   "grup": "sinir_tool",
+   "kategori": "sinir_transkript",
+   "soru": "Gelecek dönem hangi zorunlu dersleri almam gerekiyor?",
+   "transkript": "ucuncu_sinif_2024",
+   "beklenen_tool_lar": [
+    {
+     "name": "analyze_transcript"
+    }
+   ],
+   "beklenen": [
+    "Veritabanı Yönetim Sistemleri",
+    "Sistem Programlama",
+    "Gömülü Sistemler",
+    "Yazılım Mühendisliği",
+    "Sinyaller ve Sistemler"
+   ]
+  },
+  {
+   "id": "G04",
+   "grup": "sinir_tool",
+   "kategori": "sinir_genel",
+   "soru": "Kaç AKTS seçmeli ders almam gerekiyor?",
+   "beklenen_tool_lar": [
+    {
+     "name": "get_graduation_requirements"
+    }
+   ],
+   "beklenen": [
+    "64"
+   ]
+  },
+  {
+   "id": "G05",
+   "grup": "sinir_tool",
+   "kategori": "sinir_genel",
+   "soru": "Salı günü 3. sınıfın dersleri kaçta bitiyor?",
+   "beklenen_tool_lar": [
+    {
+     "name": "get_course_schedule",
+     "args": {
+      "gun": "salı",
+      "sinif": 3
+     }
+    }
+   ],
+   "beklenen": [
+    "18:15"
+   ]
+  },
+  {
+   "id": "G06",
+   "grup": "sinir_tool",
+   "kategori": "sinir_genel",
+   "soru": "Seçmeli VII için bu dönem kaç ders açılıyor?",
+   "beklenen_tool_lar": [
+    {
+     "name": "get_offered_electives"
+    }
+   ],
+   "beklenen": [
+    "7 ders|yedi"
+   ]
+  }
+ ]
+}
