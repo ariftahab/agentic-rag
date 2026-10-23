@@ -2,7 +2,7 @@
 
 > Otomatik üretilir (`python -m experiments.report`). Production: **EXP-007**. Ayrıntılar: `experiments/results/EXP-*.json`.
 
-**Dataset:** `eval/sorular_v1.json` vv1 (45 soru: 42 tool beklentili, 11 hesaplı) · `eval/sorular_v2.json` vv2 (66 soru: 63 tool beklentili, 22 hesaplı). Bir chunk, doğru kaynak belgelerden birine aitse ve o belgede birebir geçen evidence cümlesini içeriyorsa relevant sayılır. Farklı setlerle koşulan deneyler birbiriyle karşılaştırılmaz.  
+**Dataset:** `eval/sorular_v1.json` vv1 (45 soru: 42 tool beklentili, 11 hesaplı) · `eval/sorular_v2.json` vv2 (66 soru: 63 tool beklentili, 22 hesaplı) · `eval/sorular_v3.json` vv3 (66 soru: 63 tool beklentili, 22 hesaplı). Bir chunk, doğru kaynak belgelerden birine aitse ve o belgede birebir geçen evidence cümlesini içeriyorsa relevant sayılır. Farklı setlerle koşulan deneyler birbiriyle karşılaştırılmaz.  
 **Kural:** Her deney parent'ından tek bir parametre farklı. Hypothesis deneyden önce yazılır. p < 0,05 = anlamlı (McNemar / Wilcoxon, aynı sorular üzerinde).  
 **Sabit parametreler:** `corpus=v1`, `device=cuda`, `reranker_dtype=fp16`, `fixed_answers=summer_v1`, `citation_style=madde`, `pdf_parser=pdfplumber`, `chunking=structural_v2`, `chunk_size=1500`, `chunk_overlap=150`, `embedding_model=bge-m3`, `normalize_embeddings=✓`, `retrieval=hybrid`, `vector_k=30`, `bm25_k=30`, `rrf_k=60`, `reranker_model=bge-reranker`, `reranker_max_length=512`, `rerank_candidates=30`, `final_k=5`, `llm_temperature=0.3`
 
@@ -19,6 +19,7 @@ Kalın hücre = parent'a göre değişen parametre.
 | EXP-005 | EXP-004 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | **agent_v7** | 3.5-flash-lite | 685 |
 | EXP-006 | EXP-005 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | agent_v7 | **3.1-flash-lite** | 685 |
 | EXP-007 | EXP-001 | rag | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | v1 | **3.5-flash-lite** | – |
+| EXP-008 | EXP-005 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | **agent_v10** | 3.5-flash-lite | 685 |
 
 ## 2. Results
 
@@ -31,6 +32,7 @@ Kalın hücre = parent'a göre değişen parametre.
 | EXP-005 | agent_v7 + sorular_v2: anlık tool baseline'ı (gemini-3.5-flash-lite) | v2 | – | – | – | – | – | – | referans (yeni soru seti, karşılaştırma yok) | – |
 | EXP-006 | Model karşılaştırması: gemini-3.1-flash-lite + agent_v7 (sorular_v2) | v2 | – | – | – | – | – | – | answer acc. ↓ kötüleşti (p<0.01, anlamlı) | ✓ |
 | EXP-007 | Production modeli gemini-3.5-flash-lite (klasik RAG yolu) | | | | | | | | koşulmadı | |
+| EXP-008 | agent_v10: devir + simulate_grades (sorular_v3) | v3 | – | – | – | – | – | – | referans (yeni soru seti, karşılaştırma yok) | – |
 
 Hyp.: ✓ doğrulandı · ✗ doğrulanmadı · ~ yön doğru ama anlamlı değil
 
@@ -45,6 +47,7 @@ Tool seçimi: beklenen tool'lar doğru argümanlarla çağrıldı, beklenmeyen t
 | EXP-004 | v1 | 0.854 | 0.691 | 0.691 | 0.833 | 1.000 | 0.727 | 1.000 | – | – | – | 1.22 | 2.13 | 45 | ✓ |
 | EXP-005 | v2 | 0.875 | 0.603 | 0.603 | 0.809 | 1.000 | 0.500 | 1.000 | 0.879 | 0.038 | 0.750 | 1.29 | 2.24 | 66 | ✓ |
 | EXP-006 | v2 | 0.679 | 0.682 | 0.682 | 0.762 | 1.000 | 0.455 | 1.000 | 0.894 | 0.000 | 0.571 | 0.98 | 2.03 | 66 | ✓ |
+| EXP-008 | v3 | 0.857 | 0.698 | 0.698 | 0.841 | 1.000 | 0.773 | 1.000 | 0.894 | 0.053 | 1.000 | 1.17 | 2.02 | 66 | ✓ |
 
 ## 5. Notes
 
@@ -55,3 +58,4 @@ Tool seçimi: beklenen tool'lar doğru argümanlarla çağrıldı, beklenmeyen t
 - **EXP-005:** agent_v7 baseline (sorular_v2): anlık tool program/şube sorularında doğru, ortalama zinciri hiç kurulmadı (katsayılar sandbox'ta yok), geçmiş not sorularında rapora güvenip yanlış; gereksiz tetiklenme 2/52.
 - **EXP-006:** gemini-3.1-flash-lite: answer_acc 0,875 → 0,679 (p=0,003), 3 soru 503, latency ~4 kat; yanlış belge (lisansüstü not tablosu) ve tool sayılarını yeniden toplama hataları. Öneri: production 3.5-flash-lite.
 - **EXP-007:** Production RagBot modeli 3.1-flash-lite → 3.5-flash-lite (EXP-006'ya dayanarak, koşulmadı).
+- **EXP-008:** agent_v10: ortalama soruları 5/5 doğru, hesap_dogrulugu 0,50 → 0,77, devir cevapları 5/5; kalan: rapora güvenen yanlış tool seçimi (kaldığım dersler, dönem, ders sayısı), bir gereksiz devir, katsayı aktarım hatası.
