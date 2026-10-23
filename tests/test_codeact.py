@@ -145,7 +145,9 @@ def test_handoff_continues_the_same_conversation_with_agent_tools():
         "kurallar", CONVERSATION, [SearchTool()], lambda name, args: executed.append((name, args)) or "tablo",
         {"transkript.json": '{"dersler": []}'})
     first = client.requests[0]
-    assert first["system"] == "kurallar"
+    # Prompt caching: system sonunda açık breakpoint, büyüyen konuşma için otomatik breakpoint.
+    assert first["system"] == [{"type": "text", "text": "kurallar", "cache_control": {"type": "ephemeral"}}]
+    assert first["cache_control"] == {"type": "ephemeral"}
     roles = [m["role"] for m in first["messages"]]
     assert roles == ["user", "assistant", "user", "assistant", "user"]   # system ayrı, roller sırayla
     uses = [b for m in first["messages"] for b in m["content"] if b["type"] == "tool_use"]

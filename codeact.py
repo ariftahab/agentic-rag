@@ -112,7 +112,7 @@ class CodeRunner:
 
         Dönüş: run() ile aynı alanlar + "tool_calls" (Haiku'nun agent tool'larına yaptığı çağrılar)."""
         uploaded, steps, by_id, calls = [], [], {}, []
-        tokens = {"input": 0, "output": 0}
+        tokens = {"input": 0, "output": 0, "cache_read": 0, "cache_write": 0}
         started = time.perf_counter()
         try:
             for name, content in files.items():
@@ -127,13 +127,18 @@ class CodeRunner:
             container, answer, stop = None, UNFINISHED, None
             for request in range(1, MAX_HANDOFF_REQUESTS + 1):
                 kwargs = {"container": container} if container else {}
-                response = self.client.messages.create(model=self.model, max_tokens=MAX_TOKENS,
-                                                       system=system, messages=list(history), tools=specs,
-                                                       **kwargs)
+                # Prompt caching (maliyet): tool şemaları + system prompt her soruda aynı (açık breakpoint), döngüde
+                # büyüyen konuşma bir önceki isteğin cache'inden okunur (top-level otomatik breakpoint).
+                response = self.client.messages.create(
+                    model=self.model, max_tokens=MAX_TOKENS,
+                    system=[{"type": "text", "text": system, "cache_control": {"type": "ephemeral"}}],
+                    messages=list(history), tools=specs, cache_control={"type": "ephemeral"}, **kwargs)
                 usage = getattr(response, "usage", None)
                 if usage is not None:
                     tokens["input"] += usage.input_tokens
                     tokens["output"] += usage.output_tokens
+                    tokens["cache_read"] += getattr(usage, "cache_read_input_tokens", 0) or 0
+                    tokens["cache_write"] += getattr(usage, "cache_creation_input_tokens", 0) or 0
                 if getattr(response, "container", None):
                     container = response.container.id
                 texts, pending = [], []
