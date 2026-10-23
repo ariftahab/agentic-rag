@@ -9,10 +9,13 @@ Durum: agent varsayılanı `agent_v4`; en yeni sürüm `agent_v7` (v6 + anlık t
 #13 (web transkriptsiz agent'a), #14 (mezuniyet şartları tool'u, EXP-004), #16/#17 (agent kaynakları, atıf linkleri,
 👍/👎, admin), #18 (anlık tool). Eşdeğerlik tablosu eklendi (Microcomputer Systems → Mikroişlemciler).
 
-- **Sonraki iş (2026-10-23), #19:** anlık tool en önemli yetenek (kullanıcı kararı) → önce **sorular_v2** (v1 + anlık
-  tool soruları, gereksiz tetiklenme soruları, eskimiş beklentilerin düzeltilmesi), run.py'de agent_v7 + CodeRunner ve
-  anlık tool metrikleri; sonra onayla sırayla `gemini-3.5-flash-lite` + agent_v7, ardından `gemini-3.1-flash-lite` +
-  agent_v7 (tek fark model). #15 bu deneylerle kapanır. Kota: 3.5 için günlük kalan sınırlı, tam koşu ~95-100 istek.
+- **#19 yapıldı (2026-10-23):** sorular_v2 (66 soru), run.py'de agent_v7 + CodeRunner ve anlık tool metrikleri,
+  EXP-005 (3.5-flash-lite baseline) ve EXP-006 (3.1-flash-lite; answer_acc 0,875 → 0,679, p=0,003, 3 soru 503, latency
+  ~4 kat). **Karar bekleyen:** production modelini `gemini-3.5-flash-lite` yapmak (#15'i kapatır).
+- **Sonraki iş adayı (EXP-005 bulgusu):** puan → harf notu → ortalama zinciri hiç kurulmuyor: yönetmelikteki katsayı
+  tablosu (BB 3,50) ve GNO kuralları sandbox'ta yok, agent mevzuattan bulduğunu göreve aktarmıyor, Haiku standart YÖK
+  tablosunu varsayıyor. Seçenekler: not tablosunu sandbox'a dosya olarak vermek ya da deterministik bir GNO what-if tool'u.
+  Ayrıca "Hangi derslerden kaldım?" analyze_transcript'le "kalan ders yok" diyor (rapor geçmiş FF/FD'yi göstermiyor).
 - **#14 teşhis 1 (2026-10-22, agent_v5 = v4 + "genel mezuniyet şartlarında get_graduation_requirements", commit'siz):**
   "Bilgisayar Mühendisliğinden mezun olabilmek için hangi şartlar gerekiyor?" düzeldi (tek tool çağrısı; 244 AKTS,
   zorunlu/seçmeli, yuva kuralı, GNO 2,00, geçer notlar, ADSD ve 2023 istisnası, hepsi kaynaklı; staj ayrıca yazılmadı).
