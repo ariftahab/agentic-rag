@@ -1,6 +1,6 @@
 # Experiment Log
 
-> Otomatik üretilir (`python -m experiments.report`). Production: **EXP-001**. Ayrıntılar: `experiments/results/EXP-*.json`.
+> Otomatik üretilir (`python -m experiments.report`). Production: **EXP-007**. Ayrıntılar: `experiments/results/EXP-*.json`.
 
 **Dataset:** `eval/sorular_v1.json` vv1 (45 soru: 42 tool beklentili, 11 hesaplı) · `eval/sorular_v2.json` vv2 (66 soru: 63 tool beklentili, 22 hesaplı). Bir chunk, doğru kaynak belgelerden birine aitse ve o belgede birebir geçen evidence cümlesini içeriyorsa relevant sayılır. Farklı setlerle koşulan deneyler birbiriyle karşılaştırılmaz.  
 **Kural:** Her deney parent'ından tek bir parametre farklı. Hypothesis deneyden önce yazılır. p < 0,05 = anlamlı (McNemar / Wilcoxon, aynı sorular üzerinde).  
@@ -18,6 +18,7 @@ Kalın hücre = parent'a göre değişen parametre.
 | EXP-004 | EXP-003 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | **agent_v5** | 3.5-flash-lite | 685 |
 | EXP-005 | EXP-004 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | **agent_v7** | 3.5-flash-lite | 685 |
 | EXP-006 | EXP-005 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | agent_v7 | **3.1-flash-lite** | 685 |
+| EXP-007 | EXP-001 | rag | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | v1 | **3.5-flash-lite** | – |
 
 ## 2. Results
 
@@ -29,6 +30,7 @@ Kalın hücre = parent'a göre değişen parametre.
 | EXP-004 | agent_v5: genel mezuniyet şartları için get_graduation_requirements | v1 | – | – | – | – | – | – | answer acc. ↑ iyileşti (p=0.38, anlamlı değil) | ~ |
 | EXP-005 | agent_v7 + sorular_v2: anlık tool baseline'ı (gemini-3.5-flash-lite) | v2 | – | – | – | – | – | – | referans (yeni soru seti, karşılaştırma yok) | – |
 | EXP-006 | Model karşılaştırması: gemini-3.1-flash-lite + agent_v7 (sorular_v2) | v2 | – | – | – | – | – | – | answer acc. ↓ kötüleşti (p<0.01, anlamlı) | ✓ |
+| EXP-007 | Production modeli gemini-3.5-flash-lite (klasik RAG yolu) | | | | | | | | koşulmadı | |
 
 Hyp.: ✓ doğrulandı · ✗ doğrulanmadı · ~ yön doğru ama anlamlı değil
 
@@ -52,3 +54,4 @@ Tool seçimi: beklenen tool'lar doğru argümanlarla çağrıldı, beklenmeyen t
 - **EXP-004:** agent_v5: mezuniyet şartları sorusu tam ve kaynaklı (metrikler hata sayıyor, set eskidi); answer_acc 0,78 → 0,85; transkript yüklüyken "ADSD almam gerekiyor mu?" kötüleşti (yeni tool çaldı).
 - **EXP-005:** agent_v7 baseline (sorular_v2): anlık tool program/şube sorularında doğru, ortalama zinciri hiç kurulmadı (katsayılar sandbox'ta yok), geçmiş not sorularında rapora güvenip yanlış; gereksiz tetiklenme 2/52.
 - **EXP-006:** gemini-3.1-flash-lite: answer_acc 0,875 → 0,679 (p=0,003), 3 soru 503, latency ~4 kat; yanlış belge (lisansüstü not tablosu) ve tool sayılarını yeniden toplama hataları. Öneri: production 3.5-flash-lite.
+- **EXP-007:** Production RagBot modeli 3.1-flash-lite → 3.5-flash-lite (EXP-006'ya dayanarak, koşulmadı).

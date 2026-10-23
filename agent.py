@@ -25,8 +25,8 @@ from rag import Retriever, _format_context, _to_messages, token_usage
 
 MAX_TURNS = 5  # bir soru için en fazla LLM çağrısı (tool turları + nihai cevap)
 REQUEST_TIMEOUT_S = 180  # tek bir LLM isteği için en fazla bekleme
-# Agent'ın modeli production RagBot'tan ayrı: gemini-3.1-flash-lite 2026-10-21'de sık 503 verdi, web'de agent
-# cevapları 50-318 sn sürdü; 3.5-flash-lite aynı sorularda 3-5 sn. Karşılaştırma soru seti hazır olunca deney olarak.
+# Agent'ın modeli: EXP-006'da (sorular_v2, agent_v7) gemini-3.1-flash-lite 3.5-flash-lite'tan anlamlı olarak kötü çıktı
+# (answer_acc 0,875 → 0,679, latency ~4 kat, 503 hataları); production RagBot da 3.5'e geçti (EXP-007).
 AGENT_LLM_MODEL = "gemini-3.5-flash-lite"
 
 

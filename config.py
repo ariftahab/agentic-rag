@@ -21,7 +21,7 @@ INDEX_ROOT = ROOT / "vectorstore"  # her yapılandırma kendi alt klasöründe
 EXPERIMENTS_DIR = ROOT / "experiments"
 
 # Sohbet uygulamasının kullandığı deney. Yeni bir deney üretime alınacaksa burası değişir.
-PRODUCTION_EXPERIMENT = "EXP-001"  # campus-chatbot production yapılandırması (EXP-038), mühendislik corpus v1 ile
+PRODUCTION_EXPERIMENT = "EXP-007"  # EXP-001 (campus-chatbot EXP-038 hattı, corpus v1) + gemini-3.5-flash-lite (EXP-006)
 
 # Belge adları kaynak gösteriminde ve parçaların başlığında kullanılır.
 # Listede olmayan bir PDF eklenirse dosya adı başlık olarak kullanılır.

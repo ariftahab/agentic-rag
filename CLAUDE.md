@@ -98,17 +98,17 @@ her değişiklik "kod iyileştirmesi" olarak değil, **deney** olarak yapılır:
 - Windows'ta Türkçe çıktı için `PYTHONIOENCODING=utf-8` gerekebilir.
 
 ## Mimari
-**Güncel durum (2026-10-21):** production **EXP-001** = campus-chatbot EXP-038'in retrieval hattı: corpus **v1**
+**Güncel durum (2026-10-23):** production **EXP-007** = EXP-001 (campus-chatbot EXP-038'in retrieval hattı) + 3.5-flash-lite: corpus **v1**
 (24 belge: Mühendislik Fakültesi öğrencisinin danışmanlığında gereken mevzuat + lisansüstü), pdfplumber, `structural_v2`,
-bge-m3, hybrid (vector 30 + BM25 30, RRF) + bge-reranker fp16 (30 aday → 5 chunk), `gemini-3.1-flash-lite`, tek prompt
+bge-m3, hybrid (vector 30 + BM25 30, RRF) + bge-reranker fp16 (30 aday → 5 chunk), `gemini-3.5-flash-lite`, tek prompt
 `v1`, sabit cevap `summer_v1` (yaz okulu). Kapsam mekanizmaları (netleştirme, kapsam tamamlama, staj sabit cevabı)
 tek fakülte olduğu için çıkarıldı. Henüz soru seti yok (ilk set `sorular_v1`).
 **Agentic yol (2026-10-21, terminalde, production değil):** spec GitHub #1, ticket'lar #2-#12. Kullanıcılar danışman ve
 öğrenci; şimdilik yalnız Bilgisayar Mühendisliği. **Karar LLM'de, hesap kodda:** LLM tool seçer ve sonucu cümleye döker;
 AKTS, eşleme ve kurallar deterministik kodda. Girdi yalnız UBYS **tarihsel transkripti** (yarıyıl düzenli transkript bu
 dönemin seçmelilerini göstermez, reddedilir). Kişisel veri (ad, numara, TC) LLM'e, diske ve git'e girmez; gerçek
-transkriptler `tests/private/` altında (ignore). Gemini 3.1-flash-lite 2026-10-21'de sık 503 (yoğunluk) verdi; agent
-doğrulaması `gemini-3.5-flash-lite` ile yapıldı (production modeli değişmedi).
+transkriptler `tests/private/` altında (ignore). Agent modeli `gemini-3.5-flash-lite`: EXP-006'da (sorular_v2)
+3.1-flash-lite anlamlı olarak kötü, ~4 kat yavaş ve 503'lü çıktı; production RagBot da 3.5'e geçti (EXP-007, koşulmadı).
 **Hedef:** sistem tamamen agentic olacak: danışman hocanın işlerini yapan bir agent (ör. transkript yükleme, "mezun
 olmak için kaç kredi lazım" gibi tool calling). Belge ne kadar az o kadar iyi: yalnız mühendislikle ve danışmanlıkla ilgili.
 İsimlendirme: corpus, prompt ve soru setleri v1'den başlar.
