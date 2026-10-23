@@ -21,6 +21,16 @@ Durum: agent varsayılanı `agent_v4`; en yeni sürüm `agent_v7` (v6 + anlık t
   şartları ve "neyim eksik?" cevapları 240 + Madde 22, 244 yok. Denetimin kalan iki noktası (kullanıcı kararı,
   d306c8a, 7b65790): yuva kuralı v11'de ayrı kural, kaynağı öğretim planı (bölüm uygulaması), Madde 35'e atfedilmiyor;
   gpa.py puanı yuvarlamıyor (vize/final puanı kesirli olmaz).
+- **Rapora güvenme teşhisi (2026-10-23, commit'siz, working tree'de `agent.py`, `graduation.py`, `gpa.py`, test):**
+  bitti tanımı "kaldığım dersler, kaçıncı dönemdeyim ve kalan ders sayısı doğru; genel not ortalaması, gelecek dönemin
+  zorunluları ve stajlarım tamam mı bozulmuyor". Kök neden: rapor yalnız mezuniyet özeti, agent olmayan bilgiyi "yok"
+  okudu ve devretmedi. agent_v12 = v11 + analyze_transcript'e ders geçmişi (`graduation.history_text`: dönem dönem
+  notlar, dönem sayısı, YANO Madde 28/2, harf notu dağılımı, başarısız ve tekrarlanan dersler, kalan ders sayısı) +
+  prompt raporun içeriğini sayar ve raporda yoksa devir kuralı (kullanıcı kararı: zenginleştir + devir). Sonuç: hedef
+  üçü doğru (Fizik II ve Diferansiyel Denklemler, 11. dönem, 21 ders); ortalama ve gelecek dönem kontrolleri aynı; staj
+  sorusu ilk koşuda transkript yüklü olduğu hâlde yükleme istedi, 3 tekrarda 3/3 doğru (varyans). Tam koşu için soru
+  setinde bu üç sorunun beklenen tool'u (request_new_tool → analyze_transcript) ve "kaç DD dersim var", "kaç kez
+  aldım" soruları yeni bir sette (sorular_v4) düzeltilmeli.
 - **(Çözüldü, EXP-008) Sonraki iş adayı (EXP-005 bulgusu):** puan → harf notu → ortalama zinciri hiç kurulmuyor: yönetmelikteki katsayı
   tablosu (BB 3,50) ve GNO kuralları sandbox'ta yok, agent mevzuattan bulduğunu göreve aktarmıyor, Haiku standart YÖK
   tablosunu varsayıyor. Seçenekler: not tablosunu sandbox'a dosya olarak vermek ya da deterministik bir GNO what-if tool'u.
