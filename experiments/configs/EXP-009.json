@@ -31,5 +31,7 @@
   "prompt_version": "agent_v12",
   "reranker_dtype": "fp16",
   "fixed_answers": "summer_v1"
- }
+ },
+ "notlar": "YARIM KOŞU (temiz commit 7b7eb76, --bekle 15): Gemini günlük kotası 66/70'te doldu (tamamlandi: false; son dört sınır sorusu yok); tekrar koşulmadı, yerine branch exp/haiku-agent'ta tek model Haiku denendi (EXP-010, EXP-011). Ortak sorularda EXP-008'e göre: answer_acc 44 → 48 / 52 (kaldığım dersler, 240 düzeltmesi, Cuma boş, transkript yok), hesap 17 → 19 / 22 (kaçıncı dönem 11, kalan 21 ders), gerekli tool 49 → 55 / 59, devir duyarlılığı 1,00 (yeni dört devir sorusunun üçü doğru). Açık kalanlar: rapordan cevaplanan DD sayısı ve 'kaç kez aldım' sorularında rapordan sonra gereksiz devir (cevaplar doğru); Erasmus hariç ortalamada Haiku katsayıları aramayla Lisansüstü Eğitim Yönetmeliği'nden aldı (3,50 → 3,01; agent_v13'te rapora not tablosu eklendi); şeref sorusunda analyze_transcript çağrılmadı; Oyun Programlama what-if'i tur sınırı. Latency yorumlanamaz: kota dolarken tek tool'lu sorular 40-70 sn.",
+ "kisa_not": "agent_v12 (yarım, kota 66/70): transkript geçmişi soruları düzeldi (kaldığım dersler, 11. dönem, 21 ders), 240 doğru; gereksiz devir ve devirde yanlış katsayı tablosu kaldı."
 }

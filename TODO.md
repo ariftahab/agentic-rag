@@ -31,23 +31,18 @@ Durum: agent varsayılanı `agent_v4`; en yeni sürüm `agent_v7` (v6 + anlık t
   sorusu ilk koşuda transkript yüklü olduğu hâlde yükleme istedi, 3 tekrarda 3/3 doğru (varyans). Tam koşu için soru
   setinde bu üç sorunun beklenen tool'u (request_new_tool → analyze_transcript) ve "kaç DD dersim var", "kaç kez
   aldım" soruları yeni bir sette (sorular_v4) düzeltilmeli.
-- **EXP-009 yarım (2026-10-23, temiz commit 7b7eb76):** Gemini günlük kotası 66/70'te doldu (son dört sınır sorusu
-  yok, `tamamlandi: false`); sonuç dosyası ve experiment_log commit'lenmedi, kota yenilenince `--yeniden` ile tam
-  koşulacak. Ortak sorularda: answer_acc 44 → 48 / 52 (kaldığım dersler, 240 düzeltmesi, Cuma boş, transkript yok),
-  hesap 17 → 19 / 22 (kaçıncı dönem 11, kalan 21 ders), gerekli tool 49 → 55 / 59, devir duyarlılığı 1,00 (yeni dört
-  devir sorusunun üçü doğru). Açık: (1) rapordan cevaplanan DD sayısı ve "kaç kez aldım" sorularında rapordan sonra
-  gereksiz devir (cevaplar doğru); vize 40 sorusunda simulate_grades sonrası devir; (2) Erasmus hariç ortalama
-  sorusunda Haiku katsayıları search_regulations'tan Lisansüstü Eğitim Yönetmeliği'nin tablosundan aldı, 3,50 olan
-  GNO'yu 3,01 hesapladı (tutarsızlığı fark etti ama cevapladı); (3) şeref sorusunda analyze_transcript çağrılmadı
-  (GNO yok), Oyun Programlama what-if'i tur sınırına takıldı (get_offered_electives ×4). Latency yorumlanamaz:
-  kota dolarken tek tool'lu sorular bile 40-70 sn (ortalama 4,3 → 23,8 sn).
-- **agent_v13 (2026-10-23, commit'siz, working tree'de `agent.py`, `gpa.py`, `graduation.py`, testler; teşhis
-  bekliyor, kota doldu):** kullanıcı kararı: katsayıları rapordan çeksin. analyze_transcript raporuna Madde 27/1
-  tablosu (E/I, DZ/NA ve ortalamaya katılmayan notlar dahil) ve Madde 28 ortalama tanımı; Haiku'nun devir notu
-  "katsayıları bu tablodan al, rapor yoksa önce analyze_transcript". Ayrıca (kullanıcı kararı) gpa.py v13'te E/I ve
-  DZ/NA'yı ortalamaya 0,00 ile katar (Madde 27/2; eski sürümler katmıyordu, fixture'larda yok). Bitti tanımı:
-  "Erasmus dersleri sayılmasaydı ortalamam?" 3,49 ve katsayılar rapordan; diğer üç devir sorusu bozulmuyor.
-  Komut: `teshis_agent.py EXP-009 agent_v13 D01,D02,D03,D04`. Sonra EXP-009 tam koşusu ya da v13 deneyi (karar).
+- **EXP-009 yarım (2026-10-23):** Gemini kotası 66/70'te doldu; sonuç yarım haliyle notlarıyla kayıtlı, tekrar
+  koşulmayacak (yerine tek model Haiku denendi). Ayrıntı EXP-009 config'inin `notlar`'ında.
+- **Branch `exp/haiku-agent` (2026-10-23, deneysel; kullanıcı kararı: kod main'e alınmaz, deney kayıtları main'de):**
+  agent_v13 (rapora Madde 27/1 not tablosu, E/I ve DZ/NA FF sayılır; 59f044a), agent_h1/h2 (tek model, Gemini yok) ve
+  Haiku isteklerinde prompt caching yalnız bu branch'te. EXP-010 (agent_h1) ve EXP-011 (agent_h2 + caching) sonuçları
+  main'de. **Gemini + Haiku devri (EXP-009) ile yalnız Haiku (EXP-010/011) farkı:** cevaplar 48 → 52 / 52 ortak soruda
+  (bütün sette 56/56), hesap anlamca 22 → 24 / 26; iki model arasındaki sınırdan doğan hatalar (rapora güvenip
+  devretmeme, gereksiz devir, aktarırken katsayı/etiket uydurma) kalktı; Erasmus hariç ortalama rapordaki tabloyla
+  doğru. Bedeli gecikme (4,3 sn → 10,5-11,8 sn; kullanıcı: önemli değil) ve ücret (koşu 0,27 $, caching'le 0,12 $; Gemini
+  ücretsiz kotadaydı ama deneyleri yarıda kesiyordu). Yeni hata türleri: çok değerli hesabı elle toplama, kodda iki
+  şubeyi çift sayma, kaynaksız genel bilgi ekleme, ders programı sorgularında gereksiz kod. "Bu dönem haftada kaç saat
+  derse giriyorum?" (27; h1'de 14,5, h2'de 29) **çözülmeyecek** (kullanıcı kararı: bulgu olarak kalır).
 - **(Çözüldü, EXP-008) Sonraki iş adayı (EXP-005 bulgusu):** puan → harf notu → ortalama zinciri hiç kurulmuyor: yönetmelikteki katsayı
   tablosu (BB 3,50) ve GNO kuralları sandbox'ta yok, agent mevzuattan bulduğunu göreve aktarmıyor, Haiku standart YÖK
   tablosunu varsayıyor. Seçenekler: not tablosunu sandbox'a dosya olarak vermek ya da deterministik bir GNO what-if tool'u.
