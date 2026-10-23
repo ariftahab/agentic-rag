@@ -25,12 +25,16 @@ import uuid
 from collections import Counter
 from datetime import datetime
 
-from langchain_google_genai import ChatGoogleGenerativeAI
 
 import config
 import graduation
 import transcript as transcript_parser
-from agent import AGENT_LLM_MODEL, REQUEST_TIMEOUT_S, AdvisorAgent
+import codeact
+from agent import AdvisorAgent
+
+# Branch exp/haiku-agent: web'deki agent tek model Claude Haiku (agent_h2, EXP-011): döngünün tamamı, hazır tool'lar ve
+# anlık kod (code_execution) aynı modelde, Gemini yok. Klasik RAG (RagBot) production config'iyle aynı kalır.
+WEB_AGENT_PROMPT_VERSION = "agent_h2"
 from rag import RagBot, source_label
 
 LOG_DIR = config.ROOT / "logs"
@@ -95,11 +99,8 @@ class ChatService:
         """RagBot'u ve agent'ı kurar. Agent RagBot'un Retriever'ını paylaşır: index, bge-m3 ve reranker GPU'ya
         bir kez yüklenir (6 GB GPU'da ikinci kopya sığmaz, sığsa da aynı modeli iki kez tutmanın anlamı yok)."""
         bot = RagBot.from_config(cfg)
-        # Agent'ın LLM'i ayrı nesne: tool sonucu içeren isteklerde API bazen dakikalarca beklediği için timeout'lu
-        # (AdvisorAgent.from_config ile aynı ayarlar); RagBot'un LLM'ine dokunulmaz.
-        llm = ChatGoogleGenerativeAI(model=AGENT_LLM_MODEL, temperature=cfg.llm_temperature, max_retries=2,
-                                     timeout=REQUEST_TIMEOUT_S)
-        agent = AdvisorAgent(bot.retriever, llm, graduation.load_plan())
+        agent = AdvisorAgent(bot.retriever, None, graduation.load_plan(), prompt_version=WEB_AGENT_PROMPT_VERSION,
+                             code_runner=codeact.CodeRunner())
         return cls(bot, experiment_id, agent=agent)
 
     # --- Kayıt yardımcıları ---
