@@ -12,7 +12,11 @@ Durum: agent varsayılanı `agent_v4`; en yeni sürüm `agent_v7` (v6 + anlık t
 - **#19 yapıldı (2026-10-23):** sorular_v2 (66 soru), run.py'de agent_v7 + CodeRunner ve anlık tool metrikleri,
   EXP-005 (3.5-flash-lite baseline) ve EXP-006 (3.1-flash-lite; answer_acc 0,875 → 0,679, p=0,003, 3 soru 503, latency
   ~4 kat). **Karar bekleyen:** production modelini `gemini-3.5-flash-lite` yapmak (#15'i kapatır).
-- **Sonraki iş adayı (EXP-005 bulgusu):** puan → harf notu → ortalama zinciri hiç kurulmuyor: yönetmelikteki katsayı
+- **EXP-008 (2026-10-23, agent_v10 + sorular_v3):** ortalama soruları 5/5, hesap_dogrulugu 0,50 → 0,77. **Sıradaki:**
+  (1) rapora güvenen yanlış tool seçimi: "Hangi derslerden kaldım?", "Kaçıncı dönemimdeyim?", "daha kaç ders?"
+  analyze_transcript'e gidip yanlış cevaplıyor; (2) gereksiz devir ("3,00'ün altına düşmesin" simulate_grades yerine);
+  (3) tool çıktısını aktarırken uydurma (CC katsayısı 2,00, "koşullu geçer"). Production agent hâlâ agent_v4.
+- **(Çözüldü, EXP-008) Sonraki iş adayı (EXP-005 bulgusu):** puan → harf notu → ortalama zinciri hiç kurulmuyor: yönetmelikteki katsayı
   tablosu (BB 3,50) ve GNO kuralları sandbox'ta yok, agent mevzuattan bulduğunu göreve aktarmıyor, Haiku standart YÖK
   tablosunu varsayıyor. Seçenekler: not tablosunu sandbox'a dosya olarak vermek ya da deterministik bir GNO what-if tool'u.
   Ayrıca "Hangi derslerden kaldım?" analyze_transcript'le "kalan ders yok" diyor (rapor geçmiş FF/FD'yi göstermiyor).
