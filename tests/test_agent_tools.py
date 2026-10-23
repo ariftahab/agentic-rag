@@ -417,6 +417,11 @@ def test_agent_v11_uses_only_the_regulation_total():
         assert "en az 240 AKTS'yi tamamlamak zorundadır" in new
         assert "244" in tool_reply("agent_v10", name, transcript)           # eski sürümler değişmez (EXP-008)
     assert "117 / 240 AKTS" in tool_reply("agent_v11", "analyze_transcript", third)
+    # Yuva kuralı mevzuat değil, bölüm uygulaması: v11'de Madde 35 alıntısından ayrı ve öğretim planına atfedilir.
+    rules = tool_reply("agent_v11", "get_graduation_requirements", None)
+    slot_line = next(line for line in rules.splitlines() if line.startswith("- Her seçmeli yuvası"))
+    assert "Öğretim Planı" in slot_line and "Madde 35" not in slot_line
+    assert "Her seçmeli yuvası" not in tool_reply("agent_v10", "get_graduation_requirements", None)
 
 
 # --- Kaynaklar (#16, #17): cevabın dayandığı chunk'lar ve corpus dışı belgeler ---

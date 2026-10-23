@@ -23,8 +23,19 @@
     {
       "id": "secmeli_akts",
       "aciklama": "Öğretim planının seçmeli dersler için öngördüğü AKTS, zorunlu derslerden ayrı olarak tamamlanır; her seçmeli yuvası kendi havuzundaki derslerle, yuvanın AKTS'si kadar dolar (bir yuvadaki fazla AKTS başka yuvaya sayılmaz).",
+      "alinti": "Kayıtlı olduğu programın zorunlu ve seçmeli dersler için ayrı ayrı öngördüğü toplam kredi miktarlarını tamamlamak.",
+      "not": "Yuva cümlesi mevzuatta yok; regulation_only modunda ayrı kural (secmeli_yuva) olarak öğretim planına atfedilir.",
       "kaynak": [
         {"belge": "BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği", "madde": "Madde 35, fıkra 1, bent a"}
+      ]
+    },
+    {
+      "id": "secmeli_yuva",
+      "aciklama": "Her seçmeli yuvası kendi havuzundaki derslerle, yuvanın AKTS'si kadar dolar; bir yuvadaki fazla AKTS başka yuvaya sayılmaz.",
+      "yalniz_mevzuat_modu": true,
+      "not": "Mevzuat kuralı değil: öğretim planının yuva yapısına dayanan bölüm uygulaması (kullanıcı kararı 2026-10-22). Eski kurallarda secmeli_akts'in içinde Madde 35/1-a'ya atfediliyordu; yalnız regulation_only modunda yüklenir.",
+      "kaynak": [
+        {"belge": "BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf)", "madde": "seçmeli ders yuvaları ve havuzları (bölüm uygulaması)"}
       ]
     },
     {

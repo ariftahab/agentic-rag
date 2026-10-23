@@ -463,11 +463,13 @@ def load_rules(path=RULES_PATH, regulation_only=False):
     """regulation_only=True: kuralların mevzuattan alıntısı ('alinti') kullanılır, mevzuatta olmayan eklemeler
     ('plan_toplami_bagla') çıkarılır (agent_v11 ve sonrası). Varsayılan eski davranış (eski deneyler için)."""
     rules = _load_rules(path)
-    if regulation_only:
-        for r in rules["kurallar"]:
-            if "alinti" in r:
-                r["aciklama"] = r["alinti"]
-            r.pop("plan_toplami_bagla", None)
+    if not regulation_only:  # eski kurallar: mevzuat dışı eklemeler kuralların içinde, ayrı kayıtlar yok
+        rules["kurallar"] = [r for r in rules["kurallar"] if not r.get("yalniz_mevzuat_modu")]
+        return rules
+    for r in rules["kurallar"]:
+        if "alinti" in r:
+            r["aciklama"] = r["alinti"]
+        r.pop("plan_toplami_bagla", None)
     return rules
 
 
