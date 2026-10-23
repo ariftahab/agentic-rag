@@ -1,0 +1,2964 @@
+{
+ "id": "EXP-006",
+ "calisma_zamani": "2026-10-23T12:15:07",
+ "dataset": {
+  "dosya": "eval/sorular_v2.json",
+  "surum": "v2",
+  "hash": "5ee231f15ecddb07",
+  "n_agent": 66,
+  "n_toplam": 66,
+  "transkriptler": {
+   "birinci_sinif_2026": "3a3a85551575ca4d",
+   "erasmus_2023": "acbffeee8b759e2a",
+   "ucuncu_sinif_2024": "a7271b8b8dec57bf",
+   "uzatma_2021": "6d3461af217442d9"
+  }
+ },
+ "params": {
+  "mod": "agent",
+  "corpus": "v1",
+  "device": "cuda",
+  "pdf_parser": "pdfplumber",
+  "chunking": "structural_v2",
+  "chunk_size": 1500,
+  "chunk_overlap": 150,
+  "embedding_model": "BAAI/bge-m3",
+  "normalize_embeddings": true,
+  "retrieval": "hybrid",
+  "vector_k": 30,
+  "bm25_k": 30,
+  "rrf_k": 60,
+  "reranker_model": "BAAI/bge-reranker-v2-m3",
+  "reranker_max_length": 512,
+  "rerank_candidates": 30,
+  "final_k": 5,
+  "llm_model": "gemini-3.1-flash-lite",
+  "llm_temperature": 0.3,
+  "prompt_version": "agent_v7",
+  "reranker_dtype": "fp16",
+  "fixed_answers": "summer_v1"
+ },
+ "degisen_parametreler": {
+  "llm_model": [
+   "gemini-3.5-flash-lite",
+   "gemini-3.1-flash-lite"
+  ]
+ },
+ "index": {
+  "fingerprint": "8b0b767916784604",
+  "index_params": {
+   "corpus": "v1",
+   "device": "cuda",
+   "pdf_parser": "pdfplumber",
+   "chunking": "structural_v2",
+   "chunk_size": 1500,
+   "chunk_overlap": 150,
+   "embedding_model": "BAAI/bge-m3",
+   "normalize_embeddings": true
+  },
+  "chunks": 685,
+  "avg_chunk_chars": 874.8,
+  "build_seconds": 64.6,
+  "cache_hit": 0,
+  "cache_miss": 24,
+  "created": "2026-10-22T12:07:06"
+ },
+ "environment": {
+  "git_commit": "fd93b0268d107076304582a0540bc939a26799b8",
+  "git_dirty": false,
+  "python": "3.11.9",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "cpu": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+  "cpu_count": 20,
+  "torch_device": "cuda",
+  "torch_version": "2.11.0+cu128",
+  "gpu": "NVIDIA GeForce RTX 4050 Laptop GPU",
+  "packages": {
+   "torch": "2.11.0+cu128",
+   "sentence-transformers": "6.2.0",
+   "transformers": "5.20.2",
+   "faiss-cpu": "1.15.1",
+   "rank-bm25": "0.2.2",
+   "pdfplumber": "0.11.10",
+   "pypdf": "6.21.2",
+   "langchain-core": "1.6.13",
+   "langchain-community": "0.4.2",
+   "langchain-text-splitters": "1.1.3",
+   "langchain-huggingface": "1.2.3",
+   "langchain-google-genai": "4.4.2",
+   "scipy": "1.17.1"
+  },
+  "model_revisions": {
+   "embedding": "5617a9f61b028005a4858fdac845db406aefb181",
+   "reranker": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e"
+  }
+ },
+ "agent": {
+  "prompt_version": "agent_v7",
+  "max_tur": 5,
+  "bugun": "2026-10-23",
+  "plan_hash": "99c3ab7d0be68100",
+  "kurallar_hash": "6d2e988f951d32a4"
+ },
+ "retrieval": null,
+ "llm": {
+  "tamamlandi": true,
+  "metrics": {
+   "n": 66,
+   "answer_acc": 0.6786,
+   "answer_n": 56,
+   "tool_secimi_dogrulugu": 0.6825,
+   "tool_secimi_n": 63,
+   "tool_adi_dogrulugu": 0.6825,
+   "hesap_dogrulugu": 0.4545,
+   "hesap_n": 22,
+   "arac_hesap_dogrulugu": 1,
+   "arac_hesap_n": 7,
+   "gerekli_tool_dogrulugu": 0.7619,
+   "yan_etkisiz_orani": 1,
+   "anlik_tool_isabeti": 0.8939,
+   "anlik_tool_duyarliligi": 0.5,
+   "anlik_gerekli_n": 14,
+   "anlik_tool_gereksiz_orani": 0,
+   "anlik_gereksiz_n": 52,
+   "haiku_dogrulugu": 0.5714,
+   "haiku_n": 7,
+   "ort_tool_cagrisi": 0.98,
+   "ort_tur": 2.03,
+   "agent_ms": 25742.2,
+   "agent_ms_median": 19453.8,
+   "token_input": 6322.6,
+   "token_output": 228.9,
+   "token_reasoning": 0,
+   "anlik_cagri": 7,
+   "anlik_ms": 20571,
+   "anlik_token_input": 26568.7,
+   "anlik_token_output": 3229.6
+  },
+  "per_question": [
+   {
+    "id": "M01",
+    "answer": "Mühendislik Fakültesi bölümlerinde zorunlu staj süresi toplam 40 (kırk) iş günüdür [Mühendislik Fakültesi Staj Yönergesi, Madde 10]. Stajlar, her biri en az 20 (yirmi) iş günü olmak üzere iki ayrı dönemde yapılabileceği gibi, Bölüm Staj Komisyonunun onayı ile birleştirilerek tek seferde 40 iş günü olarak da gerçekleştirilebilir [Mühendislik Fakültesi Staj Yönergesi, Madde 10].",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "Mühendislik Fakültesi zorunlu staj süresi kaç iş günü"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 4313.0,
+    "tokens": {
+     "input": 7169,
+     "output": 158,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "M02",
+    "answer": "Mühendislik Fakültesi Staj Yönergesi'ne göre staj raporunun, stajı takip eden eğitim döneminin başından itibaren en geç 15 gün içinde Bölüm Staj Komisyonuna imza karşılığı elden teslim edilmesi gerekmektedir [Mühendislik Fakültesi Staj Yönergesi, Madde 19, s. 5].",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "staj raporu teslim süresi"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 17003.8,
+    "tokens": {
+     "input": 7292,
+     "output": 104,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "M03",
+    "answer": "Mazeretinizin ilgili yönetim kurulu kararı ile kabul edilmesi şartıyla, derslerin başladığı ilk üç hafta sonuna kadar ders kaydı, ders ekleme veya ders silme işlemi yapabilirsiniz [önlisans lisans eğitim öğretim, Madde 10, s. 2]. Bu tarihten sonra herhangi bir işlem yapılması mümkün değildir [önlisans lisans eğitim öğretim, Madde 10, s. 2].\n\nKonuyla ilgili detaylı bilgi ve başvuru süreci için bölüm sekreterliğinizle veya akademik danışmanınızla ivedilikle iletişime geçmeniz önerilir.",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "ders ekleme silme süresi mazeretli ders kaydı"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 9361.7,
+    "tokens": {
+     "input": 6850,
+     "output": 161,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "M04",
+    "answer": "İlgili yönetmeliğe göre, bir dersten devamsız (DZ/NA) olan öğrenci o dersin dönem sonu sınavına ve bütünleme sınavına giremez [önlisans lisans eğitim öğretim, Madde 29, s. 7].",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "devamsızlık bütünleme sınavı hakkı"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 8923.8,
+    "tokens": {
+     "input": 6870,
+     "output": 84,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "M05",
+    "answer": "Ara sınavına mazereti nedeniyle giremeyen öğrenci, mazeretinin bitiminden itibaren **3 iş günü** içerisinde ilgili bölüm başkanlığına yazılı başvuruda bulunmalıdır [Önlisans Lisans Eğitim Öğretim, Madde 29, s. 7].\n\nSağlık mazeretleri için sağlık raporunun asıl sureti ile birlikte başvuru yapılması gerekmektedir [Önlisans Lisans Eğitim Öğretim, Madde 29, s. 7]. Başvurunuzun uygun görülmesi halinde mazeret sınavı hakkı tanınır; mazeret sınavının yer ve zaman planlaması ilgili bölüm başkanlığı tarafından yapılır [Önlisans Lisans Eğitim Öğretim, Madde 29, s. 7].",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "mazeret sınavı başvuru süresi"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 17321.5,
+    "tokens": {
+     "input": 6215,
+     "output": 193,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "M06",
+    "answer": "Bolu Abant İzzet Baysal Üniversitesi önlisans ve lisans programlarında teorik dersler için devam zorunluluğu %70'tir [önlisans lisans eğitim öğretim, Madde 24].",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "teorik derslerde devam zorunluluğu yüzde kaç"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 10948.3,
+    "tokens": {
+     "input": 5759,
+     "output": 78,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "M07",
+    "answer": "Kurumlar arası yatay geçiş için genel not ortalamasının 100 üzerinden en az 60 olması şarttır [BAİBÜ Yatay Geçiş Yönergesi, Madde 8, s. 3; kurumlar arası kredi transferi, Madde 11, s. 5].\n\nBu başarı şartını sağlayamayan öğrenciler, merkezi yerleştirme puanlarının geçiş yapmak istedikleri diploma programının ilgili yıldaki taban puanına eşit veya yüksek olması durumunda da başvuru yapabilirler [BAİBÜ Yatay Geçiş Yönergesi, Madde 8, s. 3; kurumlar arası kredi transferi, Madde 11, s. 5].\n\nBaşvurularla ilgili detaylı bilgi ve değerlendirme süreci için ilgili birimlerin ilanlarını takip etmeniz ve danışman hocanızla görüşmeniz önerilir [kurumlar arası kredi transferi, Madde 11, s. 5; BAİBÜ Yatay Geçiş Yönergesi, Madde 14, s. 5].",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "kurumlar arası yatay geçiş not ortalaması şartı"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 17258.0,
+    "tokens": {
+     "input": 6569,
+     "output": 262,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "M08",
+    "answer": "Lisansüstü programlarda bir öğrencinin her dönemde alabileceği azami ders yükü, uzmanlık alan dersi ve tez çalışması hariç olmak üzere 30 AKTS'dir [lisansüstü eğitim öğretim, Madde 12, s. 4].",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "lisansüstü bir dönemde en fazla kaç AKTS ders alınabilir"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 7073.1,
+    "tokens": {
+     "input": 6696,
+     "output": 93,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "M09",
+    "answer": "Çift anadal programına başvurabilmek için genel not ortalamanızın 100 üzerinden en az 70 olması gerekmektedir [Çift Anadal Program Yönergesi, Madde 6/5].\n\nBuna ek olarak, başvuru anında anadal programınızın ilgili sınıfında başarı sıralaması itibarıyla en üst %20'lik dilimde bulunmanız şartı aranır [Çift Anadal Program Yönergesi, Madde 6/5].\n\nEğer not ortalamanız 70 ve üzerinde olmasına rağmen başarı sıralamasında ilk %20'lik dilimde yer almıyorsanız; başvuru yapacağınız ikinci anadal programının, yerleştiğiniz yıl itibarıyla öğrenci kabul ettiği puan türündeki merkezi yerleştirme taban puanına sahip olmanız durumunda da başvuru yapabilirsiniz [Çift Anadal Program Yönergesi, Madde 6/5].\n\nAyrıca, başvuru yapabilmeniz için anadal programınızda o döneme kadar almanız gereken tüm dersleri başarıyla tamamlamış olmanız gerekmektedir [Çift Anadal Program Yönergesi, Madde 6/5].\n\nBaşvuru süreçleri ve özel şartlar hakkında daha detaylı bilgi almak ve durumunuzu değerlendirmek için danışman hocanızla görüşmeniz önerilir.",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "çift anadal programı başvuru not ortalaması şartı"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 13431.9,
+    "tokens": {
+     "input": 6982,
+     "output": 316,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "M10",
+    "answer": "2023-2024 eğitim-öğretim yılı ve öncesinde üniversiteye kayıt yaptıran öğrencilerin, Alan Dışı Seçmeli Ders (ADSD) kapsamında açılan derslere kayıtlanmaları isteğe bağlıdır [alan dışı seçmeli ders yönergesi, Geçici Madde 1].",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "2023-2024 girişli öğrenciler alan dışı seçmeli ders zorunlu mu"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 7019.5,
+    "tokens": {
+     "input": 6607,
+     "output": 106,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "B01",
+    "answer": "Bilgisayar Mühendisliği programından mezun olabilmek için sağlanması gereken temel şartlar şunlardır:\n\n*   **AKTS ve Ders Yükümlülüğü:** Öğretim planında yer alan toplam 244 AKTS'lik yükümlülüğün tamamlanması gerekir [BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 22, fıkra 1]. Bu kapsamda;\n    *   Tüm zorunlu derslerin (stajlar dahil) başarıyla tamamlanması zorunludur [BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 20, fıkra 2; Madde 35, fıkra 1, bent a].\n    *   Öğretim planında belirtilen seçmeli ders yuvalarının (Rektörlük ve bölüm seçmelileri), her yuva kendi havuzundaki derslerle ve yuvanın öngördüğü AKTS kadar doldurulmalıdır [BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 35, fıkra 1, bent a].\n    *   2024 ve sonrası girişli öğrenciler için \"Alan Dışı Seçmeli Ders\" yuvasından en az bir ders alma zorunluluğu bulunmaktadır [BAİBÜ Alan Dışı Seçmeli Ders Yönergesi, Madde 7, fıkra 3]. (2023 ve öncesi girişliler için bu dersi almak isteğe bağlıdır [BAİBÜ Alan Dışı Seçmeli Ders Yönergesi, Geçici Madde 1, fıkra 1]).\n*   **Başarı Notu:** Derslerden geçmek için en az DD harf notu veya not ortalamasına katılmayan derslerde B (başarılı) notu alınmalıdır [BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 27, fıkra 1; Madde 31, fıkra 1].\n*   **Genel Ağırlıklı Not Ortalaması (GNO):** Mezuniyet için GNO'nun en az 2,00 olması gerekmektedir [BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 35, fıkra 1, bent b].\n\nKendi durumunuzu (tamamlanan AKTS, eksik dersler vb.) detaylı incelememi isterseniz, lütfen UBYS'den güncel tarihsel transkriptinizi yükleyiniz.",
+    "tool_calls": [
+     {
+      "name": "get_graduation_requirements",
+      "args": {}
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 26349.7,
+    "tokens": {
+     "input": 6031,
+     "output": 593,
+     "reasoning": 0
+    },
+    "answer_ok": 0,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "B02",
+    "answer": "Zorunlu bir dersten başarısız olmanız durumunda, ilgili dersi tekrar almanız gerekmektedir [önlisans lisans eğitim öğretim, Madde 28]. Tekrar ettiğiniz derslerden aldığınız en son not, genel not ortalamanıza (GANO) katılır [önlisans lisans eğitim öğretim, Madde 28].\n\nDersin ne zaman tekrar alınması gerektiği ve diğer akademik süreçlerinizle ilgili detaylı bilgi için danışman hocanızla görüşmeniz önerilir.",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "zorunlu dersten kalma bütünleme sonrası tekrar alma ve not ortalaması hesaplama"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 5096.3,
+    "tokens": {
+     "input": 6934,
+     "output": 148,
+     "reasoning": 0
+    },
+    "answer_ok": 0,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "B03",
+    "answer": "Staj dersi için bütünleme sınavı uygulanmamaktadır; stajlar, dönem içerisinde yapılan çalışmalara (staj dosyası, mülakat vb.) göre değerlendirilen dersler kapsamında olduğundan bu tür dersler için bütünleme ve tek-çift sınavı yapılmaz [Önlisans Lisans Eğitim Öğretim, Madde 29, fıkra 9].\n\nStajda başarısız olunması durumunda:\n*   Stajı başarısız olarak değerlendirilen öğrenciler, bölümün ve işletmenin koşullarının uygunluğuna göre yeniden staj yapmak zorundadır [Uygulamalı Eğitimler Yönergesi, Madde 14, fıkra 6 ve 10].\n*   Stajını tamamlamayan veya başarısız olan öğrenciler, stajını takip eden ilk staj döneminde tekrar yapmakla yükümlüdür [Mühendislik Fakültesi Staj Yönergesi, Madde 13, fıkra 5].\n*   Tekrar edilen stajda da başarısız olunması veya mezuniyet için gerekli staj süresinin tamamlanamaması hâlinde mezuniyet gerçekleşemez [Mühendislik Fakültesi Staj Yönergesi, Madde 13, fıkra 5].\n\nKonuyla ilgili daha detaylı bilgi ve süreç yönetimi için bölümünüzün staj komisyonu veya danışman hocanız ile görüşmeniz önerilir.",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "staj bütünleme sınavı stajda başarısız olma"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 20028.3,
+    "tokens": {
+     "input": 6536,
+     "output": 342,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "C01",
+    "answer": "Erasmus+ hibeleri üniversitenin yönetmeliklerinde belirtilen sabit bir tutar olmayıp, değişim programları ikili anlaşmalar ve YÖK tarafından belirlenen esaslar doğrultusunda uygulanmaktadır [önlisans lisans eğitim öğretim, Madde 36].\n\nErasmus+ hibe miktarları ve güncel ödeme esasları hakkında detaylı bilgi almak için üniversitenin **Dış İlişkiler Ofisi** veya **Erasmus Koordinatörlüğü** ile iletişime geçmeniz gerekmektedir. Bu konuda yönetmeliklerde spesifik bir tutar bilgisi bulunmamaktadır.",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "Erasmus hibesi aylık kaç avro"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 5212.7,
+    "tokens": {
+     "input": 7103,
+     "output": 154,
+     "reasoning": 0
+    },
+    "answer_ok": 0,
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "C02",
+    "answer": "Bu konuda bilgim yok. Konuyla ilgili güncel bilgilere ulaşmak için Bolu Abant İzzet Baysal Üniversitesi Sağlık, Kültür ve Spor Daire Başkanlığı'nın resmi internet sitesini ziyaret edebilir veya ilgili birimle iletişime geçebilirsiniz.",
+    "tool_calls": [],
+    "turns": 1,
+    "agent_ms": 27175.7,
+    "tokens": {
+     "input": 2393,
+     "output": 58,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "C03",
+    "answer": "Bu konuda bilgim yok. Bölüm başkanlığı ile ilgili güncel bilgilere ulaşmak için Bolu Abant İzzet Baysal Üniversitesi Bilgisayar Mühendisliği Bölümü'nün resmi web sayfasını ziyaret edebilir veya bölüm sekreterliği ile iletişime geçebilirsiniz.",
+    "tool_calls": [],
+    "turns": 1,
+    "agent_ms": 8146.4,
+    "tokens": {
+     "input": 2386,
+     "output": 59,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "T01",
+    "answer": "Transkriptinizdeki verilere göre mevcut durumunuz şu şekildedir:\n\n*   **Şu anki AKTS:** 0\n*   **Bu dönem aldığınız tüm dersleri başarıyla tamamlamanız durumunda:** Toplam 32 AKTS'ye ulaşmış olacaksınız.\n\nMezuniyetiniz için toplamda 244 AKTS tamamlamanız gerekmektedir [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025]. Eksik dersleriniz ve mezuniyet şartlarınızla ilgili detaylı bilgi için transkript analiz raporunu inceleyebilirsiniz.",
+    "tool_calls": [
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 3273.9,
+    "tokens": {
+     "input": 7068,
+     "output": 149,
+     "reasoning": 0
+    },
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0,
+    "hesap_dogru": 1,
+    "sayilar": {
+     "gecilen_akts": {
+      "beklenen": 0,
+      "cevapta": true,
+      "aracta": 0
+     },
+     "devam_edenler_gecilirse_akts": {
+      "beklenen": 32,
+      "cevapta": true,
+      "aracta": 32
+     }
+    },
+    "arac_hesap_dogru": 1
+   },
+   {
+    "id": "T02",
+    "answer": "Transkriptinizdeki verilere göre mezuniyet durumunuzun özeti aşağıdadır:\n\n**Genel Durum:**\n*   **Toplam AKTS:** 244 AKTS'den 117'si tamamlanmıştır. Bu dönem aldığınız dersleri başarıyla geçmeniz durumunda toplam 152 AKTS'ye ulaşacaksınız.\n*   **GNO:** 3.08 (Mezuniyet için gereken 2.00 şartını sağlıyorsunuz).\n*   **Zorunlu Dersler:** 40 zorunlu dersten 25'i tamamlanmıştır. Bu dönem aldığınız 6 zorunlu dersi geçerseniz 31'e yükselecektir.\n*   **Seçmeli Dersler:** 64 AKTS'lik seçmeli ders yükümlülüğünüzün 16 AKTS'si tamamlanmıştır.\n*   **Alan Dışı Seçmeli Ders:** Henüz alınmamıştır (zorunludur).\n\n**Eksik Zorunlu Dersler:**\nBu dönem aldığınız dersler dışında tamamlamanız gereken dersler şunlardır:\n*   **6. Yarıyıl:** Veritabanı Yönetim Sistemleri, Sistem Programlama, Gömülü Sistemler, Yazılım Mühendisliği, Sinyaller ve Sistemler.\n*   **7. Yarıyıl:** Bitirme Projesi I, Staj II.\n*   **8. Yarıyıl:** Veri İletişimi ve Bilgisayar Ağları, Bitirme Projesi II.\n\n**Açık Seçmeli Yuvaları:**\nBu dönem aldığınız \"Makine Öğrenmesine Giriş\" dersi ile Seçmeli V yuvası tamamlanmaktadır. Ancak Seçmeli VI, Seçmeli VII, Seçmeli VIII ve Alan Dışı Seçmeli Ders yuvalarınız henüz açık durumdadır.\n\n*Kaynaklar: BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği (Madde 20, 22, 35); BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı (2024-2025); BAİBÜ Alan Dışı Seçmeli Ders Yönergesi (Madde 7).*\n\nDers seçimleriniz ve mezuniyet planlamanızla ilgili ayrıntılı değerlendirme için danışman hocanızla görüşmeniz önerilir.",
+    "tool_calls": [
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 5867.4,
+    "tokens": {
+     "input": 6372,
+     "output": 535,
+     "reasoning": 0
+    },
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0,
+    "hesap_dogru": 1,
+    "sayilar": {
+     "gecilen_akts": {
+      "beklenen": 117,
+      "cevapta": true,
+      "aracta": 117
+     },
+     "devam_edenler_gecilirse_akts": {
+      "beklenen": 152,
+      "cevapta": true,
+      "aracta": 152
+     },
+     "gno": {
+      "beklenen": 3.08,
+      "cevapta": true,
+      "aracta": 3.08
+     }
+    },
+    "arac_hesap_dogru": 1
+   },
+   {
+    "id": "T03",
+    "answer": "Transkriptinizdeki verilere göre mezuniyet durumunuz ve AKTS bilgileriniz aşağıdadır:\n\n### Genel Durum\n*   **Tamamlanan AKTS:** 176 / 242\n*   **Bu Dönemki Dersler Başarılı Sayılırsa:** 206 / 242\n*   **GNO:** 3.5 (Mezuniyet için gereken alt sınır 2.00'dır [BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 35, fıkra 1, bent b])\n*   **Mezuniyet Durumu:** Henüz mezuniyet şartlarını karşılamıyorsunuz.\n\n### Eğitim Planı ve Şartlar\n*   **Zorunlu Dersler:** Toplam 40 AKTS'lik zorunlu dersin 34'ü tamamlanmış durumdadır. Bu dönemki derslerinizle 36'ya çıkacaktır. [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025]\n*   **Seçmeli Dersler:** Toplam 64 AKTS'lik seçmeli dersin 24'ü tamamlanmış durumdadır. Bu dönemki derslerinizle 44'e çıkacaktır. [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025]\n*   **Alan Dışı Seçmeli:** 2023-2024 ve öncesinde kayıtlı olduğunuz için Alan Dışı Seçmeli Ders almanız isteğe bağlıdır. [BAİBÜ Alan Dışı Seçmeli Ders Yönergesi, Geçici Madde 1, fıkra 1]\n\n### Eksik Zorunlu Dersler\n*   Sistem Programlama (6. yarıyıl)\n*   Gömülü Sistemler (6. yarıyıl)\n*   Bitirme Projesi I (7. yarıyıl - *Bu dönem alınıyor*)\n*   Staj II (7. yarıyıl - *Bu dönem alınıyor*)\n*   Veri İletişimi ve Bilgisayar Ağları (8. yarıyıl)\n*   Bitirme Projesi II (8. yarıyıl)\n\n### Önemli Notlar\n*   **Plan Dışı Dersler:** Transkriptinizde yer alan \"Microcontroller Programming\" (5 AKTS) dersi plan dışı görünmektedir. Bu dersin öğretim planındaki hangi derse sayıldığını (intibak) biliyorsanız lütfen belirtin, kayıt altına alalım.\n*   **Otomatik Eşlemeler:** Yazılım Mühendisliği, Veritabanı Yönetim Sistemleri, Sinyaller ve Sistemler ve Python ile Derin Öğrenme dersleri, ders adlarının çevirisine göre otomatik eşlenmiştir. Kesin eşdeğerlik intibak komisyonu kararına bağlıdır.\n\n*Not: Bu analiz, mevcut transkriptinizdeki veriler üzerinden yapılmıştır. Mezuniyet planlamanız için danışman hocanızla görüşmeniz önerilir.*",
+    "tool_calls": [
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 3290.5,
+    "tokens": {
+     "input": 6331,
+     "output": 705,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0,
+    "hesap_dogru": 1,
+    "sayilar": {
+     "gecilen_akts": {
+      "beklenen": 176,
+      "cevapta": true,
+      "aracta": 176
+     },
+     "devam_edenler_gecilirse_akts": {
+      "beklenen": 206,
+      "cevapta": true,
+      "aracta": 206
+     },
+     "gno": {
+      "beklenen": 3.5,
+      "cevapta": true,
+      "aracta": 3.5
+     }
+    },
+    "arac_hesap_dogru": 1
+   },
+   {
+    "id": "T04",
+    "answer": "Transkriptteki öğrencinin mevcut durumu ve \"Algoritma Analizi\" dersini geçmesi durumundaki mezuniyet analizi aşağıdadır:\n\n*   **Mevcut Durum:** Öğrencinin toplam 231 AKTS'si bulunmaktadır ve GNO'su 1.97'dir. Mezuniyet için gereken 242 AKTS, 40 zorunlu ders, 64 seçmeli AKTS ve 2.00 GNO şartları henüz karşılanmamaktadır [BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 22, fıkra 1; Madde 35, fıkra 1].\n*   **Bu Dönem \"Algoritma Analizi\" Geçilirse:** Toplam AKTS 237'ye, tamamlanan zorunlu ders sayısı 39'a yükselecektir. Ancak, mezuniyet için gereken 242 AKTS, 40 zorunlu ders ve 64 seçmeli AKTS şartları ile 2.00 GNO barajı hala sağlanamamaktadır [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025; BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 35].\n\n**Sonuç:** \"Algoritma Analizi\" dersini geçmek mezuniyet için yeterli değildir. Öğrencinin ayrıca:\n1.  **Staj II** dersini tamamlaması [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025],\n2.  Eksik kalan seçmeli ders AKTS'lerini tamamlaması [BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 35, fıkra 2],\n3.  GNO'sunu 2.00 seviyesine yükseltmesi gerekmektedir [BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 35, fıkra 1, bent b].\n\nDers seçimi ve mezuniyet planlamasıyla ilgili nihai değerlendirme için danışman hocanızla görüşmeniz önerilir.",
+    "tool_calls": [
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 35427.3,
+    "tokens": {
+     "input": 5862,
+     "output": 531,
+     "reasoning": 0
+    },
+    "answer_ok": 0,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0,
+    "hesap_dogru": 1,
+    "sayilar": {
+     "gecilen_akts": {
+      "beklenen": 231,
+      "cevapta": true,
+      "aracta": 231
+     },
+     "devam_edenler_gecilirse_akts": {
+      "beklenen": 237,
+      "cevapta": true,
+      "aracta": 237
+     },
+     "gno": {
+      "beklenen": 1.97,
+      "cevapta": true,
+      "aracta": 1.97
+     }
+    },
+    "arac_hesap_dogru": 1
+   },
+   {
+    "id": "T05",
+    "answer": "Transkript analizine göre, öğretim planındaki zorunlu derslerinizden biri olan **Staj II** henüz tamamlanmamıştır.\n\nÖğretim planınızda yer alan tüm zorunlu derslerin (stajlar dahil) başarıyla tamamlanması mezuniyet şartıdır [BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 35, fıkra 1, bent a; BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025].\n\nStaj süreçleri ve eksik stajlarınızın tamamlanmasıyla ilgili ayrıntılı bilgi için bölümünüzün staj yönergesini inceleyebilir veya staj komisyonu ile görüşebilirsiniz.",
+    "tool_calls": [
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 5257.1,
+    "tokens": {
+     "input": 5850,
+     "output": 183,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "T06",
+    "answer": "Öğretim planı kurallarına göre, her seçmeli ders yuvası kendi havuzundaki derslerle ve o yuva için belirlenen AKTS miktarı kadar tamamlanmak zorundadır. Bir seçmeli yuvasından alınan fazla ders veya AKTS, başka bir seçmeli yuvasındaki eksikliği kapatmak için kullanılamaz [BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 35, fıkra 2; BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025 (data/öğretim planı.pdf), seçmeli ders yuvaları ve havuzları].\n\nTranskript analizine göre, Seçmeli VIII yuvasında 20 AKTS'lik bir açık bulunmaktadır. Bu yuvanın tamamlanabilmesi için Seçmeli VIII havuzundan ders almanız gerekmektedir. Konuyla ilgili nihai değerlendirme ve ders seçimi için danışman hocanızla görüşmeniz önerilir.",
+    "tool_calls": [
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 31240.9,
+    "tokens": {
+     "input": 5886,
+     "output": 239,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0,
+    "hesap_dogru": 0,
+    "sayilar": {
+     "secmeli_gecilen_akts": {
+      "beklenen": 60,
+      "cevapta": false
+     },
+     "secmeli_acik_akts": {
+      "beklenen": 4,
+      "cevapta": false
+     }
+    }
+   },
+   {
+    "id": "T07",
+    "answer": "Transkriptteki öğrencinin güncel genel not ortalaması (GNO) 1,97'dir.\n\nMezuniyet için gereken GNO alt sınırı 2,00'dir [BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 35, fıkra 1, bent b]. Bu durumda, mevcut GNO mezuniyet şartını karşılamamaktadır.\n\nAyrıca, transkript analizi sonucunda mezuniyet için tamamlanması gereken AKTS, zorunlu dersler ve seçmeli ders yuvalarında da eksiklikler bulunduğu görülmektedir. Durumunuzla ilgili detaylı değerlendirme ve akademik planlama için danışman hocanızla görüşmeniz önerilir.",
+    "tool_calls": [
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 16227.9,
+    "tokens": {
+     "input": 5856,
+     "output": 175,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0,
+    "hesap_dogru": 1,
+    "sayilar": {
+     "gno": {
+      "beklenen": 1.97,
+      "cevapta": true,
+      "aracta": 1.97
+     }
+    },
+    "arac_hesap_dogru": 1
+   },
+   {
+    "id": "T08",
+    "answer": "Transkriptteki öğrencinin bu dönem aldığı seçmeli dersler ve AKTS değerleri aşağıdadır:\n\n*   **Yapay Zeka:** 4 AKTS\n*   **Veri Madenciliği:** 4 AKTS\n*   **Nesnelerin İnterneti:** 4 AKTS\n*   **Bilişim Hukuku:** 4 AKTS\n*   **Yapay Sinir Ağları:** 4 AKTS\n\nBu derslerin tamamı öğretim planındaki \"Seçmeli VII\" yuvası kapsamındadır.\n\n*Not: Transkriptteki plan dışı derslerden \"Microcontroller Programming\" (5 AKTS) dersinin öğretim planındaki hangi derse sayıldığını biliyorsanız, lütfen bildiriniz; bu bilgi eşdeğerlik kaydı için gereklidir.*",
+    "tool_calls": [
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 23028.9,
+    "tokens": {
+     "input": 6335,
+     "output": 183,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "T09",
+    "answer": "Transkriptinizdeki plan dışı derslerin (Erasmus, intibak vb.) öğretim planındaki derslerle eşleşmesi, ders adlarının çevirisine göre sistem tarafından otomatik olarak yapılmıştır.\n\nBu eşleşmeye göre \"Software Engineering\" dersi, öğretim planındaki \"Yazılım Mühendisliği\" dersi ile eşlenmiş görünmektedir.\n\n**Önemli Not:** Bu otomatik eşleme bilgilendirme amaçlıdır. Derslerin resmi intibakı ve eşdeğerliği, ilgili bölüm intibak komisyonunun kararına bağlıdır. Eğer bu dersin resmi olarak sayıldığından emin değilseniz veya bir hata olduğunu düşünüyorsanız, bölümünüzün intibak komisyonu ile iletişime geçmeniz gerekmektedir.",
+    "tool_calls": [
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 14433.6,
+    "tokens": {
+     "input": 6343,
+     "output": 172,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "T10",
+    "answer": "İntibak kaydı yapıldı. Güncel durumunuz aşağıdadır:\n\nTranskriptteki öğrenci şu an 176 AKTS tamamlamış; bu dönem alınan dersler başarıyla tamamlanırsa toplam 206 AKTS'ye ulaşılacaktır. Mezuniyet için gereken toplam AKTS 242'dir.\n\n**Durum Özeti:**\n*   **Zorunlu Dersler:** 40 zorunlu ders AKTS'sinin 35'i tamamlandı; bu dönem alınanlarla 37'ye çıkacak. Eksik kalan zorunlu dersler: *Sistem Programlama*, *Veri İletişimi ve Bilgisayar Ağları* ve *Bitirme Projesi II*.\n*   **Seçmeli Dersler:** 64 seçmeli AKTS'sinin 24'ü tamamlandı; bu dönem alınanlarla 44'e çıkacak. 20 AKTS'lik seçmeli ders açığı bulunmaktadır.\n*   **GNO:** 3.50 (Mezuniyet için gereken 2.00 şartı sağlanmaktadır).\n*   **Alan Dışı Seçmeli:** 2023-2024 kayıtlı öğrenci olduğu için isteğe bağlıdır.\n\n**Önemli Not:** Plan dışı derslerin (Erasmus vb.) öğretim planındaki derslerle eşleşmesi, intibak komisyonunun nihai kararına bağlıdır. Yukarıdaki veriler bu eşleşmelerin kabul edildiği varsayımıyla hesaplanmıştır.\n\nMezuniyet şartlarının detayları için *BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği* (Madde 22, 35) ve *Bilgisayar Mühendisliği Öğretim Planı* (2024-2025) kaynaklarını inceleyebilirsiniz. Ders seçimleriniz ve mezuniyet planlamanız için danışman hocanızla görüşmeniz önerilir.",
+    "tool_calls": [
+     {
+      "name": "confirm_equivalence",
+      "args": {
+       "transcript_course": "Microcontroller Programming",
+       "plan_course": "Gömülü Sistemler"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 45227.0,
+    "tokens": {
+     "input": 6549,
+     "output": 461,
+     "reasoning": 0
+    },
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0,
+    "hesap_dogru": 1,
+    "sayilar": {
+     "tamamlanan_zorunlu_ders": {
+      "beklenen": 35,
+      "cevapta": true
+     }
+    }
+   },
+   {
+    "id": "T11",
+    "answer": "Transkriptteki öğrencinin mezuniyet için tamamlaması gereken zorunlu dersler şunlardır:\n\n*   **Sistem Programlama** (6. yarıyıl, 6 AKTS)\n*   **Veri İletişimi ve Bilgisayar Ağları** (8. yarıyıl, 5 AKTS)\n*   **Bitirme Projesi II** (8. yarıyıl, 5 AKTS)\n\nBu dönem alınan **Bitirme Projesi I** ve **Staj II** dersleri başarıyla tamamlandığında, zorunlu ders yükümlülüklerinin büyük bir kısmı karşılanmış olacaktır [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025].\n\nAyrıca, mezuniyet için zorunlu derslerin yanı sıra seçmeli ders yuvalarından kalan AKTS yükümlülüklerinin de tamamlanması gerekmektedir [BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 35, fıkra 2]. Plan dışı derslerin eşdeğerliği ile ilgili kesin kararın intibak komisyonu tarafından verileceğini hatırlatmak isterim.",
+    "tool_calls": [
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 2299.4,
+    "tokens": {
+     "input": 6462,
+     "output": 278,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "T12",
+    "answer": "2024-2025 eğitim-öğretim yılında kayıt yaptırdığınız için, mezuniyetiniz için öğretim planınızda yer alan **Alan Dışı Seçmeli Ders** yuvasından en az bir ders almanız zorunludur [BAİBÜ Alan Dışı Seçmeli Ders Yönergesi, Madde 7, fıkra 3].\n\nTranskript analizinizde, bu dersi henüz almadığınız görülmektedir. Mezuniyet şartlarınızı tamamlamak için öğrenim süreniz boyunca bu yuvadan bir ders almanız gerekmektedir [BAİBÜ Alan Dışı Seçmeli Ders Yönergesi, Madde 7, fıkra 3; BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025].",
+    "tool_calls": [
+     {
+      "name": "get_graduation_requirements",
+      "args": {}
+     },
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     }
+    ],
+    "turns": 3,
+    "agent_ms": 34579.3,
+    "tokens": {
+     "input": 11354,
+     "output": 202,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [
+     "get_graduation_requirements"
+    ],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "T13",
+    "answer": "Transkriptinizdeki kayıt yılına göre, 2023-2024 eğitim-öğretim yılı ve öncesinde kaydolan öğrenciler için Alan Dışı Seçmeli Derslere kayıtlanmak isteğe bağlıdır [BAİBÜ Alan Dışı Seçmeli Ders Yönergesi, Geçici Madde 1, fıkra 1]. Dolayısıyla, bu dersi almamış olmanız mezuniyetinize engel teşkil etmemektedir.\n\nTranskriptinizde \"Microcontroller Programming\" isimli plan dışı bir ders görünmektedir. Bu dersin öğretim planındaki hangi derse sayıldığını (intibak durumunu) teyit etmemi ister misiniz?",
+    "tool_calls": [
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 39270.3,
+    "tokens": {
+     "input": 6341,
+     "output": 161,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "T14",
+    "answer": "Bu soruyu yanıtlayabilmem için transkriptinizdeki mevcut durumu analiz etmem gerekiyor. Lütfen UBYS'den indirdiğiniz tarihsel transkript dosyanızı sisteme yükleyin.\n\nTranskriptinizi yükledikten sonra, öğretim planınızla karşılaştırarak toplam kaç AKTS'nizin kaldığını ve mezuniyet şartlarına göre durumunuzu size bildirebilirim.",
+    "tool_calls": [],
+    "turns": 1,
+    "agent_ms": 20035.7,
+    "tokens": {
+     "input": 2387,
+     "output": 85,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "W01",
+    "answer": "\"İleri Makine Öğrenmesi\" dersi 2026-2027 Güz dönemi ders programında açılmamaktadır. Bu nedenle, bu dönem bu dersi alarak \"Seçmeli VI\" yuvasını tamamlamanız mümkün değildir.\n\nÖğretim planı ve transkript verileriniz üzerinden yapılan simülasyon sonucunda, mezuniyet için gereken zorunlu dersleriniz ve seçmeli AKTS yükümlülükleriniz henüz tamamlanmamıştır. Seçmeli ders yuvaları, kendi havuzlarındaki derslerle ve yuvanın öngördüğü AKTS kadar tamamlanabilir; bir yuvadaki fazla AKTS başka bir yuvaya sayılmaz [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025; BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 35, fıkra 2].\n\nDers seçimi ve planlamanızla ilgili nihai karar için danışman hocanızla görüşmeniz gerekmektedir.",
+    "tool_calls": [
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     },
+     {
+      "name": "simulate_courses",
+      "args": {
+       "course_sets": [
+        [
+         "İleri Makine Öğrenmesi"
+        ]
+       ]
+      }
+     }
+    ],
+    "turns": 3,
+    "agent_ms": 17197.9,
+    "tokens": {
+     "input": 11643,
+     "output": 278,
+     "reasoning": 0
+    },
+    "answer_ok": 0,
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [
+     "analyze_transcript"
+    ],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0,
+    "hesap_dogru": 0,
+    "sayilar": {
+     "kume1_akts": {
+      "beklenen": 156,
+      "cevapta": false
+     }
+    }
+   },
+   {
+    "id": "W02",
+    "answer": "Transkriptteki öğrencinin mevcut durumu ve \"Web Programlama\" ile \"Algoritma Analizi\" dersleri için yapılan simülasyon sonucu aşağıdadır:\n\n*   **Web Programlama:** Bu ders daha önce geçilmiştir, dolayısıyla tekrar alınması durumunda AKTS'ye ek bir katkı sağlamaz.\n*   **Algoritma Analizi:** Bu ders halihazırda bu dönem alınmaktadır, dolayısıyla AKTS'ye ek bir katkı sağlamaz.\n\nBu derslerin alınması durumunda toplam AKTS'de bir artış olmayacaktır.\n\nMezuniyet şartları ve ders seçimiyle ilgili nihai kararlar için danışman hocanızla görüşmeniz gerekmektedir.",
+    "tool_calls": [
+     {
+      "name": "simulate_courses",
+      "args": {
+       "course_sets": [
+        [
+         "Web Programlama",
+         "Algoritma Analizi"
+        ]
+       ]
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 4165.1,
+    "tokens": {
+     "input": 6062,
+     "output": 182,
+     "reasoning": 0
+    },
+    "answer_ok": 0,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0,
+    "hesap_dogru": 0,
+    "sayilar": {
+     "kume1_akts": {
+      "beklenen": 152,
+      "cevapta": false
+     }
+    }
+   },
+   {
+    "id": "W03",
+    "answer": "\"Oyun Programlama\" isimli bir ders, Bilgisayar Mühendisliği öğretim planındaki seçmeli ders havuzlarında ve bu dönem açılan dersler listesinde bulunmamaktadır. Bu nedenle, bu dersi alarak seçmeli AKTS şartını tamamlamanız mümkün değildir.\n\nTranskriptinizdeki güncel duruma göre, mezuniyet için gereken 64 AKTS'lik seçmeli ders yükümlülüğünüzün henüz 44 AKTS'lik kısmı açıktır. Seçmeli derslerinizi, öğretim planınızda yer alan ve ilgili dönemlerde açılan derslerden seçmeniz gerekmektedir [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025; BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 35, fıkra 2].\n\nDers seçimi ve tercihlerinize ilişkin nihai kararınız için danışman hocanızla görüşmeniz önerilir.",
+    "tool_calls": [
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     },
+     {
+      "name": "simulate_courses",
+      "args": {
+       "course_sets": [
+        [
+         "Oyun Programlama"
+        ]
+       ]
+      }
+     },
+     {
+      "name": "get_offered_electives",
+      "args": {
+       "yuva": ""
+      }
+     }
+    ],
+    "turns": 4,
+    "agent_ms": 54517.3,
+    "tokens": {
+     "input": 16085,
+     "output": 273,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [
+     "analyze_transcript",
+     "get_offered_electives"
+    ],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "W04",
+    "answer": "Yapılan simülasyon sonucunda, belirttiğiniz derslerin hiçbiri 2026-2027 Güz dönemi ders programında açılmadığı için, bu dersleri alarak seçmeli şartınızı bu dönem tamamlamanız mümkün görünmemektedir.\n\nSimülasyon sonuçları şu şekildedir:\n\n*   **1. Küme (Görüntü İşleme, Bulut Bilişim, Bilgisayarlı Görme, Uzman Sistemler, Veri Bilimine Giriş):** Bu derslerin tamamı bu dönem açılmadığı için seçmeli AKTS şartı (64/64) teorik olarak tamamlansa dahi, dersler alınamadığından mezuniyet şartları karşılanmamaktadır. Ayrıca, Sistem Programlama, Gömülü Sistemler, Veri İletişimi ve Bilgisayar Ağları ile Bitirme Projesi II gibi zorunlu dersleriniz de eksik görünmektedir [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025; BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 20, 22, 35].\n*   **2. Küme (Görüntü İşleme, Bulut Bilişim):** Bu dersler de bu dönem açılmadığı için seçmeli AKTS şartı (52/64) tamamlanamamakta ve 12 AKTS'lik bir açık kalmaktadır. Yine aynı zorunlu dersler eksiktir [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025; BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 35].\n\nDers seçimi ve mezuniyet planlaması konusunda en doğru yönlendirme için lütfen danışman hocanızla görüşünüz.",
+    "tool_calls": [
+     {
+      "name": "simulate_courses",
+      "args": {
+       "course_sets": [
+        [
+         "Görüntü İşleme",
+         "Bulut Bilişim",
+         "Bilgisayarlı Görme",
+         "Uzman Sistemler",
+         "Veri Bilimine Giriş"
+        ],
+        [
+         "Görüntü İşleme",
+         "Bulut Bilişim"
+        ]
+       ]
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 20857.0,
+    "tokens": {
+     "input": 6615,
+     "output": 505,
+     "reasoning": 0
+    },
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0,
+    "hesap_dogru": 0,
+    "sayilar": {
+     "kume1_akts": {
+      "beklenen": 226,
+      "cevapta": false
+     },
+     "kume2_akts": {
+      "beklenen": 214,
+      "cevapta": false
+     }
+    }
+   },
+   {
+    "id": "W05",
+    "answer": "<hata: GoogleAPIError>",
+    "tool_calls": [],
+    "turns": null,
+    "agent_ms": null,
+    "answer_ok": 0,
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "gerekli_tool_dogru": 0,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [
+     "simulate_courses"
+    ],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0,
+    "hesap_dogru": 0,
+    "sayilar": {
+     "kume1_akts": {
+      "beklenen": 241,
+      "cevapta": false
+     }
+    }
+   },
+   {
+    "id": "P01",
+    "answer": "<hata: GoogleAPIError>",
+    "tool_calls": [],
+    "turns": null,
+    "agent_ms": null,
+    "answer_ok": 0,
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "gerekli_tool_dogru": 0,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [
+     "get_course_schedule"
+    ],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "P02",
+    "answer": "3. sınıfın salı günkü ders programı aşağıdadır:\n\n*   **08:30-13:15:** İşletim Sistemleri I (A şubesi) - 326\n*   **13:30-16:15:** Mikroişlemciler (A şubesi) - 327\n*   **13:30-18:15:** İşletim Sistemleri I (B şubesi) - 326\n*   **16:30-18:15:** Mikroişlemciler (A şubesi) - Donanım Laboratuvarı\n\nKaynak: BAİBÜ Bilgisayar Mühendisliği Bölümü 2026-2027 Güz Dönemi Ders Programı (data/2026_27_Güz_Lisans_v2.pdf)",
+    "tool_calls": [
+     {
+      "name": "get_course_schedule",
+      "args": {
+       "sinif": 3,
+       "gun": "salı"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 67950.6,
+    "tokens": {
+     "input": 5024,
+     "output": 226,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "P03",
+    "answer": "2. sınıf öğrencilerinin cuma günü ders programı şu şekildedir:\n\n*   **08:30-13:15:** Veri Yapıları (A şubesi) - Bilgisayar (Yazılım) Laboratuvarı\n*   **09:30-12:15:** Mühendislik Ekonomisi (Seçmeli III) - 326\n*   **13:30-18:15:** Veri Yapıları (B şubesi) - Bilgisayar (Yazılım) Laboratuvarı\n\nKaynak: BAİBÜ Bilgisayar Mühendisliği Bölümü 2026-2027 Güz Dönemi Ders Programı (data/2026_27_Güz_Lisans_v2.pdf)",
+    "tool_calls": [
+     {
+      "name": "get_course_schedule",
+      "args": {
+       "gun": "cuma",
+       "sinif": 2
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 51255.9,
+    "tokens": {
+     "input": 5000,
+     "output": 203,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "P04",
+    "answer": "Ders programınızı görüntüleyebilmem için öncelikle UBYS'den indirdiğiniz tarihsel transkriptinizi yüklemeniz gerekmektedir. Transkriptinizi yükledikten sonra \"benim derslerim\" üzerinden Pazartesi günkü programınızı sorgulayabilirim.",
+    "tool_calls": [],
+    "turns": 1,
+    "agent_ms": 12863.3,
+    "tokens": {
+     "input": 2385,
+     "output": 59,
+     "reasoning": 0
+    },
+    "answer_ok": 0,
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "gerekli_tool_dogru": 0,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [
+     "get_course_schedule"
+    ],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "P05",
+    "answer": "\"Yapay Zeka\" dersi bu dönemki ders programında bulunamadı. Dersin açılıp açılmadığını veya güncel programı kontrol etmek için bölüm sekreterliğine veya danışmanınıza başvurabilirsiniz.",
+    "tool_calls": [
+     {
+      "name": "get_course_schedule",
+      "args": {
+       "dersler": [
+        "Yapay Zeka"
+       ]
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 36070.7,
+    "tokens": {
+     "input": 4834,
+     "output": 70,
+     "reasoning": 0
+    },
+    "answer_ok": 0,
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "gerekli_tool_dogru": 0,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [
+     "get_offered_electives"
+    ],
+    "fazla_tool_lar": [
+     "get_course_schedule"
+    ],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "S01",
+    "answer": "2026-2027 Güz dönemi için Seçmeli III yuvasında açılan dersler şunlardır:\n\n*   **Programlama Dilleri Temelleri:** Çarşamba 15:30-18:15 (Bilgisayar (Yazılım) Laboratuvarı)\n*   **Mühendislik Ekonomisi:** Cuma 09:30-12:15 (326)\n*   **Kablosuz Algılayıcı Ağlar:** Pazartesi 12:30-15:15 (326)\n*   **Web Programlama:** Pazartesi 15:30-18:15 (Sistem Ağları Laboratuvarı)\n\nKaynak: BAİBÜ Bilgisayar Mühendisliği Bölümü 2026-2027 Güz Dönemi Ders Programı [data/2026_27_Güz_Lisans_v2.pdf]",
+    "tool_calls": [
+     {
+      "name": "get_offered_electives",
+      "args": {
+       "yuva": "Seçmeli III"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 51041.4,
+    "tokens": {
+     "input": 5070,
+     "output": 245,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "S02",
+    "answer": "2026-2027 Güz dönemi için Seçmeli VIII yuvasında bu dönem açılan ders bulunmamaktadır. Havuzda yer alan derslerin tamamı bu dönem açılmamaktadır [BAİBÜ Bilgisayar Mühendisliği Bölümü 2026-2027 Güz Dönemi Ders Programı].",
+    "tool_calls": [
+     {
+      "name": "get_offered_electives",
+      "args": {
+       "yuva": "Seçmeli VIII"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 15594.5,
+    "tokens": {
+     "input": 5009,
+     "output": 99,
+     "reasoning": 0
+    },
+    "answer_ok": 0,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "S03",
+    "answer": "<hata: GoogleAPIError>",
+    "tool_calls": [],
+    "turns": null,
+    "agent_ms": null,
+    "answer_ok": 0,
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "gerekli_tool_dogru": 0,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [
+     "get_offered_electives"
+    ],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "F01",
+    "answer": "Evet, Bölüm Staj Komisyonunun onayı ile her biri 20 iş gününden oluşan iki dönem stajı birleştirerek, tek seferde aralıksız 40 iş günü olarak gerçekleştirmeniz mümkündür [Mühendislik Fakültesi Staj Yönergesi, Madde 10].",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "staj tek seferde yapılabilir mi"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 26009.0,
+    "tokens": {
+     "input": 6989,
+     "output": 92,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "F02",
+    "answer": "Genel not ortalaması 100 üzerinden 60 şartını sağlayamayan adaylar, kayıt oldukları yıldaki merkezi yerleştirme puanlarının, geçiş yapmak istedikleri diploma programının o yılki taban puanına eşit veya yüksek olması durumunda yatay geçiş başvurusu yapabilirler [Yatay Geçiş Yönergesi, Madde 8; Kurumlar arası kredi transferi, Madde 11].",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "kurumlar arası yatay geçiş not ortalaması şartı istisna"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 19050.2,
+    "tokens": {
+     "input": 6627,
+     "output": 125,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "A01",
+    "answer": "BAİBÜ Lisansüstü Eğitim Yönetmeliği'nin 38. maddesi uyarınca, 100 üzerinden 62 puanın harf notu karşılığı **DD**'dir ve katsayısı **1,0**'dır [lisansüstü eğitim yönetmeliği, Madde 38].\n\nGenel not ortalamanızın (GNO) ne olacağı, yalnızca bu dersten aldığınız nota değil, transkriptinizdeki diğer tüm derslerin harf notlarına, bu dersin AKTS kredisine ve toplam aldığınız derslerin AKTS kredileri toplamına bağlıdır.\n\nGNO hesabı şu şekilde yapılır:\n*   Her bir dersin harf notu katsayısı ile o dersin AKTS kredisi çarpılır.\n*   Tüm derslerden elde edilen bu çarpımların toplamı, toplam AKTS kredisine bölünür [lisansüstü eğitim yönetmeliği, Madde 38].\n\nKendi güncel ortalamanızı ve bu dersin ortalamanıza etkisini görmek isterseniz, transkriptinizi sisteme yükleyerek analiz etmemi sağlayabilirsiniz.",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "harf notu aralıkları ve ortalama hesaplama"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 68713.6,
+    "tokens": {
+     "input": 7026,
+     "output": 274,
+     "reasoning": 0
+    },
+    "answer_ok": 0,
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "gerekli_tool_dogru": 0,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [
+     "request_new_tool"
+    ],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 0,
+    "anlik_gerekli": 0,
+    "hesap_dogru": 0,
+    "sayilar": {
+     "ortalama": {
+      "beklenen": 3.06,
+      "cevapta": false
+     }
+    }
+   },
+   {
+    "id": "A02",
+    "answer": "Ders başarı notu, yarıyıl içi değerlendirmelerin (ara sınav, ödev vb.) ve dönem sonu sınavının (final) birlikte değerlendirilmesiyle elde edilir [Önlisans Lisans Eğitim Öğretim, Madde 26, fıkra 1].\n\nDersin sorumlu öğretim elemanı tarafından aksi belirtilmedikçe, sistemde varsayılan olarak ara sınavın %40, dönem sonu sınavının %60 etkili olduğu hesaplama yöntemi uygulanır [Önlisans Lisans Eğitim Öğretim, Madde 26, fıkra 2].\n\nBu varsayılan ağırlıklara göre, 100 üzerinden en az 60 puan alarak \"DD\" harf notuyla geçmek istediğinizi varsayarsak (veya dersin geçme notu farklıysa bu eşiği baz alarak), finalden almanız gereken notu şu formülle hesaplayabilirsiniz:\n\n**(Vize Notu x 0,40) + (Final Notu x 0,60) = Hedeflenen Başarı Notu**\n\nÖrneğin, vizeden 40 aldıysanız:\n(40 x 0,40) + (Final Notu x 0,60) = 60\n16 + (Final Notu x 0,60) = 60\nFinal Notu x 0,60 = 44\nFinal Notu = 44 / 0,60 ≈ **73,33**\n\nDersin özel ağırlık oranlarını ve geçme notu sınırını öğrenmek için dersin izlencesini (syllabus) kontrol etmeniz veya dersin öğretim elemanına danışmanız önerilir.",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "ders geçme notu hesaplama final vize ağırlığı"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 36609.3,
+    "tokens": {
+     "input": 7082,
+     "output": 409,
+     "reasoning": 0
+    },
+    "answer_ok": 0,
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "gerekli_tool_dogru": 0,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [
+     "request_new_tool"
+    ],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 0,
+    "anlik_gerekli": 0
+   },
+   {
+    "id": "A03",
+    "answer": "Ders başarı notu; ara sınavlar, yarıyıl sonu sınavı ve dönem içi çalışmaların ağırlıklı ortalaması alınarak öğretim elemanı tarafından hesaplanır [önlisans lisans eğitim öğretim, Madde 27]. Bu hesaplamanın yüzdeleri (vize/final ağırlığı) dönem başında öğretim elemanı tarafından duyurulur.\n\nSadece vize (50) ve final (60) notlarınızla kesin bir harf notu hesaplanamaz; çünkü dönem içi çalışmalarınızın ve sınav ağırlıklarının ne olduğu bilinmemektedir.\n\nGenel not ortalamanızın (GNO) 2,00'yi geçip geçmeyeceği ise sadece bu dersin notuna değil, transkriptinizdeki tüm derslerin AKTS kredileri ve harf notlarına bağlıdır. Mevcut GNO durumunuzu ve bu dersin ortalamanıza etkisini görmek için transkriptiniz yüklüyse `analyze_transcript` aracını kullanabilirim.\n\nDersin ağırlıklı notunu ve harf notu karşılığını öğrenmek için dersin öğretim elemanıyla görüşebilir veya UBYS üzerinden notunuzun sisteme girilmesini bekleyebilirsiniz.",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "BAİBÜ Mühendislik Fakültesi başarı notu hesaplama vize final ağırlığı harf notu"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 23363.4,
+    "tokens": {
+     "input": 6974,
+     "output": 297,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "gerekli_tool_dogru": 0,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [
+     "request_new_tool"
+    ],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 0,
+    "anlik_gerekli": 0,
+    "hesap_dogru": 0,
+    "sayilar": {
+     "ortalama": {
+      "beklenen": 2.02,
+      "cevapta": false
+     }
+    }
+   },
+   {
+    "id": "A04",
+    "answer": "Belirttiğiniz notlar (Matematik I: 85, Fizik I: 72, Kimya: 58) ve bu derslerin öğretim planındaki 6'şar AKTS değerleri üzerinden yapılan hesaplamaya göre ağırlıklı ortalamanız **71,67**'dir.\n\nBu hesaplama anlık olarak üretilmiş olup doğrulanmamıştır. Genel not ortalamanızın (GNO) kesin hesaplanması için transkriptinizdeki tüm derslerin notlarını ve AKTS değerlerini içeren güncel durumunuzu dikkate almanız gerekmektedir.",
+    "tool_calls": [
+     {
+      "name": "request_new_tool",
+      "args": {
+       "transkript_gerekli": true,
+       "gorev": "Matematik I (85), Fizik I (72) ve Kimya (58) notlarının ağırlıklı ortalamasını hesapla. Bu derslerin AKTS değerlerini öğretim planından bul ve kullan."
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 42156.7,
+    "tokens": {
+     "input": 5280,
+     "output": 203,
+     "reasoning": 0
+    },
+    "anlik_tool": [
+     {
+      "gorev": "Matematik I (85), Fizik I (72) ve Kimya (58) notlarının ağırlıklı ortalamasını hesapla. Bu derslerin AKTS değerlerini öğretim planından bul ve kullan.",
+      "transkript": true,
+      "haiku_cevabi": "**Sonuç:** AKTS ağırlıklı ortalama **71,67** (tam değer 71,6667).\n\n**Hesap:** Üç dersin de AKTS değeri 6 olduğu için ağırlıklı ortalama, düz ortalamayla aynı çıkar: (85·6 + 72·6 + 58·6) / (6 + 6 + 6) = 1290 / 18 = 71,67.\n\n**AKTS değerleri (öğretim planı, 2024-2025, zorunlu dersler):**\n- Matematik I (kod 1906001072015): 6 AKTS\n- Fizik I (kod 1906001032015): 6 AKTS\n- Kimya (kod 1906001052015): 6 AKTS\n\n**Varsayımlar:**\n- Ders adları tam eşleşmeyle arandı. Her ad için planda tek kayıt bulundu, bu yüzden şube ya da alternatif ders seçimi gerekmedi.\n- Ağırlık olarak AKTS kullanıldı, çünkü görev AKTS değerlerini kullanmayı istiyordu.\n- Notlar, ders programı ve transkript dosyaları bu hesapta kullanılmadı.",
+      "adimlar": [
+       {
+        "tip": "kod",
+        "kod": "cd \"$INPUT_DIR\" && cat > /tmp/hesap.py << 'EOF'\nimport json, os, sys\n\nd = os.environ[\"INPUT_DIR\"]\nplan = json.load(open(os.path.join(d, \"ogretim_plani.json\"), encoding=\"utf-8\"))\n\n# Tüm havuz (zorunlu + seçmeli yuvaların havuzları) üzerinde ders adı araması\nkayitlar = []\nfor x in plan.get(\"zorunlu_dersler\", []):\n    kayitlar.append((\"zorunlu\", x.get(\"ad\", \"\"), x.get(\"kod\"), x.get(\"akts\")))\nfor y in plan.get(\"secmeli_yuvalar\", []):\n    for h in y.get(\"havuz\", []):\n        kayitlar.append((\"secmeli:\" + y.get(\"ad\", \"\"), h.get(\"ad\", \"\"), h.get(\"kod\"), h.get(\"akts\")))\n\ndef bul(ad):\n    ad_n = ad.casefold()\n    return [k for k in kayitlar if k[1].casefold() == ad_n]\n\nhedefler = {\"Matematik I\": 85, \"Fizik I\": 72, \"Kimya\": 58}\nakts = {}\nfor ad in hedefler:\n    adaylar = bul(ad)\n    print(f\"Aranan: {ad} -> {len(adaylar)} eşleşme\")\n    for a in adaylar:\n        print(\"   \", a)\n    if len(adaylar) != 1:\n        sys.exit(f\"HATA: '{ad}' için tek eşleşme yok ({len(adaylar)}).\")\n    akts[ad] = adaylar[0][3]\n\nprint(\"\\nAKTS:\", akts)\ntoplam_akts = sum(akts.values())\ntoplam_puan = sum(hedefler[a] * akts[a] for a in hedefler)\nort = toplam_puan / toplam_akts\nprint(f\"Toplam AKTS: {toplam_akts}\")\nprint(f\"Ağırlıklı toplam: {toplam_puan}\")\nprint(f\"AKTS ağırlıklı ortalama: {ort:.4f} ({ort:.2f})\")\nEOF\npython3 /tmp/hesap.py",
+        "cikti": "Aranan: Matematik I -> 1 eşleşme\n    ('zorunlu', 'Matematik I', '1906001072015', 6)\nAranan: Fizik I -> 1 eşleşme\n    ('zorunlu', 'Fizik I', '1906001032015', 6)\nAranan: Kimya -> 1 eşleşme\n    ('zorunlu', 'Kimya', '1906001052015', 6)\n\nAKTS: {'Matematik I': 6, 'Fizik I': 6, 'Kimya': 6}\nToplam AKTS: 18\nAğırlıklı toplam: 1290\nAKTS ağırlıklı ortalama: 71.6667 (71.67)\n"
+       },
+       {
+        "tip": "metin",
+        "metin": "**Sonuç:** AKTS ağırlıklı ortalama **71,67** (tam değer 71,6667).\n\n**Hesap:** Üç dersin de AKTS değeri 6 olduğu için ağırlıklı ortalama, düz ortalamayla aynı çıkar: (85·6 + 72·6 + 58·6) / (6 + 6 + 6) = 1290 / 18 = 71,67.\n\n**AKTS değerleri (öğretim planı, 2024-2025, zorunlu dersler):**\n- Matematik I (kod 1906001072015): 6 AKTS\n- Fizik I (kod 1906001032015): 6 AKTS\n- Kimya (kod 1906001052015): 6 AKTS\n\n**Varsayımlar:**\n- Ders adları tam eşleşmeyle arandı. Her ad için planda tek kayıt bulundu, bu yüzden şube ya da alternatif ders seçimi gerekmedi.\n- Ağırlık olarak AKTS kullanıldı, çünkü görev AKTS değerlerini kullanmayı istiyordu.\n- Notlar, ders programı ve transkript dosyaları bu hesapta kullanılmadı."
+       }
+      ],
+      "istek_sayisi": 1,
+      "sure_ms": 11113,
+      "tokens": {
+       "input": 11097,
+       "output": 1527
+      },
+      "bitis": "end_turn"
+     }
+    ],
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "gerekli_tool_dogru": 0,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [
+     "search_regulations"
+    ],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gerekli": 1,
+    "haiku_dogru": 0,
+    "hesap_dogru": 0,
+    "sayilar": {
+     "ortalama": {
+      "beklenen": 2.91,
+      "cevapta": false
+     }
+    }
+   },
+   {
+    "id": "A05",
+    "answer": "Bu hesaplama, transkriptinizdeki veriler ve OBS'deki GNO (3,08) kullanılarak anlık olarak üretilmiştir ve doğrulanmamıştır.\n\nHesaplamalara göre, Algoritma Analizi dersinden en az **DC** (katsayı 1,50) almanız gerekmektedir. **DD** (katsayı 1,00) almanız durumunda GNO'nuzun 3,00'ün altına düşeceği öngörülmektedir.\n\n**Önemli Notlar:**\n*   Transkriptinizdeki notlar üzerinden yapılan kredi ağırlıklı GNO hesaplaması ile OBS'deki 3,08 değeri arasında farklılık bulunmaktadır. Bu nedenle, bu sonuç yalnızca bir öngörüdür.\n*   Dersin kredi ve AKTS değerleri öğretim planı ile uyumlu olarak hesaplamaya dahil edilmiştir.\n*   Diferansiyel Denklemler dersinin bu dönemdeki tekrarı hesaba katılmamıştır.\n\nKesin durumunuz ve akademik planlamanız için lütfen danışman hocanızla görüşünüz.",
+    "tool_calls": [
+     {
+      "name": "request_new_tool",
+      "args": {
+       "gorev": "Transkriptteki mevcut GNO ve dersleri kullanarak, Algoritma Analizi dersinden alınacak notun GNO'yu 3,00'ün altına düşürmemesi için gereken minimum notu hesapla.",
+       "transkript_gerekli": true
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 46413.7,
+    "tokens": {
+     "input": 5766,
+     "output": 315,
+     "reasoning": 0
+    },
+    "anlik_tool": [
+     {
+      "gorev": "Transkriptteki mevcut GNO ve dersleri kullanarak, Algoritma Analizi dersinden alınacak notun GNO'yu 3,00'ün altına düşürmemesi için gereken minimum notu hesapla.",
+      "transkript": true,
+      "haiku_cevabi": "GNO doğrulaması tutmadı: hesaplanan 2,4167, OBS'deki 3,08. Bu fark, tekrarlanan dersler veya ağırlık yöntemiyle açıklanabilir, o yüzden veriyi inceliyorum.\nTranskriptte iki tekrar var: Fizik II (önce FF, sonra DC) ve Diferansiyel Denklemler (önce FD, sonra henüz notsuz). Bu tekrarları ve alternatif yöntemleri deneyip OBS GNO'su ile karşılaştırıyorum.\n**Sonuç:** Algoritma Analizi dersinden en az **DC** (katsayı 1,50) almak gerekir. DD (1,00) GNO'yu 3,00'ın altına düşürür.\n\n**Hesap:**\n- Transkriptteki OBS GNO'su 3,08'dir. Algoritma Analizi 4 kredi ve 6 AKTS'dir (öğretim planı ve transkriptle uyumlu), henüz notsuzdur.\n- GNO'yu kredi ağırlıklı ortalama olarak kabul ettim: (T + 4x) / (96 + 4) ≥ 3,00. Bu, x ≥ 1,08 verir. DD (1,00) yetmez, DC (1,50) yeterlidir.\n- AKTS ağırlığıyla yapılan kontrolde (toplam 128 AKTS, Algoritma Analizi 6 AKTS) gereken katsayı 1,29 çıkar. Yine DC yeterli, DD yetersizdir. Sonuç iki yöntemde de aynıdır.\n\n**Önemli uyarı: transkriptteki notlardan GNO yeniden hesaplanamadı.**\n- Notlu 31 kayıttan (96 kredi) kredi ağırlıklı GNO 2,4167 çıktı, OBS'deki 3,08 ile uyuşmuyor. Tekrarlanan derslerde son notu almak (Fizik II: önce FF, sonra DC) bu farkı kapatmadı; GNO 2,5217 oldu.\n- Buna karşın OBS'nin AKTS özetleri transkriptle tutuyor: 128 AKTS tüm notlu denemelerin toplamı, 117 AKTS ise geçilen derslerin toplamı.\n- Transkriptteki notlardan gidersek GNO 3,00'a hiçbir not ile ulaşılamaz. En yüksek AA bile GNO'yu 3,00 üzerinde tutamaz, çünkü hesaplanan GNO 3,00'ın hayli altındadır. Bu nedenle sonuç, OBS'deki 3,08 değerine dayanır. OBS'nin GNO'sunun hangi kayıtlardan hesaplandığı doğrulanmalıdır.\n\n**Varsayımlar:**\n1. GNO, kredi ağırlıklı ortalamadır. Harf katsayıları standarttır (AA 4,00 … FF 0,00).\n2. Mevcut GNO olarak OBS'deki 3,08 kullanıldı; ağırlık tabanı olarak 96 kredi (ya da 128 AKTS) alındı.\n3. Algoritma Analizi'nin yalnızca bu dönemki tek kaydı vardır ve bu dönemin notu henüz girilmemiştir.\n4. Diferansiyel Denklemler'in 2026 Güz'deki (notsuz) tekrarının sonucu hesaba katılmadı.\n5. Ders programında Algoritma Analizi şubesi bulunamadı. Bu, hesabı etkilemez, çünkü soru yalnızca not ve kredi ile ilgilidir.",
+      "adimlar": [
+       {
+        "tip": "kod",
+        "kod": "cat > /tmp/gno_hesap.py << 'EOF'\nimport json, os\n\nIN = os.environ.get(\"INPUT_DIR\", \"/tmp\")\nwith open(os.path.join(IN, \"transkript.json\"), encoding=\"utf-8\") as f:\n    tr = json.load(f)\nwith open(os.path.join(IN, \"ogretim_plani.json\"), encoding=\"utf-8\") as f:\n    plan = json.load(f)\nwith open(os.path.join(IN, \"ders_programi.json\"), encoding=\"utf-8\") as f:\n    prog = json.load(f)\n\nKATSAYI = {\"AA\": 4.00, \"BA\": 3.50, \"BB\": 3.00, \"CB\": 2.50, \"CC\": 2.00,\n           \"DC\": 1.50, \"DD\": 1.00, \"FD\": 0.50, \"FF\": 0.00}\nHEDEF = 3.00\nAD_HEDEF = \"Algoritma Analizi\"\n\ndef norm(s):\n    return str(s).replace(\"İ\", \"i\").replace(\"I\", \"ı\").lower().strip()\n\n# 1) Transkriptteki notlu dersler (kredi ağırlıklı GNO)\nnotlu = [d for d in tr[\"dersler\"] if d.get(\"not\") in KATSAYI]\ntoplam_kredi = sum(d[\"kredi\"] for d in notlu)\ntoplam_puan = sum(d[\"kredi\"] * KATSAYI[d[\"not\"]] for d in notlu)\ngno_hesap = toplam_puan / toplam_kredi\nprint(f\"Notlu ders sayısı: {len(notlu)}, toplam kredi: {toplam_kredi}\")\nprint(f\"Hesaplanan GNO (kredi ağırlıklı): {gno_hesap:.4f}\")\nprint(f\"OBS GNO: {tr['obs_ozet']['gno']}\")\n\n# 2) Algoritma Analizi'ni bul (transkript, öğretim planı, ders programı)\ndef bul(liste, anahtar=\"ad\"):\n    return [x for x in liste if AD_HEDEF.lower() in norm(x.get(anahtar, \"\"))]\n\nprint(\"\\nTranskriptte Algoritma Analizi:\", bul(tr[\"dersler\"]))\naa_plan = bul(plan[\"zorunlu_dersler\"])\nprint(\"Öğretim planında:\", aa_plan)\naa_prog = bul(prog[\"dersler\"])\nprint(\"Ders programında:\", aa_prog)\n\n# 3) Algoritma Analizi kredisi ve notsuz kayıt\naa_kayit = [d for d in tr[\"dersler\"] if AD_HEDEF.lower() in norm(d.get(\"ad\", \"\"))]\nif aa_kayit and aa_kayit[0].get(\"not\") in KATSAYI:\n    print(\"\\nAlgoritma Analizi zaten notlandırılmış; hesap yapılmadı.\")\n    raise SystemExit(0)\n\nif aa_plan:\n    kredi = aa_plan[0][\"kredi\"]\nelse:\n    kredi = aa_prog[0].get(\"kredi\") if aa_prog and \"kredi\" in aa_prog[0] else None\nif kredi is None:\n    raise SystemExit(\"Algoritma Analizi kredisi bulunamadı.\")\n\n# 4) Gereken minimum puan: (T + k*x)/(K + k) >= 3.00  => x >= (3*(K+k) - T)/k\nK = toplam_kredi\nT = toplam_puan\nx_gerek = (HEDEF * (K + kredi) - T) / kredi\nprint(f\"\\nAlgoritma Analizi kredisi: {kredi}\")\nprint(f\"Gereken minimum katsayı (ham): {x_gerek:.4f}\")\n\n# 5) Harf notu eşiklerinden en düşük uygun harf\nuygun = [(h, c) for h, c in sorted(KATSAYI.items(), key=lambda t: t[1])\n         if c >= x_gerek - 1e-9]\nif x_gerek <= 0:\n    print(\"Minimum not: FF (0,00) yeterli.\")\nelif not uygun:\n    print(\"Bu dersten en yüksek not (AA) bile GNO'yu 3,00 üzerinde tutamaz.\")\nelse:\n    h, c = uygun[0]\n    print(f\"En düşük yeterli harf notu: {h} ({c:.2f})\")\n    # Doğrulama\n    yeni = (T + kredi * c) / (K + kredi)\n    print(f\"Doğrulama: {h} ile yeni GNO = {yeni:.4f}\")\nEOF\nINPUT_DIR=$INPUT_DIR python3 /tmp/gno_hesap.py",
+        "cikti": "Notlu ders sayısı: 31, toplam kredi: 96\nHesaplanan GNO (kredi ağırlıklı): 2.4167\nOBS GNO: 3.08\n\nTranskriptte Algoritma Analizi: [{'yil': 2026, 'donem': 'Güz', 'kod': '1906003032015', 'ad': 'Algoritma Analizi', 'kredi': 4, 'akts': 6, 'not': None, 'erasmus': False}]\nÖğretim planında: [{'kod': '1906003032015', 'ad': 'Algoritma Analizi', 'yariyil': 5, 'kredi': 4, 'akts': 6, 'ad_en': 'Algorithm Analysis', 'ad_en_kaynak': 'BAİBÜ Bilgisayar Mühendisliği 2021 ECTS uyumlu müfredat ve ders içerikleri (data/BILG_2021.pdf)'}]\nDers programında: []\n\nAlgoritma Analizi kredisi: 4\nGereken minimum katsayı (ham): 17.0000\nBu dersten en yüksek not (AA) bile GNO'yu 3,00 üzerinde tutamaz.\n"
+       },
+       {
+        "tip": "metin",
+        "metin": "GNO doğrulaması tutmadı: hesaplanan 2,4167, OBS'deki 3,08. Bu fark, tekrarlanan dersler veya ağırlık yöntemiyle açıklanabilir, o yüzden veriyi inceliyorum."
+       },
+       {
+        "tip": "kod",
+        "kod": "cd /tmp && python3 -c \"\nimport json,os\nfrom collections import Counter\ntr=json.load(open(os.path.join(os.environ['INPUT_DIR'],'transkript.json'),encoding='utf-8'))\nK={'AA':4.0,'BA':3.5,'BB':3.0,'CB':2.5,'CC':2.0,'DC':1.5,'DD':1.0,'FD':0.5,'FF':0.0}\nfor d in tr['dersler']: print(d['yil'],d['donem'],d['kod'],d['ad'][:28].ljust(28),d['kredi'],d['akts'],repr(d['not']),d['erasmus'])\nprint(Counter(d['kod'] for d in tr['dersler']).most_common(3))\nn=[d for d in tr['dersler'] if d['not'] in K]\nfor lab,w in [('kredi',lambda d:d['kredi']),('akts',lambda d:d['akts'])]:\n  print(lab, sum(w(d)*K[d['not']] for d in n)/sum(w(d) for d in n))\nprint('kayitsiz/notsuz:',[d['ad'] for d in tr['dersler'] if d['not'] not in K])\n\"",
+        "cikti": "2024 Güz 1906001012015 Bilgisayar Mühendisliğine Gi 2 2 'BA' False\n2024 Güz 1906001032015 Fizik I                      4 6 'CC' False\n2024 Güz 1906001052015 Kimya                        4 6 'DD' False\n2024 Güz 1906001072015 Matematik I                  4 6 'CB' False\n2024 Güz 1906001092015 Atatürk İlkeleri ve Inkilap  2 2 'BB' False\n2024 Güz 1906001112015 Türk Dili I                  2 2 'AA' False\n2024 Güz 1906001132015 Yabancı Dil I                2 2 'BA' False\n2024 Güz 1906001172019 Kariyer Planlama             1 2 'AA' False\n2024 Güz REKL001 Girişimcilik                 3 4 'BB' False\n2024 Bahar 1906001022015 C Programlama                3 4 'BB' False\n2024 Bahar 1906001042015 Fizik II                     4 6 'FF' False\n2024 Bahar 1906001062015 Lineer Cebir                 3 4 'CC' False\n2024 Bahar 1906001082015 Matematik II                 4 6 'DC' False\n2024 Bahar 1906001102015 Atatürk İlkeleri ve Inkilap  2 2 'BA' False\n2024 Bahar 1906001122015 Türk Dili II                 2 2 'AA' False\n2024 Bahar 1906001142015 Yabancı Dil II               2 2 'BB' False\n2024 Bahar BESY0002 Spor Bilgisi ve Kültürü      3 4 'AA' False\n2025 Güz 1906002012015 Nesne Tabanlı Programlama    4 6 'BB' False\n2025 Güz 1906002032015 Ayrık Matematik              3 3 'CC' False\n2025 Güz 1906002052015 Veri Yapıları                4 4 'CB' False\n2025 Güz 1906002072015 Mesleki İngilizce            3 3 'BA' False\n2025 Güz 1906002092015 Diferansiyel Denklemler      4 5 'FD' False\n2025 Güz 1906002112015 Elektrik Devreleri           4 5 'DD' False\n2025 Güz 1906002192023 Web Programlama              3 4 'BA' False\n2025 Bahar 1906002022015 Simulasyon Sistemleri        4 7 'CC' False\n2025 Bahar 1906002042015 Otomata Teorisi              3 7 'DC' False\n2025 Bahar 1906002062015 Olasılık ve İstatistik       3 4 'BB' False\n2025 Bahar 1906002082015 Sayısal Elektronik           4 4 'CB' False\n2025 Bahar 1906002102015 Proje Planlama ve Yönetimi   3 4 'BA' False\n2025 Bahar 1906002212023 Python Programlamaya Giriş   3 4 'AA' False\n2025 Bahar 1906001042015 Fizik II                     4 6 'DC' False\n2026 Güz 1906003012015 Mikroişlemciler              4 5 None False\n2026 Güz 1906003032015 Algoritma Analizi            4 6 None False\n2026 Güz 1906003052015 İşletim Sistemleri I         4 5 None False\n2026 Güz 1906003072015 Bilgisayar Mimarisi I        3 5 None False\n2026 Güz 1906003092015 Staj I                       0 5 None False\n2026 Güz 1906003212026 Makine Öğrenmesine Giriş     3 4 None False\n2026 Güz 1906002092015 Diferansiyel Denklemler      4 5 None False\n[('1906001042015', 2), ('1906002092015', 2), ('1906001012015', 1)]\nkredi 2.4166666666666665\nakts 2.33203125\nkayitsiz/notsuz: ['Mikroişlemciler', 'Algoritma Analizi', 'İşletim Sistemleri I', 'Bilgisayar Mimarisi I', 'Staj I', 'Makine Öğrenmesine Giriş', 'Diferansiyel Denklemler']\n"
+       },
+       {
+        "tip": "metin",
+        "metin": "Transkriptte iki tekrar var: Fizik II (önce FF, sonra DC) ve Diferansiyel Denklemler (önce FD, sonra henüz notsuz). Bu tekrarları ve alternatif yöntemleri deneyip OBS GNO'su ile karşılaştırıyorum."
+       },
+       {
+        "tip": "kod",
+        "kod": "cd /tmp && python3 -c \"\nimport json,os\ntr=json.load(open(os.path.join(os.environ['INPUT_DIR'],'transkript.json'),encoding='utf-8'))\nK={'AA':4.0,'BA':3.5,'BB':3.0,'CB':2.5,'CC':2.0,'DC':1.5,'DD':1.0,'FD':0.5,'FF':0.0}\ndef g(lst,w):\n  return sum(w(d)*K[d['not']] for d in lst)/sum(w(d) for d in lst)\nn=[d for d in tr['dersler'] if d['not'] in K]\nkr=lambda d:d['kredi']; ak=lambda d:d['akts']\n# son alinan not (tekrarda en son not esas)\nson={}\nfor d in n: son[d['kod']]=d\ns=list(son.values())\nprint('son not, kredi:',round(g(s,kr),4),'akts:',round(g(s,ak),4), 'ders',len(s))\n# gecen dersler\ngc=[d for d in s if d['not']!='FF' and d['not']!='FD' and d['not']!='DD']\nprint('sadece gecen (>=DC), kredi:',round(g(gc,kr),4))\nprint('tum, FF haric:', round(g([d for d in n if d['not']!='FF'],kr),4))\nprint('toplam akts notlu:',sum(d['akts'] for d in n), 'son-not akts:',sum(d['akts'] for d in s))\nprint('gecen akts (not>=DD):',sum(d['akts'] for d in s if d['not']!='FF' and d['not']!='FD'))\n\"",
+        "cikti": "son not, kredi: 2.5217 akts: 2.4467 ders 30\nsadece gecen (>=DC), kredi: 2.775\ntum, FF haric: 2.5217\ntoplam akts notlu: 128 son-not akts: 122\ngecen akts (not>=DD): 117\n"
+       },
+       {
+        "tip": "kod",
+        "kod": "cd /tmp && python3 -c \"\nK={'DD':1.0,'DC':1.5}\ngno=3.08\nfor lab,base,ak in [('kredi',96,4),('AKTS',128,6)]:\n  T=gno*base; x=(3*(base+ak)-T)/ak\n  print(lab, 'T=',round(T,2),'gereken katsayi=',round(x,4), 'DD yeterli mi:', 1.0>=x-1e-9, 'DC yeterli mi:', 1.5>=x-1e-9)\n\"",
+        "cikti": "kredi T= 295.68 gereken katsayi= 1.08 DD yeterli mi: False DC yeterli mi: True\nAKTS T= 394.24 gereken katsayi= 1.2933 DD yeterli mi: False DC yeterli mi: True\n"
+       },
+       {
+        "tip": "metin",
+        "metin": "**Sonuç:** Algoritma Analizi dersinden en az **DC** (katsayı 1,50) almak gerekir. DD (1,00) GNO'yu 3,00'ın altına düşürür.\n\n**Hesap:**\n- Transkriptteki OBS GNO'su 3,08'dir. Algoritma Analizi 4 kredi ve 6 AKTS'dir (öğretim planı ve transkriptle uyumlu), henüz notsuzdur.\n- GNO'yu kredi ağırlıklı ortalama olarak kabul ettim: (T + 4x) / (96 + 4) ≥ 3,00. Bu, x ≥ 1,08 verir. DD (1,00) yetmez, DC (1,50) yeterlidir.\n- AKTS ağırlığıyla yapılan kontrolde (toplam 128 AKTS, Algoritma Analizi 6 AKTS) gereken katsayı 1,29 çıkar. Yine DC yeterli, DD yetersizdir. Sonuç iki yöntemde de aynıdır.\n\n**Önemli uyarı: transkriptteki notlardan GNO yeniden hesaplanamadı.**\n- Notlu 31 kayıttan (96 kredi) kredi ağırlıklı GNO 2,4167 çıktı, OBS'deki 3,08 ile uyuşmuyor. Tekrarlanan derslerde son notu almak (Fizik II: önce FF, sonra DC) bu farkı kapatmadı; GNO 2,5217 oldu.\n- Buna karşın OBS'nin AKTS özetleri transkriptle tutuyor: 128 AKTS tüm notlu denemelerin toplamı, 117 AKTS ise geçilen derslerin toplamı.\n- Transkriptteki notlardan gidersek GNO 3,00'a hiçbir not ile ulaşılamaz. En yüksek AA bile GNO'yu 3,00 üzerinde tutamaz, çünkü hesaplanan GNO 3,00'ın hayli altındadır. Bu nedenle sonuç, OBS'deki 3,08 değerine dayanır. OBS'nin GNO'sunun hangi kayıtlardan hesaplandığı doğrulanmalıdır.\n\n**Varsayımlar:**\n1. GNO, kredi ağırlıklı ortalamadır. Harf katsayıları standarttır (AA 4,00 … FF 0,00).\n2. Mevcut GNO olarak OBS'deki 3,08 kullanıldı; ağırlık tabanı olarak 96 kredi (ya da 128 AKTS) alındı.\n3. Algoritma Analizi'nin yalnızca bu dönemki tek kaydı vardır ve bu dönemin notu henüz girilmemiştir.\n4. Diferansiyel Denklemler'in 2026 Güz'deki (notsuz) tekrarının sonucu hesaba katılmadı.\n5. Ders programında Algoritma Analizi şubesi bulunamadı. Bu, hesabı etkilemez, çünkü soru yalnızca not ve kredi ile ilgilidir."
+       }
+      ],
+      "istek_sayisi": 1,
+      "sure_ms": 37362,
+      "tokens": {
+       "input": 45633,
+       "output": 6652
+      },
+      "bitis": "end_turn"
+     }
+    ],
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "gerekli_tool_dogru": 0,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [
+     "search_regulations"
+    ],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gerekli": 1,
+    "haiku_dogru": 0,
+    "hesap_dogru": 0,
+    "sayilar": {
+     "puan": {
+      "beklenen": 55,
+      "cevapta": false
+     }
+    }
+   },
+   {
+    "id": "A06",
+    "answer": "Transkriptteki verilere dayanarak yapılan anlık hesaplamaya göre, transkriptte 2 adet DD notlu ders bulunmaktadır.\n\nBu hesaplama anlık olarak üretilmiştir ve doğrulanmamıştır. Transkriptinizdeki derslerin notlarını kontrol ederek bu sayıyı teyit etmeniz önerilir.",
+    "tool_calls": [
+     {
+      "name": "request_new_tool",
+      "args": {
+       "gorev": "Transkriptteki DD notlu derslerin sayısını hesapla.",
+       "transkript_gerekli": true
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 25912.1,
+    "tokens": {
+     "input": 5208,
+     "output": 108,
+     "reasoning": 0
+    },
+    "anlik_tool": [
+     {
+      "gorev": "Transkriptteki DD notlu derslerin sayısını hesapla.",
+      "transkript": true,
+      "haiku_cevabi": "**Sonuç: Transkriptte 2 adet DD notlu ders var.**\n\n- **Kimya** (1906001052015), 2024 Güz, 4 kredi, 6 AKTS\n- **Elektrik Devreleri** (1906002112015), 2025 Güz, 4 kredi, 5 AKTS\n\n**Nasıl hesaplandı:** `transkript.json` içindeki 38 ders kaydında `not` alanı \"DD\" olan kayıtlar sayıldı. Büyük/küçük harf ve baştaki/sondaki boşluk farkı için değer normalize edildi. Her iki DD kaydı da farklı bir ders koduna ait, yani tekrar alınmış aynı ders yok.\n\n**Varsayımlar ve notlar:**\n- Dosyadaki not dağılımı: BA 6, CC 4, DD 2, CB 3, BB 6, AA 5, FF 1, DC 3, FD 1 ve değeri boş/None olan 7 kayıt. Boş notlu 7 kayıt DD olarak sayılmadı. Bunların bir kısmı devam eden ya da notu henüz girilmemiş dersler olabilir; transkripte bakılarak doğrulanması iyi olur.\n- Sayım yalnızca transkriptteki kayıtlara dayanıyor. Ders programı ve öğretim planı bu soruda kullanılmadı.",
+      "adimlar": [
+       {
+        "tip": "kod",
+        "kod": "cd \"$INPUT_DIR\" && python3 - <<'EOF'\nimport json, collections\nwith open(\"transkript.json\", encoding=\"utf-8\") as f:\n    t = json.load(f)\ndersler = t[\"dersler\"]\nnotlar = collections.Counter(str(d.get(\"not\", \"\")).strip().upper() for d in dersler)\nprint(\"Toplam ders kaydı:\", len(dersler))\nprint(\"Not dağılımı:\", dict(notlar))\ndd = [d for d in dersler if str(d.get(\"not\", \"\")).strip().upper() == \"DD\"]\nprint(\"DD kayıt sayısı:\", len(dd))\nkodlar = collections.Counter(d[\"kod\"] for d in dd)\ntekrar = {k: v for k, v in kodlar.items() if v > 1}\nprint(\"DD notlu benzersiz ders sayısı:\", len(kodlar))\nprint(\"Birden fazla DD kaydı olan kodlar:\", tekrar)\nfor d in dd:\n    print(d[\"yil\"], d[\"donem\"], d[\"kod\"], d[\"ad\"], d[\"kredi\"], d[\"akts\"], d[\"not\"], \"erasmus=\" + str(d.get(\"erasmus\")))\nEOF",
+        "cikti": "Toplam ders kaydı: 38\nNot dağılımı: {'BA': 6, 'CC': 4, 'DD': 2, 'CB': 3, 'BB': 6, 'AA': 5, 'FF': 1, 'DC': 3, 'FD': 1, 'NONE': 7}\nDD kayıt sayısı: 2\nDD notlu benzersiz ders sayısı: 2\nBirden fazla DD kaydı olan kodlar: {}\n2024 Güz 1906001052015 Kimya 4 6 DD erasmus=False\n2025 Güz 1906002112015 Elektrik Devreleri 4 5 DD erasmus=False\n"
+       },
+       {
+        "tip": "metin",
+        "metin": "**Sonuç: Transkriptte 2 adet DD notlu ders var.**\n\n- **Kimya** (1906001052015), 2024 Güz, 4 kredi, 6 AKTS\n- **Elektrik Devreleri** (1906002112015), 2025 Güz, 4 kredi, 5 AKTS\n\n**Nasıl hesaplandı:** `transkript.json` içindeki 38 ders kaydında `not` alanı \"DD\" olan kayıtlar sayıldı. Büyük/küçük harf ve baştaki/sondaki boşluk farkı için değer normalize edildi. Her iki DD kaydı da farklı bir ders koduna ait, yani tekrar alınmış aynı ders yok.\n\n**Varsayımlar ve notlar:**\n- Dosyadaki not dağılımı: BA 6, CC 4, DD 2, CB 3, BB 6, AA 5, FF 1, DC 3, FD 1 ve değeri boş/None olan 7 kayıt. Boş notlu 7 kayıt DD olarak sayılmadı. Bunların bir kısmı devam eden ya da notu henüz girilmemiş dersler olabilir; transkripte bakılarak doğrulanması iyi olur.\n- Sayım yalnızca transkriptteki kayıtlara dayanıyor. Ders programı ve öğretim planı bu soruda kullanılmadı."
+       }
+      ],
+      "istek_sayisi": 1,
+      "sure_ms": 10420,
+      "tokens": {
+       "input": 10551,
+       "output": 1184
+      },
+      "bitis": "end_turn"
+     }
+    ],
+    "answer_ok": 0,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gerekli": 1,
+    "haiku_dogru": 1,
+    "hesap_dogru": 1,
+    "sayilar": {
+     "dd_ders": {
+      "beklenen": 2,
+      "cevapta": true
+     }
+    }
+   },
+   {
+    "id": "A07",
+    "answer": "Transkriptinizde başarısız olduğunuz (FF, FD, NA veya devamsızlık nedeniyle kalınan) dersler şunlardır:\n\n*   **Fizik I** (2. yarıyıl, 6 AKTS)\n*   **Fizik II** (4. yarıyıl, 6 AKTS)\n\nBu dersler, BAİBÜ Bilgisayar Mühendisliği Programı 2024-2025 Öğretim Planı'na göre zorunlu dersleriniz arasındadır. Ders kaydı ve mezuniyet şartları ile ilgili ayrıntılı bilgi için danışman hocanızla görüşmeniz önerilir.",
+    "tool_calls": [
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 14517.5,
+    "tokens": {
+     "input": 6368,
+     "output": 154,
+     "reasoning": 0
+    },
+    "answer_ok": 0,
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "gerekli_tool_dogru": 0,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [
+     "request_new_tool"
+    ],
+    "fazla_tool_lar": [
+     "analyze_transcript"
+    ],
+    "anlik_dogru": 0,
+    "anlik_gerekli": 0
+   },
+   {
+    "id": "A08",
+    "answer": "Transkriptinizdeki verilere göre \"Algoritma Analizi\" dersini şu anki dönemle birlikte toplam 2 kez almış görünüyorsunuz. Ders, öğretim planında 5. yarıyıl zorunlu dersi olarak yer almaktadır [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025].",
+    "tool_calls": [
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 17987.8,
+    "tokens": {
+     "input": 5852,
+     "output": 93,
+     "reasoning": 0
+    },
+    "answer_ok": 0,
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "gerekli_tool_dogru": 0,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [
+     "request_new_tool"
+    ],
+    "fazla_tool_lar": [
+     "analyze_transcript"
+    ],
+    "anlik_dogru": 0,
+    "anlik_gerekli": 0,
+    "hesap_dogru": 0,
+    "sayilar": {
+     "alis": {
+      "beklenen": 4,
+      "cevapta": false
+     }
+    }
+   },
+   {
+    "id": "A09",
+    "answer": "Transkript verilerine göre, 2021-2022 eğitim-öğretim yılında kayıtlanan öğrenci, 2026-2027 eğitim-öğretim yılı güz döneminde (bugün 23.10.2026) 11. yarıyıl (6. yıl) içerisindedir.",
+    "tool_calls": [
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 30367.0,
+    "tokens": {
+     "input": 5844,
+     "output": 91,
+     "reasoning": 0
+    },
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "gerekli_tool_dogru": 0,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [
+     "request_new_tool"
+    ],
+    "fazla_tool_lar": [
+     "analyze_transcript"
+    ],
+    "anlik_dogru": 0,
+    "anlik_gerekli": 0,
+    "hesap_dogru": 1,
+    "sayilar": {
+     "donem": {
+      "beklenen": 11,
+      "cevapta": true
+     }
+    }
+   },
+   {
+    "id": "A10",
+    "answer": "Transkriptinizdeki verilere göre, bu dönem aldığınız derslerin tamamını başarıyla geçmeniz durumunda mezuniyet durumunuz şu şekildedir:\n\n*   **Toplam AKTS:** Mezuniyet için gereken 244 AKTS'nin 152'sini tamamlamış olacaksınız.\n*   **Zorunlu Dersler:** Öğretim planındaki 40 zorunlu dersten 31'ini tamamlamış olacaksınız. Henüz almadığınız 9 zorunlu ders (Veritabanı Yönetim Sistemleri, Sistem Programlama, Gömülü Sistemler, Yazılım Mühendisliği, Sinyaller ve Sistemler, Bitirme Projesi I, Staj II, Veri İletişimi ve Bilgisayar Ağları, Bitirme Projesi II) bulunmaktadır.\n*   **Seçmeli Dersler:** 64 AKTS'lik seçmeli ders yükümlülüğünüzün 20 AKTS'sini tamamlamış olacaksınız. 44 AKTS'lik seçmeli ders açığınız kalacaktır.\n*   **Alan Dışı Seçmeli Ders:** Mezuniyet için zorunlu olan \"Alan Dışı Seçmeli Ders\" henüz alınmamıştır.\n\nÖzetle, bu dönemki derslerinizi geçseniz dahi, mezuniyet için **9 zorunlu dersi** tamamlamanız, **44 AKTS'lik seçmeli ders** almanız ve **Alan Dışı Seçmeli Ders** yükümlülüğünüzü yerine getirmeniz gerekmektedir.\n\nMezuniyet şartları ile ilgili detaylı bilgiye BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği (Madde 22, 35) ve Bilgisayar Mühendisliği Programı 2024-2025 Öğretim Planı üzerinden ulaşabilirsiniz. Ders seçimlerinizle ilgili planlama yapmak için danışman hocanızla görüşmeniz önerilir.",
+    "tool_calls": [
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 22039.5,
+    "tokens": {
+     "input": 6392,
+     "output": 433,
+     "reasoning": 0
+    },
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "gerekli_tool_dogru": 0,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [
+     "request_new_tool"
+    ],
+    "fazla_tool_lar": [
+     "analyze_transcript"
+    ],
+    "anlik_dogru": 0,
+    "anlik_gerekli": 0,
+    "hesap_dogru": 0,
+    "sayilar": {
+     "ders": {
+      "beklenen": 21,
+      "cevapta": false
+     }
+    }
+   },
+   {
+    "id": "A11",
+    "answer": "Cuma gününü boş bırakma isteğinizle ilgili yaptığım inceleme aşağıdadır. Bu hesaplama anlık üretilmiştir ve doğrulanmamıştır; kesin bilgi için ders programını ve şube durumunuzu danışman hocanızla teyit etmeniz önerilir.\n\nDers programı verilerine göre:\n\n*   **Makine Öğrenmesine Giriş:** Dersin A şubesi Çarşamba günü (13:30–16:15) yapılmaktadır. Cuma günkü boşluğu sağlamak için bu dersin A şubesine geçiş yapabilirsiniz.\n*   **Diğer Dersler:** Transkriptinizdeki derslerden \"Veri Yapıları\"nın A ve B şubeleri ile \"Yabancı Dil I\" dersi Cuma günü yapılmaktadır. Bu dersleri alıyorsanız, Cuma gününü tamamen boşaltmak mümkün görünmemektedir.\n\nDers programındaki diğer dersleriniz için şube seçeneklerini ve çakışma durumlarını UBYS üzerinden kontrol etmeniz ve nihai kararınız için danışman hocanızla görüşmeniz gerekmektedir.",
+    "tool_calls": [
+     {
+      "name": "get_course_schedule",
+      "args": {
+       "gun": "cuma"
+      }
+     },
+     {
+      "name": "request_new_tool",
+      "args": {
+       "transkript_gerekli": true,
+       "gorev": "Transkriptteki derslerin (Makine Öğrenmesine Giriş hariç) diğer şubelerinin Cuma günü olup olmadığını ve Makine Öğrenmesine Giriş dersinin başka şubesi olup olmadığını kontrol et."
+      }
+     }
+    ],
+    "turns": 3,
+    "agent_ms": 56331.7,
+    "tokens": {
+     "input": 8293,
+     "output": 329,
+     "reasoning": 0
+    },
+    "anlik_tool": [
+     {
+      "gorev": "Transkriptteki derslerin (Makine Öğrenmesine Giriş hariç) diğer şubelerinin Cuma günü olup olmadığını ve Makine Öğrenmesine Giriş dersinin başka şubesi olup olmadığını kontrol et.",
+      "transkript": true,
+      "haiku_cevabi": "Ders programı kayıtlarında ders adı `ders` anahtarında; `ad` yerine onu kullanarak betiği düzeltip yeniden çalıştırıyorum.\n**Sonuç**\n\n- **Transkriptteki diğer dersler (Makine Öğrenmesine Giriş hariç):** Cuma gününde 3 şube var:\n  - Veri Yapıları, şube A (Cuma 08:30–12:15, B.L.)\n  - Veri Yapıları, şube B (Cuma 13:30–18:15, B.L.)\n  - Yabancı Dil I (Cuma 08:30–10:15, derslik 123; tek şube)\n- **Makine Öğrenmesine Giriş:** Programda 2 şube var. Şube A Çarşamba (13:30–16:15, derslik 227), şube B Cuma (13:30–16:15, derslik 326). Yani başka bir şubesi var ve o şube Cuma günü.\n\n**Nasıl hesaplandı**\n\nTranskriptteki 38 kayıt, kod bazında 36 benzersiz derse indirildi. Her ders kodu, `ders_programi.json` içindeki `dersler` listesinde kod eşleşmesiyle aranarak tüm şubeleri ve günleri listelendi. Bu kontrol, betik içinde yapıldı; sayılar betik çıktısından alındı.\n\n**Varsayımlar ve notlar**\n\n1. Transkript şube bilgisi içermediği için öğrencinin hangi şubeden aldığı bilinmiyor. \"Diğer şube\" yorumunu, ders programındaki bütün şubeleri kontrol ederek yaptım. Öğrencinin kayıtlı olduğu şubeye göre sonuç değişebilir.\n2. Transkriptteki 36 dersin 19'u ders programında yok (ör. C Programlama, Lineer Cebir, Staj I). Bu dersler için şube kontrolü yapılamadı; muhtemelen önceki müfredattan veya bu dönem açılmayan derslerden.\n3. Transkriptte 38 kayıt olduğu halde 36 benzersiz kod var; iki kayıt tekrar alınmış ders olabilir. Tekrarlar ayrı sayılmadı.\n4. Ders programındaki bazı şube etiketleri tutarsız (ör. Elektrik Devreleri'nde aynı şube B için iki ayrı saat bloğu). Bu, kontrol sonucunu değiştirmiyor.\n5. Akademik takvim ve resmi tatiller (ör. 28 Ekim 2026 öğleden sonrası) bu kontrolün kapsamında değildir; yalnızca gün adına bakıldı.",
+      "adimlar": [
+       {
+        "tip": "kod",
+        "kod": "cat > /tmp/kontrol.py << 'EOF'\nimport json, os\n\nIN = os.environ.get(\"INPUT_DIR\", \"/tmp\")\ndef yukle(ad):\n    with open(os.path.join(IN, ad), encoding=\"utf-8\") as f:\n        return json.load(f)\n\nplan = yukle(\"ogretim_plani.json\")\nprog = yukle(\"ders_programi.json\")\ntr = yukle(\"transkript.json\")\n\nHARIC = \"Makine Öğrenmesine Giriş\"\ndersler = prog[\"dersler\"]\n\n# Transkriptteki dersler (kod bazlı eşleşme)\ntr_kodlar = {}\nfor d in tr[\"dersler\"]:\n    tr_kodlar.setdefault(d[\"kod\"], d[\"ad\"])\n\ndef ad_eslesme(ad):\n    return ad.strip().lower()\n\nml_kodlar = {k for k, a in tr_kodlar.items() if ad_eslesme(a) == ad_eslesme(HARIC)}\nprint(\"Transkriptte Makine Öğrenmesine Giriş kodu(ları):\", ml_kodlar if ml_kodlar else \"yok\")\n\nprint(\"\\n=== Transkript derslerinin ders programındaki şubeleri ===\")\nprint(f\"Transkript ders sayısı (tekil kod): {len(tr_kodlar)}\")\nhedef = [k for k in tr_kodlar if k not in ml_kodlar]\nprint(f\"Kontrol edilecek ders sayısı (ML hariç): {len(hedef)}\")\n\ncuma_var = []\nfor kod in hedef:\n    ad = tr_kodlar[kod]\n    subeler = [s for s in dersler if s[\"kod\"] == kod]\n    # Transkriptteki dersin programda şubesi yoksa not et\n    if not subeler:\n        print(f\"- {ad} ({kod}): ders programında bulunamadı\")\n        continue\n    for s in subeler:\n        print(f\"- {ad} ({kod}) şube {s['sube']}: {s['gun']} {s['saatler']} derslik {s['derslik']}\")\n        if s[\"gun\"].lower() == \"cuma\":\n            cuma_var.append((ad, s[\"sube\"]))\n\nprint(\"\\nCuma gününde olan şubeler (ML hariç):\")\nfor ad, sb in cuma_var:\n    print(f\"  {ad} - şube {sb}\")\nprint(\"Toplam Cuma şubesi:\", len(cuma_var))\n\nprint(\"\\n=== Makine Öğrenmesine Giriş şubeleri (ders programı) ===\")\nml_prog = [s for s in dersler if s[\"ad\"].strip().lower() == ad_eslesme(HARIC) or s[\"kod\"] in ml_kodlar]\nfor s in ml_prog:\n    print(f\"  {s['ad']} ({s['kod']}) şube {s['sube']}: {s['gun']} {s['saatler']} sınıf {s['sinif']}\")\nprint(\"Toplam ML şube sayısı:\", len(ml_prog))\nEOF\npython3 /tmp/kontrol.py",
+        "cikti": "Hata (çıkış kodu 1): Traceback (most recent call last):\n  File \"/tmp/kontrol.py\", line 50, in <module>\n    ml_prog = [s for s in dersler if s[\"ad\"].strip().lower() == ad_eslesme(HARIC) or s[\"kod\"] in ml_kodlar]\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/kontrol.py\", line 50, in <listcomp>\n    ml_prog = [s for s in dersler if s[\"ad\"].strip().lower() == ad_eslesme(HARIC) or s[\"kod\"] in ml_kodlar]\n                                     ~^^^^^^\nKeyError: 'ad'\n"
+       },
+       {
+        "tip": "metin",
+        "metin": "Ders programı kayıtlarında ders adı `ders` anahtarında; `ad` yerine onu kullanarak betiği düzeltip yeniden çalıştırıyorum."
+       },
+       {
+        "tip": "kod",
+        "kod": "cd /tmp && sed -i 's/s\\[\"ad\"\\].strip().lower() == ad_eslesme(HARIC)/s[\"ders\"].strip().lower() == ad_eslesme(HARIC)/; s/print(f\"  {s\\[.ad.\\]} ({s\\[.kod.\\]})/print(f\"  {s[\\x27ders\\x27]} ({s[\\x27kod\\x27]})/' kontrol.py && python3 kontrol.py | tail -8\npython3 -c \"\nimport json,os\np=json.load(open(os.path.join(os.environ['INPUT_DIR'],'ders_programi.json')))\nt=json.load(open(os.path.join(os.environ['INPUT_DIR'],'transkript.json')))\nprint([s for s in p['dersler'] if 'Öğrenme' in s['ders'] or s['kod']=='1906003212026'])\nprint([ (d['yil'],d['donem'],d['kod'],d['ad']) for d in t['dersler'] if 'Öğrenme' in d['ad'] or d['kod']=='1906003212026'])\nprint(sorted({s['gun'] for s in p['dersler']}))\n\"",
+        "cikti": "  Veri Yapıları - şube A\n  Veri Yapıları - şube B\nToplam Cuma şubesi: 3\n\n=== Makine Öğrenmesine Giriş şubeleri (ders programı) ===\n  Makine Öğrenmesine Giriş (1906003212026) şube A: Çarşamba ['13:30-14:15', '14:30-15:15', '15:30-16:15'] sınıf 3\n  Makine Öğrenmesine Giriş (1906003212026) şube B: Cuma ['13:30-14:15', '14:30-15:15', '15:30-16:15'] sınıf 3\nToplam ML şube sayısı: 2\n[{'gun': 'Çarşamba', 'sinif': 3, 'ders': 'Makine Öğrenmesine Giriş', 'kod': '1906003212026', 'sube': 'A', 'yuva': 'Seç V', 'derslik': '227', 'saatler': ['13:30-14:15', '14:30-15:15', '15:30-16:15']}, {'gun': 'Cuma', 'sinif': 3, 'ders': 'Makine Öğrenmesine Giriş', 'kod': '1906003212026', 'sube': 'B', 'yuva': 'Seç V', 'derslik': '326', 'saatler': ['13:30-14:15', '14:30-15:15', '15:30-16:15']}]\n[(2026, 'Güz', '1906003212026', 'Makine Öğrenmesine Giriş')]\n['Cuma', 'Pazartesi', 'Perşembe', 'Salı', 'Çarşamba']\n"
+       },
+       {
+        "tip": "metin",
+        "metin": "**Sonuç**\n\n- **Transkriptteki diğer dersler (Makine Öğrenmesine Giriş hariç):** Cuma gününde 3 şube var:\n  - Veri Yapıları, şube A (Cuma 08:30–12:15, B.L.)\n  - Veri Yapıları, şube B (Cuma 13:30–18:15, B.L.)\n  - Yabancı Dil I (Cuma 08:30–10:15, derslik 123; tek şube)\n- **Makine Öğrenmesine Giriş:** Programda 2 şube var. Şube A Çarşamba (13:30–16:15, derslik 227), şube B Cuma (13:30–16:15, derslik 326). Yani başka bir şubesi var ve o şube Cuma günü.\n\n**Nasıl hesaplandı**\n\nTranskriptteki 38 kayıt, kod bazında 36 benzersiz derse indirildi. Her ders kodu, `ders_programi.json` içindeki `dersler` listesinde kod eşleşmesiyle aranarak tüm şubeleri ve günleri listelendi. Bu kontrol, betik içinde yapıldı; sayılar betik çıktısından alındı.\n\n**Varsayımlar ve notlar**\n\n1. Transkript şube bilgisi içermediği için öğrencinin hangi şubeden aldığı bilinmiyor. \"Diğer şube\" yorumunu, ders programındaki bütün şubeleri kontrol ederek yaptım. Öğrencinin kayıtlı olduğu şubeye göre sonuç değişebilir.\n2. Transkriptteki 36 dersin 19'u ders programında yok (ör. C Programlama, Lineer Cebir, Staj I). Bu dersler için şube kontrolü yapılamadı; muhtemelen önceki müfredattan veya bu dönem açılmayan derslerden.\n3. Transkriptte 38 kayıt olduğu halde 36 benzersiz kod var; iki kayıt tekrar alınmış ders olabilir. Tekrarlar ayrı sayılmadı.\n4. Ders programındaki bazı şube etiketleri tutarsız (ör. Elektrik Devreleri'nde aynı şube B için iki ayrı saat bloğu). Bu, kontrol sonucunu değiştirmiyor.\n5. Akademik takvim ve resmi tatiller (ör. 28 Ekim 2026 öğleden sonrası) bu kontrolün kapsamında değildir; yalnızca gün adına bakıldı."
+       }
+      ],
+      "istek_sayisi": 1,
+      "sure_ms": 21423,
+      "tokens": {
+       "input": 24970,
+       "output": 3470
+      },
+      "bitis": "end_turn"
+     }
+    ],
+    "answer_ok": 1,
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [
+     "get_course_schedule"
+    ],
+    "anlik_dogru": 1,
+    "anlik_gerekli": 1,
+    "haiku_dogru": 0
+   },
+   {
+    "id": "A12",
+    "answer": "\"İşletim Sistemleri I\" dersinin B şubesi Salı günü 13:30–18:15 saatleri arasında yapılmaktadır. Bu hesaplama anlık olarak üretilmiş olup doğrulanmamıştır.\n\nTranskriptinizdeki 2026 Güz dönemi dersleri ile yapılan çakışma kontrolünde:\n*   Eğer **Mikroişlemciler** dersini **A şubesinden** alıyorsanız, bu ders ile **gerçek bir çakışma** yaşamaktasınız.\n*   Mikroişlemciler dersini **B şubesinden** alıyorsanız, İşletim Sistemleri I (B şubesi) ile bir çakışma görünmemektedir.\n\nDiğer dersleriniz (Algoritma Analizi, Bilgisayar Mimarisi I, Diferansiyel Denklemler, Makine Öğrenmesine Giriş) ile Salı günü için bir çakışma tespit edilmemiştir.\n\nDers seçimi ve çakışma durumları ile ilgili kesin bilgi ve onay için lütfen danışman hocanızla görüşünüz.",
+    "tool_calls": [
+     {
+      "name": "get_course_schedule",
+      "args": {
+       "dersler": [
+        "İşletim Sistemleri I"
+       ]
+      }
+     },
+     {
+      "name": "get_course_schedule",
+      "args": {
+       "gun": "perşembe"
+      }
+     },
+     {
+      "name": "request_new_tool",
+      "args": {
+       "transkript_gerekli": true,
+       "gorev": "\"İşletim Sistemleri I\" dersinin B şubesinin gün ve saatini bul, ardından bu dersin çakıştığı başka bir ders olup olmadığını kontrol et."
+      }
+     }
+    ],
+    "turns": 4,
+    "agent_ms": 125770.9,
+    "tokens": {
+     "input": 10984,
+     "output": 353,
+     "reasoning": 0
+    },
+    "anlik_tool": [
+     {
+      "gorev": "\"İşletim Sistemleri I\" dersinin B şubesinin gün ve saatini bul, ardından bu dersin çakıştığı başka bir ders olup olmadığını kontrol et.",
+      "transkript": true,
+      "haiku_cevabi": "**Sonuç:** \"İşletim Sistemleri I\" dersinin B şubesi **Salı günü 13:30–18:15** arasında, derslik 326'da işleniyor (13:30-14:15, 14:30-15:15, 15:30-16:15, 16:30-17:15, 17:30-18:15). Bu şube, programdaki başka bir derslle çakışıyor.\n\n**Çakışma kontrolü:** Ders programındaki tüm Salı kayıtları, zaman aralıkları kesişiyorsa çakışma sayıldı. Sonuçta B şubesi şu derslerle çakışıyor:\n- Kimya B (1. sınıf)\n- Nesne Tabanlı Programlama B (2. sınıf)\n- Mikroişlemciler A (3. sınıf), 13:30–15:30 ve 16:30–18:15\n- Bitirme Projesi I B (4. sınıf)\n- Makine Öğrenmesine Giriş (Seç V), yalnızca B şubesi Salı 13:30–15:30 görünüyor. Bu kayıt Salı için değil, aşağıdaki kontrolde ayrıca değerlendirildi.\n\n**Öğrenciye özel değerlendirme:** Transkriptte 2026 Güz döneminde (notu henüz boş) alınmış görünen dersler var. Bu dersleri ve programdaki şubelerini kontrol ettim:\n- **Mikroişlemciler (A şubesi, Salı 13:30–15:30 ve 16:30–18:15):** Öğrenci bu şubedeyse İşletim Sistemleri I B ile **gerçek çakışma** var. Aynı dersin B şubesi (Perşembe) ile çakışma yok.\n- **Makine Öğrenmesine Giriş:** A şubesi Çarşamba, B şubesi Cuma. Salı ile çakışma yok.\n- **Algoritma Analizi** (Pazartesi), **Bilgisayar Mimarisi I** (Perşembe A / Salı yok, B Perşembe), **Diferansiyel Denklemler** (Çarşamba): Salı ile çakışma yok.\n- Kimya (2024), Nesne Tabanlı Programlama (2025) geçmiş dönem derslerinde alınmış, bu nedenle güncel çakışma değil. Bitirme Projesi I ise 4. sınıf dersi olduğu için bu öğrencinin programında yer almıyor.\n\n**Varsayımlar:**\n1. Görev, \"İşletim Sistemleri I\" dersinin B şubesine göre yapıldı. Transkriptte öğrencinin hangi şubede olduğu yazmıyor; B şubesinin alındığı varsayıldı.\n2. Çakışma, programdaki tüm kayıtlarla kontrol edildi. Öğrencinin gerçek kaydı değerlendirmeye alınmadı. Yalnızca transkriptteki 2026 Güz dersleri \"güncel\" kabul edildi, bu da transkriptin o dönemki kayıtları gösterdiği varsayımına dayanıyor.\n3. Mikroişlemciler'in şubesi transkriptte belirtilmediği için iki durum ayrı ayrı yazıldı. A şubesinde çakışma var, B şubesinde yok.\n4. Tatil kayıtları (28 Ekim 2026 Çarşamba, 13.00'ten sonra) Salı gününü etkilemediği için hesaba katılmadı.",
+      "adimlar": [
+       {
+        "tip": "kod",
+        "kod": "cat > /tmp/cakisma.py << 'EOF'\nimport json, os\n\ninp = os.environ[\"INPUT_DIR\"]\nwith open(os.path.join(inp, \"ders_programi.json\"), encoding=\"utf-8\") as f:\n    prog = json.load(f)\n\nHEDEF_AD = \"İşletim Sistemleri I\"\nHEDEF_SUBE = \"B\"\n\ndef to_min(hhmm):\n    h, m = hhmm.strip().split(\":\")\n    return int(h) * 60 + int(m)\n\ndef aralik(s):\n    a, b = s.split(\"-\")\n    return to_min(a), to_min(b)\n\ndersler = prog[\"dersler\"]\n\n# Hedef dersin B şubesi (ad eşleşmesi; büyük/küçük harf ve boşluk toleranslı)\nnorm = lambda s: \" \".join(str(s).split()).casefold()\nhedefler = [d for d in dersler\n            if norm(d.get(\"ders\", \"\")) == norm(HEDEF_AD)\n            and str(d.get(\"sube\", \"\")).strip().upper() == HEDEF_SUBE]\n\nprint(\"=== Hedef ders (B şubesi) kayıtları ===\")\nfor d in hedefler:\n    print(json.dumps(d, ensure_ascii=False))\n\nif not hedefler:\n    print(\"HATA: B şubesi bulunamadı.\")\n    raise SystemExit(1)\n\n# Aynı adlı dersin tüm şubeleri (bilgi amaçlı)\nprint(\"\\n=== '%s' dersinin tüm şubeleri ===\" % HEDEF_AD)\nfor d in dersler:\n    if norm(d.get(\"ders\", \"\")) == norm(HEDEF_AD):\n        print(d.get(\"sube\"), d.get(\"gun\"), d.get(\"saatler\"), d.get(\"derslik\"))\n\nprint(\"\\n=== Çakışma kontrolü ===\")\nbulunan = []\nfor h in hedefler:\n    hg = h[\"gun\"]\n    hs = [aralik(s) for s in h[\"saatler\"]]\n    for d in dersler:\n        if d is h or d.get(\"gun\") != hg:\n            continue\n        # Aynı kayıt değilse (kod+şube+gün) karşılaştır\n        if d.get(\"kod\") == h.get(\"kod\") and d.get(\"sube\") == h.get(\"sube\"):\n            continue\n        for s in d.get(\"saatler\", []):\n            a, b = aralik(s)\n            for x, y in hs:\n                if a < y and x < b:  # zaman aralıkları kesişiyor\n                    bulunan.append((h, d, s))\n                    break\n\nif not bulunan:\n    print(\"Çakışan ders bulunmadı.\")\nelse:\n    for h, d, s in bulunan:\n        print(\"ÇAKIŞMA: %s (%s şubesi, %s, %s) <-> %s (%s şubesi, %s, %s) [%s]\" % (\n            h[\"ders\"], h[\"sube\"], h[\"gun\"], h[\"saatler\"],\n            d[\"ders\"], d.get(\"sube\"), d[\"gun\"], d.get(\"saatler\"), s))\nEOF\nINPUT_DIR=\"$INPUT_DIR\" python3 /tmp/cakisma.py",
+        "cikti": "=== Hedef ders (B şubesi) kayıtları ===\n{\"gun\": \"Salı\", \"sinif\": 3, \"ders\": \"İşletim Sistemleri I\", \"kod\": \"1906003052015\", \"sube\": \"B\", \"yuva\": null, \"derslik\": \"326\", \"saatler\": [\"13:30-14:15\", \"14:30-15:15\", \"15:30-16:15\", \"16:30-17:15\", \"17:30-18:15\"]}\n\n=== 'İşletim Sistemleri I' dersinin tüm şubeleri ===\nA Salı ['08:30-09:15', '09:30-10:15', '10:30-11:15', '11:30-12:15', '12:30-13:15'] 326\nB Salı ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15'] 326\n\n=== Çakışma kontrolü ===\nÇAKIŞMA: İşletim Sistemleri I (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']) <-> Kimya (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']) [13:30-14:15]\nÇAKIŞMA: İşletim Sistemleri I (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']) <-> Kimya (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']) [14:30-15:15]\nÇAKIŞMA: İşletim Sistemleri I (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']) <-> Kimya (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']) [15:30-16:15]\nÇAKIŞMA: İşletim Sistemleri I (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']) <-> Kimya (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']) [16:30-17:15]\nÇAKIŞMA: İşletim Sistemleri I (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']) <-> Kimya (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']) [17:30-18:15]\nÇAKIŞMA: İşletim Sistemleri I (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']) <-> Nesne Tabanlı Programlama (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']) [13:30-14:15]\nÇAKIŞMA: İşletim Sistemleri I (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']) <-> Nesne Tabanlı Programlama (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']) [14:30-15:15]\nÇAKIŞMA: İşletim Sistemleri I (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']) <-> Nesne Tabanlı Programlama (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']) [15:30-16:15]\nÇAKIŞMA: İşletim Sistemleri I (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']) <-> Nesne Tabanlı Programlama (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']) [16:30-17:15]\nÇAKIŞMA: İşletim Sistemleri I (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']) <-> Nesne Tabanlı Programlama (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']) [17:30-18:15]\nÇAKIŞMA: İşletim Sistemleri I (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']) <-> Mikroişlemciler (A şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15']) [13:30-14:15]\nÇAKIŞMA: İşletim Sistemleri I (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']) <-> Mikroişlemciler (A şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15']) [14:30-15:15]\nÇAKIŞMA: İşletim Sistemleri I (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']) <-> Mikroişlemciler (A şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15']) [15:30-16:15]\nÇAKIŞMA: İşletim Sistemleri I (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']) <-> Bitirme Projesi I (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15']) [13:30-14:15]\nÇAKIŞMA: İşletim Sistemleri I (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']) <-> Bitirme Projesi I (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15']) [14:30-15:15]\nÇAKIŞMA: İşletim Sistemleri I (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']) <-> Bitirme Projesi I (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15']) [15:30-16:15]\nÇAKIŞMA: İşletim Sistemleri I (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']) <-> Bitirme Projesi I (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15']) [16:30-17:15]\nÇAKIŞMA: İşletim Sistemleri I (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']) <-> Mikroişlemciler (A şubesi, Salı, ['16:30-17:15', '17:30-18:15']) [16:30-17:15]\nÇAKIŞMA: İşletim Sistemleri I (B şubesi, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']) <-> Mikroişlemciler (A şubesi, Salı, ['16:30-17:15', '17:30-18:15']) [17:30-18:15]\n"
+       },
+       {
+        "tip": "kod",
+        "kod": "cd /tmp && python3 -c \"\nimport json,os\np=json.load(open(os.path.join(os.environ['INPUT_DIR'],'ders_programi.json'),encoding='utf-8'))\nfor d in p['dersler']:\n    if d['gun']=='Salı' and d['sube'] in ('A','B') or d.get('yuva'):\n        print(d['sinif'],d['ders'],d['kod'],d['sube'],d['yuva'],d['derslik'],d['saatler'])\n\" | sort; cd /tmp && python3 -c \"\nimport json,os\nt=json.load(open(os.path.join(os.environ['INPUT_DIR'],'transkript.json'),encoding='utf-8'))\nprint([ (d['yil'],d['donem'],d['ad']) for d in t['dersler'] if 'Kimya' in d['ad'] or 'Nesne' in d['ad'] or 'Mikro' in d['ad'] or 'Bitirme' in d['ad']])\n\"",
+        "cikti": "1 Kimya 1906001052015 A None 327 ['08:30-09:15', '09:30-10:15', '10:30-11:15', '11:30-12:15', '12:30-13:15']\n1 Kimya 1906001052015 B None 227 ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']\n2 Kablosuz Algılayıcı Ağlar 1906002172023 None Seç III 326 ['12:30-13:15', '13:30-14:15', '14:30-15:15']\n2 Mühendislik Ekonomisi 1906002152015 None Seç III 326 ['09:30-10:15', '10:30-11:15', '11:30-12:15']\n2 Nesne Tabanlı Programlama 1906002012015 A None B.L. ['08:30-09:15', '09:30-10:15', '10:30-11:15', '11:30-12:15', '12:30-13:15']\n2 Nesne Tabanlı Programlama 1906002012015 B None B.L. ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']\n2 Programlama Dilleri Temelleri 1906002132015 None Seç III B.L. ['15:30-16:15', '16:30-17:15', '17:30-18:15']\n2 Web Programlama 1906002192023 None Seç III A.L. ['15:30-16:15', '16:30-17:15', '17:30-18:15']\n3 Doğal Dil İşleme 1906003132015 None Seç V 327 ['12:30-13:15']\n3 Doğal Dil İşleme 1906003132015 None Seç V B.L. ['10:30-11:15', '11:30-12:15']\n3 Makine Öğrenmesine Giriş 1906003212026 A Seç V 227 ['13:30-14:15', '14:30-15:15', '15:30-16:15']\n3 Makine Öğrenmesine Giriş 1906003212026 B Seç V 326 ['13:30-14:15', '14:30-15:15', '15:30-16:15']\n3 Mikroişlemciler 1906003012015 A None 327 ['13:30-14:15', '14:30-15:15', '15:30-16:15']\n3 Mikroişlemciler 1906003012015 A None D.L. ['16:30-17:15', '17:30-18:15']\n3 Paralel Hesaplama 1906003152015 None Seç V A.L. ['09:30-10:15', '10:30-11:15', '11:30-12:15']\n3 Veri Yönetişimi 1906003192025 None Seç V U.E. ['09:30-10:15', '10:30-11:15', '11:30-12:15']\n3 İşletim Sistemleri I 1906003052015 A None 326 ['08:30-09:15', '09:30-10:15', '10:30-11:15', '11:30-12:15', '12:30-13:15']\n3 İşletim Sistemleri I 1906003052015 B None 326 ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']\n4 Bilişim Hukuku 1906004232018 None Seç VII 326 ['12:30-13:15', '13:30-14:15', '14:30-15:15']\n4 Bitirme Projesi I 1906004012015 B None  ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15']\n4 Nesnelerin İnterneti 1906004252018 None Seç VII 227 ['09:30-10:15', '10:30-11:15', '11:30-12:15']\n4 Sensor Ağları 1906004212018 None Seç VII 326 ['15:30-16:15', '16:30-17:15', '17:30-18:15']\n4 Veri Madenciliği 1906004132015 None Seç VII  ['15:30-16:15', '16:30-17:15', '17:30-18:15']\n4 Yapay Sinir Ağları 1906004172015 None Seç VII  ['12:30-13:15', '13:30-14:15', '14:30-15:15']\n4 Yapay Zeka 1906004112015 None Seç VII 327 ['15:30-16:15', '16:30-17:15', '17:30-18:15']\n4 İleri Veri Tabanı Yönetim Sistemleri 1906004052015 None Seç VII  ['09:30-10:15', '10:30-11:15', '11:30-12:15']\n[(2024, 'Güz', 'Kimya'), (2025, 'Güz', 'Nesne Tabanlı Programlama'), (2026, 'Güz', 'Mikroişlemciler')]\n"
+       },
+       {
+        "tip": "kod",
+        "kod": "cd /tmp && python3 -c \"\nimport json,os\nt=json.load(open(os.path.join(os.environ['INPUT_DIR'],'transkript.json'),encoding='utf-8'))\nfor d in t['dersler']:\n    if d['yil']>=2026: print(d)\n\"",
+        "cikti": "{'yil': 2026, 'donem': 'Güz', 'kod': '1906003012015', 'ad': 'Mikroişlemciler', 'kredi': 4, 'akts': 5, 'not': None, 'erasmus': False}\n{'yil': 2026, 'donem': 'Güz', 'kod': '1906003032015', 'ad': 'Algoritma Analizi', 'kredi': 4, 'akts': 6, 'not': None, 'erasmus': False}\n{'yil': 2026, 'donem': 'Güz', 'kod': '1906003052015', 'ad': 'İşletim Sistemleri I', 'kredi': 4, 'akts': 5, 'not': None, 'erasmus': False}\n{'yil': 2026, 'donem': 'Güz', 'kod': '1906003072015', 'ad': 'Bilgisayar Mimarisi I', 'kredi': 3, 'akts': 5, 'not': None, 'erasmus': False}\n{'yil': 2026, 'donem': 'Güz', 'kod': '1906003092015', 'ad': 'Staj I', 'kredi': 0, 'akts': 5, 'not': None, 'erasmus': False}\n{'yil': 2026, 'donem': 'Güz', 'kod': '1906003212026', 'ad': 'Makine Öğrenmesine Giriş', 'kredi': 3, 'akts': 4, 'not': None, 'erasmus': False}\n{'yil': 2026, 'donem': 'Güz', 'kod': '1906002092015', 'ad': 'Diferansiyel Denklemler', 'kredi': 4, 'akts': 5, 'not': None, 'erasmus': False}\n"
+       },
+       {
+        "tip": "kod",
+        "kod": "cd /tmp && python3 -c \"\nimport json,os\np=json.load(open(os.path.join(os.environ['INPUT_DIR'],'ders_programi.json'),encoding='utf-8'))\nkod={'1906003012015','1906003032015','1906003052015','1906003072015','1906003092015','1906003212026','1906002092015'}\nfor d in p['dersler']:\n    if d['kod'] in kod: print(d['ders'],d['sube'],d['gun'],d['derslik'],d['saatler'])\n\" | sort",
+        "cikti": "Algoritma Analizi A Pazartesi 327 ['08:30-09:15', '09:30-10:15', '10:30-11:15']\nAlgoritma Analizi A Pazartesi B.L. ['11:30-12:15', '12:30-13:15']\nAlgoritma Analizi B Pazartesi 327 ['13:30-14:15', '14:30-15:15', '15:30-16:15']\nAlgoritma Analizi B Pazartesi B.L. ['16:30-17:15', '17:30-18:15']\nBilgisayar Mimarisi I A Perşembe 327 ['13:30-14:15', '14:30-15:15', '15:30-16:15']\nBilgisayar Mimarisi I B Perşembe 326 ['09:30-10:15', '10:30-11:15', '11:30-12:15']\nDiferansiyel Denklemler None Çarşamba 326 ['08:30-09:15', '09:30-10:15', '10:30-11:15', '11:30-12:15']\nMakine Öğrenmesine Giriş A Çarşamba 227 ['13:30-14:15', '14:30-15:15', '15:30-16:15']\nMakine Öğrenmesine Giriş B Cuma 326 ['13:30-14:15', '14:30-15:15', '15:30-16:15']\nMikroişlemciler A Salı 327 ['13:30-14:15', '14:30-15:15', '15:30-16:15']\nMikroişlemciler A Salı D.L. ['16:30-17:15', '17:30-18:15']\nMikroişlemciler B Perşembe 227 ['13:30-14:15', '14:30-15:15', '15:30-16:15']\nMikroişlemciler B Perşembe D.L. ['16:30-17:15', '17:30-18:15']\nİşletim Sistemleri I A Salı 326 ['08:30-09:15', '09:30-10:15', '10:30-11:15', '11:30-12:15', '12:30-13:15']\nİşletim Sistemleri I B Salı 326 ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15']\n"
+       },
+       {
+        "tip": "metin",
+        "metin": "**Sonuç:** \"İşletim Sistemleri I\" dersinin B şubesi **Salı günü 13:30–18:15** arasında, derslik 326'da işleniyor (13:30-14:15, 14:30-15:15, 15:30-16:15, 16:30-17:15, 17:30-18:15). Bu şube, programdaki başka bir derslle çakışıyor.\n\n**Çakışma kontrolü:** Ders programındaki tüm Salı kayıtları, zaman aralıkları kesişiyorsa çakışma sayıldı. Sonuçta B şubesi şu derslerle çakışıyor:\n- Kimya B (1. sınıf)\n- Nesne Tabanlı Programlama B (2. sınıf)\n- Mikroişlemciler A (3. sınıf), 13:30–15:30 ve 16:30–18:15\n- Bitirme Projesi I B (4. sınıf)\n- Makine Öğrenmesine Giriş (Seç V), yalnızca B şubesi Salı 13:30–15:30 görünüyor. Bu kayıt Salı için değil, aşağıdaki kontrolde ayrıca değerlendirildi.\n\n**Öğrenciye özel değerlendirme:** Transkriptte 2026 Güz döneminde (notu henüz boş) alınmış görünen dersler var. Bu dersleri ve programdaki şubelerini kontrol ettim:\n- **Mikroişlemciler (A şubesi, Salı 13:30–15:30 ve 16:30–18:15):** Öğrenci bu şubedeyse İşletim Sistemleri I B ile **gerçek çakışma** var. Aynı dersin B şubesi (Perşembe) ile çakışma yok.\n- **Makine Öğrenmesine Giriş:** A şubesi Çarşamba, B şubesi Cuma. Salı ile çakışma yok.\n- **Algoritma Analizi** (Pazartesi), **Bilgisayar Mimarisi I** (Perşembe A / Salı yok, B Perşembe), **Diferansiyel Denklemler** (Çarşamba): Salı ile çakışma yok.\n- Kimya (2024), Nesne Tabanlı Programlama (2025) geçmiş dönem derslerinde alınmış, bu nedenle güncel çakışma değil. Bitirme Projesi I ise 4. sınıf dersi olduğu için bu öğrencinin programında yer almıyor.\n\n**Varsayımlar:**\n1. Görev, \"İşletim Sistemleri I\" dersinin B şubesine göre yapıldı. Transkriptte öğrencinin hangi şubede olduğu yazmıyor; B şubesinin alındığı varsayıldı.\n2. Çakışma, programdaki tüm kayıtlarla kontrol edildi. Öğrencinin gerçek kaydı değerlendirmeye alınmadı. Yalnızca transkriptteki 2026 Güz dersleri \"güncel\" kabul edildi, bu da transkriptin o dönemki kayıtları gösterdiği varsayımına dayanıyor.\n3. Mikroişlemciler'in şubesi transkriptte belirtilmediği için iki durum ayrı ayrı yazıldı. A şubesinde çakışma var, B şubesinde yok.\n4. Tatil kayıtları (28 Ekim 2026 Çarşamba, 13.00'ten sonra) Salı gününü etkilemediği için hesaba katılmadı."
+       }
+      ],
+      "istek_sayisi": 1,
+      "sure_ms": 32443,
+      "tokens": {
+       "input": 54306,
+       "output": 5299
+      },
+      "bitis": "end_turn"
+     }
+    ],
+    "answer_ok": 1,
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [
+     "get_course_schedule"
+    ],
+    "anlik_dogru": 1,
+    "anlik_gerekli": 1,
+    "haiku_dogru": 1
+   },
+   {
+    "id": "A13",
+    "answer": "Transkriptteki 2026-2027 Güz dönemi derslerine göre haftalık toplam ders saatiniz 27'dir (45 dakikalık bloklar halinde).\n\nBu hesaplama anlık üretilmiştir ve doğrulanmamıştır. Ders saati tanımı kurumun yönetmeliğine göre farklılık gösterebilir. Ayrıca, şube seçimi gibi değişkenler nedeniyle ders programınızdaki kesin saatler farklılık gösterebilir. Kesin bilgi için ders programınızı UBYS üzerinden kontrol etmeniz önerilir.",
+    "tool_calls": [
+     {
+      "name": "request_new_tool",
+      "args": {
+       "gorev": "Transkriptteki bu dönemin dersleri için haftalık toplam ders saati nedir?",
+       "transkript_gerekli": true
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 51653.6,
+    "tokens": {
+     "input": 5451,
+     "output": 157,
+     "reasoning": 0
+    },
+    "anlik_tool": [
+     {
+      "gorev": "Transkriptteki bu dönemin dersleri için haftalık toplam ders saati nedir?",
+      "transkript": true,
+      "haiku_cevabi": "Betik iki şubeli dersleri (Giriş, Kimya) çift saydı: 34 çıktı. Her ders için tek şube seçmek gerekiyor. Düzeltip yeniden çalıştırıyorum.\n**Sonuç: Transkriptteki 2026-2027 Güz dönemi derslerinin haftalık toplam ders saati 27'dir** (45 dakikalık blok olarak).\n\n**Nasıl hesaplandı:**\n- Transkriptteki 2026 Güz kayıtları (9 ders) alındı ve `kod` alanıyla `ders_programi.json` içindeki dersler eşleştirildi.\n- Her dersin haftalık blok sayısı, `saatler` listesinin uzunluğu olarak alındı.\n\n| Ders | Haftalık saat |\n|---|---|\n| Bilgisayar Mühendisliğine Giriş | 2 |\n| Fizik I | 5 |\n| Kimya | 5 |\n| Matematik I | 5 |\n| Atatürk İlkeleri ve İnkılap Tarihi I | 2 |\n| Türk Dili I | 2 |\n| Yabancı Dil I | 2 |\n| Kariyer Planlama | 1 |\n| Mühendislik Etiği | 3 |\n| **Toplam** | **27** |\n\n**Varsayımlar:**\n- **Şube seçimi:** Bilgisayar Mühendisliğine Giriş (A/B) ve Kimya (A/B) iki şubeli. Öğrencinin hangi şubede olduğu dosyada yok. İki şubenin saat sayısı aynı olduğu için toplam bu seçimden etkilenmiyor. İlk betik iki şubeyi birlikte saydığı için 34 vermişti. Bu hatayı düzelttim ve doğru sonuç 27.\n- **Ders saati birimi:** Programdaki her `saatler` girdisi 45 dakikalık bir blok olarak sayıldı. Ders saati tanımı kurumun yönetmeliğine göre farklılık gösterebilir; dosyada bu tanım yok.\n- **Seçmeli yuva:** Transkriptteki dersler için yuva (seçmeli) eşleşmesi bulunmadı. Hepsi zorunlu ders olarak değerlendirildi.\n- **Kapsam:** Hesap yalnızca transkriptteki 2026 Güz dönemi kayıtlarını kapsıyor. Akademik takvimdeki tatiller (örneğin 28 Ekim öğleden sonra) haftalık saat sayısını değiştirmez, dönem toplamını etkiler.",
+      "adimlar": [
+       {
+        "tip": "kod",
+        "kod": "cd \"$INPUT_DIR\" && python3 -c \"\nimport json\nt=json.load(open('transkript.json',encoding='utf-8'))\np=json.load(open('ders_programi.json',encoding='utf-8'))\nprint('TRANSKRIPT DERSLER:')\nfor d in t['dersler']: print(d)\nprint()\nprint('PROGRAM DERSLER (ilk 3):')\nfor d in p['dersler'][:3]: print(d)\nprint('keys prog:', list(p.keys()))\n\"",
+        "cikti": "TRANSKRIPT DERSLER:\n{'yil': 2026, 'donem': 'Güz', 'kod': '1906001012015', 'ad': 'Bilgisayar Mühendisliğine Giriş', 'kredi': 2, 'akts': 2, 'not': None, 'erasmus': False}\n{'yil': 2026, 'donem': 'Güz', 'kod': '1906001032015', 'ad': 'Fizik I', 'kredi': 4, 'akts': 6, 'not': None, 'erasmus': False}\n{'yil': 2026, 'donem': 'Güz', 'kod': '1906001052015', 'ad': 'Kimya', 'kredi': 4, 'akts': 6, 'not': None, 'erasmus': False}\n{'yil': 2026, 'donem': 'Güz', 'kod': '1906001072015', 'ad': 'Matematik I', 'kredi': 4, 'akts': 6, 'not': None, 'erasmus': False}\n{'yil': 2026, 'donem': 'Güz', 'kod': '1906001092015', 'ad': 'Atatürk İlkeleri ve Inkilap Tarihi I', 'kredi': 2, 'akts': 2, 'not': None, 'erasmus': False}\n{'yil': 2026, 'donem': 'Güz', 'kod': '1906001112015', 'ad': 'Türk Dili I', 'kredi': 2, 'akts': 2, 'not': None, 'erasmus': False}\n{'yil': 2026, 'donem': 'Güz', 'kod': '1906001132015', 'ad': 'Yabancı Dil I', 'kredi': 2, 'akts': 2, 'not': None, 'erasmus': False}\n{'yil': 2026, 'donem': 'Güz', 'kod': '1906001172019', 'ad': 'Kariyer Planlama', 'kredi': 1, 'akts': 2, 'not': None, 'erasmus': False}\n{'yil': 2026, 'donem': 'Güz', 'kod': '1906001152016', 'ad': 'Mühendislik Etiği', 'kredi': 3, 'akts': 4, 'not': None, 'erasmus': False}\n\nPROGRAM DERSLER (ilk 3):\n{'gun': 'Pazartesi', 'sinif': 1, 'ders': 'Bilgisayar Mühendisliğine Giriş', 'kod': '1906001012015', 'sube': 'A', 'yuva': None, 'derslik': 'B.L.', 'saatler': ['08:30-09:15', '09:30-10:15']}\n{'gun': 'Pazartesi', 'sinif': 3, 'ders': 'Algoritma Analizi', 'kod': '1906003032015', 'sube': 'A', 'yuva': None, 'derslik': '327', 'saatler': ['08:30-09:15', '09:30-10:15', '10:30-11:15']}\n{'gun': 'Pazartesi', 'sinif': 4, 'ders': 'Bitirme Projesi I', 'kod': '1906004012015', 'sube': 'A', 'yuva': None, 'derslik': '', 'saatler': ['08:30-09:15', '09:30-10:15', '10:30-11:15', '11:30-12:15']}\nkeys prog: ['kaynak', 'donem', 'ders_baslangic', 'ders_bitis', 'takvim_kaynak', 'tatiller', 'derslikler', 'dersler']\n"
+       },
+       {
+        "tip": "kod",
+        "kod": "cd \"$INPUT_DIR\" && cat > /tmp/haftalik.py << 'EOF'\nimport json, collections\nt = json.load(open('transkript.json', encoding='utf-8'))\np = json.load(open('ders_programi.json', encoding='utf-8'))\n\ndonem_dersleri = [d for d in t['dersler'] if d['yil'] == 2026 and d['donem'] == 'Güz']\nkodlar = {d['kod'] for d in donem_dersleri}\n\neslesen = [d for d in p['dersler'] if d['kod'] in kodlar]\nprint(\"Transkriptteki dönem dersi sayısı:\", len(donem_dersleri))\nprint(\"Programda eşleşen kayıt sayısı (kod+şube):\", len(eslesen))\nprint()\n\ntoplam = 0\nper_kod = collections.defaultdict(list)\nfor d in eslesen:\n    per_kod[d['kod']].append(d)\n\nfor d in donem_dersleri:\n    kayitlar = per_kod.get(d['kod'], [])\n    if not kayitlar:\n        print(f\"{d['ad']} ({d['kod']}): programda yok -> 0 saat\")\n        continue\n    for k in kayitlar:\n        s = len(k['saatler'])\n        toplam += s\n        print(f\"{d['ad']} ({d['kod']}) şube {k['sube']}, {k['gun']}, {k['saatler']} -> {s} saat\")\n    if len(kayitlar) > 1:\n        print(\"   ^ UYARI: birden fazla şube/kayıt var\")\n\nprint()\nprint(\"Yuva (seçmeli) kayıtları eşleşen:\", [d['ad'] for d in eslesen if d.get('yuva')])\nprint(\"Haftalık toplam ders saati (blok sayısı):\", toplam)\nEOF\npython3 /tmp/haftalik.py",
+        "cikti": "Transkriptteki dönem dersi sayısı: 9\nProgramda eşleşen kayıt sayısı (kod+şube): 11\n\nBilgisayar Mühendisliğine Giriş (1906001012015) şube A, Pazartesi, ['08:30-09:15', '09:30-10:15'] -> 2 saat\nBilgisayar Mühendisliğine Giriş (1906001012015) şube B, Çarşamba, ['08:30-09:15', '09:30-10:15'] -> 2 saat\n   ^ UYARI: birden fazla şube/kayıt var\nFizik I (1906001032015) şube None, Perşembe, ['08:30-09:15', '09:30-10:15', '10:30-11:15', '11:30-12:15', '12:30-13:15'] -> 5 saat\nKimya (1906001052015) şube A, Salı, ['08:30-09:15', '09:30-10:15', '10:30-11:15', '11:30-12:15', '12:30-13:15'] -> 5 saat\nKimya (1906001052015) şube B, Salı, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15'] -> 5 saat\n   ^ UYARI: birden fazla şube/kayıt var\nMatematik I (1906001072015) şube None, Pazartesi, ['13:30-14:15', '14:30-15:15', '15:30-16:15', '16:30-17:15', '17:30-18:15'] -> 5 saat\nAtatürk İlkeleri ve Inkilap Tarihi I (1906001092015) şube None, Çarşamba, ['12:30-13:15', '13:30-14:15'] -> 2 saat\nTürk Dili I (1906001112015) şube None, Perşembe, ['13:30-14:15', '14:30-15:15'] -> 2 saat\nYabancı Dil I (1906001132015) şube None, Cuma, ['08:30-09:15', '09:30-10:15'] -> 2 saat\nKariyer Planlama (1906001172019) şube None, Çarşamba, ['11:30-12:15'] -> 1 saat\nMühendislik Etiği (1906001152016) şube None, Çarşamba, ['14:30-15:15', '15:30-16:15', '16:30-17:15'] -> 3 saat\n\nYuva (seçmeli) kayıtları eşleşen: []\nHaftalık toplam ders saati (blok sayısı): 34\n"
+       },
+       {
+        "tip": "metin",
+        "metin": "Betik iki şubeli dersleri (Giriş, Kimya) çift saydı: 34 çıktı. Her ders için tek şube seçmek gerekiyor. Düzeltip yeniden çalıştırıyorum."
+       },
+       {
+        "tip": "kod",
+        "kod": "cd \"$INPUT_DIR\" && cat > /tmp/haftalik.py << 'EOF'\nimport json, collections\nt = json.load(open('transkript.json', encoding='utf-8'))\np = json.load(open('ders_programi.json', encoding='utf-8'))\n\ndonem_dersleri = [d for d in t['dersler'] if d['yil'] == 2026 and d['donem'] == 'Güz']\nper_kod = collections.defaultdict(list)\nfor d in p['dersler']:\n    per_kod[d['kod']].append(d)\n\ntoplam = 0\nfor d in donem_dersleri:\n    kayitlar = per_kod.get(d['kod'], [])\n    if not kayitlar:\n        print(f\"{d['ad']}: programda yok -> 0 saat\"); continue\n    # Her ders için tek şube: aynı kod birden fazla şubedeyse, saat sayıları eşit mi kontrol et\n    sure = {len(k['saatler']) for k in kayitlar}\n    secilen = kayitlar[0]  # şube belirsiz; saat sayıları aynıysa sonuç değişmez\n    s = len(secilen['saatler'])\n    toplam += s\n    not_ = f\" [şubeler: {', '.join(str(k['sube']) for k in kayitlar)}; saat sayıları {sorted(sure)}]\" if len(kayitlar) > 1 else \"\"\n    print(f\"{d['ad']} ({d['kod']}): {s} saat{not_}\")\n\nprint()\nprint(\"Dönem ders sayısı:\", len(donem_dersleri))\nprint(\"Haftalık toplam ders saati (45 dk blok):\", toplam)\nEOF\npython3 /tmp/haftalik.py",
+        "cikti": "Bilgisayar Mühendisliğine Giriş (1906001012015): 2 saat [şubeler: A, B; saat sayıları [2]]\nFizik I (1906001032015): 5 saat\nKimya (1906001052015): 5 saat [şubeler: A, B; saat sayıları [5]]\nMatematik I (1906001072015): 5 saat\nAtatürk İlkeleri ve Inkilap Tarihi I (1906001092015): 2 saat\nTürk Dili I (1906001112015): 2 saat\nYabancı Dil I (1906001132015): 2 saat\nKariyer Planlama (1906001172019): 1 saat\nMühendislik Etiği (1906001152016): 3 saat\n\nDönem ders sayısı: 9\nHaftalık toplam ders saati (45 dk blok): 27\n"
+       },
+       {
+        "tip": "metin",
+        "metin": "**Sonuç: Transkriptteki 2026-2027 Güz dönemi derslerinin haftalık toplam ders saati 27'dir** (45 dakikalık blok olarak).\n\n**Nasıl hesaplandı:**\n- Transkriptteki 2026 Güz kayıtları (9 ders) alındı ve `kod` alanıyla `ders_programi.json` içindeki dersler eşleştirildi.\n- Her dersin haftalık blok sayısı, `saatler` listesinin uzunluğu olarak alındı.\n\n| Ders | Haftalık saat |\n|---|---|\n| Bilgisayar Mühendisliğine Giriş | 2 |\n| Fizik I | 5 |\n| Kimya | 5 |\n| Matematik I | 5 |\n| Atatürk İlkeleri ve İnkılap Tarihi I | 2 |\n| Türk Dili I | 2 |\n| Yabancı Dil I | 2 |\n| Kariyer Planlama | 1 |\n| Mühendislik Etiği | 3 |\n| **Toplam** | **27** |\n\n**Varsayımlar:**\n- **Şube seçimi:** Bilgisayar Mühendisliğine Giriş (A/B) ve Kimya (A/B) iki şubeli. Öğrencinin hangi şubede olduğu dosyada yok. İki şubenin saat sayısı aynı olduğu için toplam bu seçimden etkilenmiyor. İlk betik iki şubeyi birlikte saydığı için 34 vermişti. Bu hatayı düzelttim ve doğru sonuç 27.\n- **Ders saati birimi:** Programdaki her `saatler` girdisi 45 dakikalık bir blok olarak sayıldı. Ders saati tanımı kurumun yönetmeliğine göre farklılık gösterebilir; dosyada bu tanım yok.\n- **Seçmeli yuva:** Transkriptteki dersler için yuva (seçmeli) eşleşmesi bulunmadı. Hepsi zorunlu ders olarak değerlendirildi.\n- **Kapsam:** Hesap yalnızca transkriptteki 2026 Güz dönemi kayıtlarını kapsıyor. Akademik takvimdeki tatiller (örneğin 28 Ekim öğleden sonra) haftalık saat sayısını değiştirmez, dönem toplamını etkiler."
+       }
+      ],
+      "istek_sayisi": 1,
+      "sure_ms": 22367,
+      "tokens": {
+       "input": 29466,
+       "output": 3362
+      },
+      "bitis": "end_turn"
+     }
+    ],
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gerekli": 1,
+    "haiku_dogru": 1,
+    "hesap_dogru": 1,
+    "sayilar": {
+     "saat": {
+      "beklenen": 27,
+      "cevapta": true
+     }
+    }
+   },
+   {
+    "id": "A14",
+    "answer": "327 numaralı derslikte pazartesi günü gerçekleşen dersler aşağıdadır. Bu veriler anlık olarak üretilmiştir ve doğrulanmamıştır:\n\nDerslik 327'de pazartesi günü **Algoritma Analizi** dersi yapılmaktadır:\n\n| Şube | Saatler | Derslik |\n|---|---|---|\n| A | 08:30–11:15 | 327 |\n| B | 13:30–16:15 | 327 |\n\n*Not: Bu liste haftalık ders programına göre hazırlanmıştır. Resmi tatillerde ders yapılmayabileceğini göz önünde bulundurunuz.*",
+    "tool_calls": [
+     {
+      "name": "request_new_tool",
+      "args": {
+       "gorev": "327 numaralı derslikte pazartesi günü hangi dersler var?",
+       "transkript_gerekli": false
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 49353.7,
+    "tokens": {
+     "input": 5306,
+     "output": 196,
+     "reasoning": 0
+    },
+    "anlik_tool": [
+     {
+      "gorev": "327 numaralı derslikte pazartesi günü hangi dersler var?",
+      "transkript": false,
+      "haiku_cevabi": "Derslik 327'de pazartesi günü **tek ders** var: **Algoritma Analizi** (3. sınıf, kod 1906003032015).\n\nBu dersin iki şubesi aynı derslikte, pazartesi günü yapılıyor:\n\n| Şube | Saatler | Derslik |\n|---|---|---|\n| A | 08:30–09:15, 09:30–10:15, 10:30–11:15 | 327 |\n| B | 13:30–14:15, 14:30–15:15, 15:30–16:15 | 327 |\n\n**Nasıl hesaplandı:** `ders_programi.json` içindeki 55 ders kaydında `derslik` değeri \"327\" olan ve `gun` değeri \"Pazartesi\" olan kayıtlar filtrelendi. Sonuçta 2 kayıt çıktı.\n\n**Varsayımlar:**\n- Soru \"hangi dersler\" diye sorduğu için aynı dersin A ve B şubeleri ayrı kayıt olarak gösterildi, ama tek ders sayıldı.\n- Derslik alanında \"327\" yazan kayıtlar eşleşme olarak alındı. Bu değer derslik kısaltma sözlüğünde (A.L., B.L., D.L.) yer almıyor, yani ek bir derslik adı gibi görünüyor.\n- Liste haftalık ders programına göre hazırlandı. Dönemin tatil günleri (ör. 28 Ekim 2026 öğleden sonra) kontrol edilmedi; bu tarihlerde ders yapılmayabilir.",
+      "adimlar": [
+       {
+        "tip": "kod",
+        "kod": "cd \"$INPUT_DIR\" && python3 - <<'EOF'\nimport json\nwith open(\"ders_programi.json\", encoding=\"utf-8\") as f:\n    p = json.load(f)\ndersler = p[\"dersler\"]\nprint(\"Toplam ders kaydı:\", len(dersler))\nprint(\"Dersliklerin benzersiz değerleri:\", sorted({str(d.get(\"derslik\")) for d in dersler}))\neslesen = [d for d in dersler if \"327\" in str(d.get(\"derslik\",\"\")) and d.get(\"gun\") == \"Pazartesi\"]\nprint(\"327 numaralı derslik + Pazartesi kayıt sayısı:\", len(eslesen))\nfor d in eslesen:\n    print(d)\nEOF",
+        "cikti": "Toplam ders kaydı: 55\nDersliklerin benzersiz değerleri: ['', '123', '227', '326', '327', 'A.L.', 'B.L.', 'D.L.', 'U.E.']\n327 numaralı derslik + Pazartesi kayıt sayısı: 2\n{'gun': 'Pazartesi', 'sinif': 3, 'ders': 'Algoritma Analizi', 'kod': '1906003032015', 'sube': 'A', 'yuva': None, 'derslik': '327', 'saatler': ['08:30-09:15', '09:30-10:15', '10:30-11:15']}\n{'gun': 'Pazartesi', 'sinif': 3, 'ders': 'Algoritma Analizi', 'kod': '1906003032015', 'sube': 'B', 'yuva': None, 'derslik': '327', 'saatler': ['13:30-14:15', '14:30-15:15', '15:30-16:15']}\n"
+       },
+       {
+        "tip": "metin",
+        "metin": "Derslik 327'de pazartesi günü **tek ders** var: **Algoritma Analizi** (3. sınıf, kod 1906003032015).\n\nBu dersin iki şubesi aynı derslikte, pazartesi günü yapılıyor:\n\n| Şube | Saatler | Derslik |\n|---|---|---|\n| A | 08:30–09:15, 09:30–10:15, 10:30–11:15 | 327 |\n| B | 13:30–14:15, 14:30–15:15, 15:30–16:15 | 327 |\n\n**Nasıl hesaplandı:** `ders_programi.json` içindeki 55 ders kaydında `derslik` değeri \"327\" olan ve `gun` değeri \"Pazartesi\" olan kayıtlar filtrelendi. Sonuçta 2 kayıt çıktı.\n\n**Varsayımlar:**\n- Soru \"hangi dersler\" diye sorduğu için aynı dersin A ve B şubeleri ayrı kayıt olarak gösterildi, ama tek ders sayıldı.\n- Derslik alanında \"327\" yazan kayıtlar eşleşme olarak alındı. Bu değer derslik kısaltma sözlüğünde (A.L., B.L., D.L.) yer almıyor, yani ek bir derslik adı gibi görünüyor.\n- Liste haftalık ders programına göre hazırlandı. Dönemin tatil günleri (ör. 28 Ekim 2026 öğleden sonra) kontrol edilmedi; bu tarihlerde ders yapılmayabilir."
+       }
+      ],
+      "istek_sayisi": 1,
+      "sure_ms": 8869,
+      "tokens": {
+       "input": 9958,
+       "output": 1113
+      },
+      "bitis": "end_turn"
+     }
+    ],
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gerekli": 1,
+    "haiku_dogru": 1
+   },
+   {
+    "id": "A15",
+    "answer": "Bu hesaplamayı yapabilmem için transkriptinizdeki güncel not ve AKTS bilgilerine ihtiyacım var. Lütfen UBYS'den indirilen tarihsel transkriptinizi sisteme yükleyin.\n\nTranskriptinizi yükledikten sonra, \"Algoritma Analizi\" dersinin mevcut notunu (eğer varsa) ve diğer tüm derslerinizin notlarını/AKTS değerlerini kullanarak güncel ortalamanızı hesaplayabilirim.",
+    "tool_calls": [],
+    "turns": 1,
+    "agent_ms": 1381.5,
+    "tokens": {
+     "input": 2394,
+     "output": 96,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "G01",
+    "answer": "Transkriptteki öğrencinin genel not ortalaması (GNO) 3,08'dir.",
+    "tool_calls": [
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 1804.1,
+    "tokens": {
+     "input": 6370,
+     "output": 34,
+     "reasoning": 0
+    },
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0,
+    "hesap_dogru": 1,
+    "sayilar": {
+     "gno": {
+      "beklenen": 3.08,
+      "cevapta": true,
+      "aracta": 3.08
+     }
+    },
+    "arac_hesap_dogru": 1
+   },
+   {
+    "id": "G02",
+    "answer": "Şeref listesine girebilmek için iki farklı durum bulunmaktadır:\n\n1.  **Dönem Şeref/Yüksek Şeref Öğrencisi:** En az normal ders yükü ile kayıtlı olduğunuz dönem sonunda, o döneme ait not ortalamanızın 3,00-3,49 arasında olması durumunda \"dönem şeref öğrencisi\", 3,50-4,00 arasında olması durumunda ise \"dönem yüksek şeref öğrencisi\" sayılırsınız [önlisans lisans eğitim öğretim, Madde 31].\n2.  **Mezuniyet Şeref/Yüksek Şeref Listesi:** Lisans öğrenimini genel ağırlıklı not ortalaması 3,00-3,49 arasında tamamlayan öğrenciler \"şeref\", 3,50 veya daha yukarı olan öğrenciler ise \"yüksek şeref\" listesine geçerek mezun olurlar. Bu durum diplomalarında belirtilir [önlisans lisans eğitim öğretim, Madde 35; mezun ogrenci verilecek belgelerin duzenlenmesi yonergesi, Madde 7].\n\nHer iki durumda da başarılı sayılabilmeniz için genel ağırlıklı not ortalamanızın ve ilgili dönem ortalamanızın en az 2,00 olması gerekmektedir [önlisans lisans eğitim öğretim, Madde 31].\n\nMevcut not ortalamanızın şeref listesi için yeterli olup olmadığını öğrenmek isterseniz, transkriptinizi yükleyerek analiz edilmesini talep edebilirsiniz.",
+    "tool_calls": [
+     {
+      "name": "search_regulations",
+      "args": {
+       "query": "şeref listesi şartları"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 19453.8,
+    "tokens": {
+     "input": 6369,
+     "output": 354,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 0,
+    "tool_adi_dogru": 0,
+    "gerekli_tool_dogru": 0,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [
+     "analyze_transcript"
+    ],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0,
+    "hesap_dogru": 0,
+    "sayilar": {
+     "gno": {
+      "beklenen": 3.08,
+      "cevapta": false,
+      "aracta": 3.08
+     }
+    },
+    "arac_hesap_dogru": 1
+   },
+   {
+    "id": "G03",
+    "answer": "Transkriptinizdeki verilere göre, bu dönem aldığınız zorunlu dersleri başarıyla tamamladığınız varsayıldığında, gelecek dönem almanız gereken zorunlu dersler şunlardır:\n\n*   **Veritabanı Yönetim Sistemleri** (6. yarıyıl, 6 AKTS)\n*   **Sistem Programlama** (6. yarıyıl, 6 AKTS)\n*   **Gömülü Sistemler** (6. yarıyıl, 5 AKTS)\n*   **Yazılım Mühendisliği** (6. yarıyıl, 5 AKTS)\n*   **Sinyaller ve Sistemler** (6. yarıyıl, 4 AKTS)\n\nBu dersler, BAİBÜ Bilgisayar Mühendisliği Programı 2024-2025 öğretim planı uyarınca zorunlu dersleriniz arasındadır [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025].\n\nDers seçimi yaparken öğretim planındaki ön koşul kurallarını ve seçmeli ders yükümlülüklerinizi (Alan Dışı Seçmeli Ders dahil) göz önünde bulundurmanız gerekmektedir [BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 20, fıkra 2; BAİBÜ Alan Dışı Seçmeli Ders Yönergesi, Madde 7, fıkra 3]. Kesin ders kaydı planınız için danışman hocanızla görüşmeniz önerilir.",
+    "tool_calls": [
+     {
+      "name": "analyze_transcript",
+      "args": {}
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 20116.6,
+    "tokens": {
+     "input": 6382,
+     "output": 361,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "G04",
+    "answer": "Bilgisayar Mühendisliği öğretim planına göre mezuniyet için tamamlanması gereken seçmeli ders yükümlülükleri şöyledir:\n\n*   **Rektörlük Seçmelileri:** 2 adet (Rek. Seçmeli I ve II), toplam **8 AKTS**.\n*   **Bölüm Seçmelileri:** 6 adet (Seçmeli III, IV, V, VI, VII ve VIII), toplam **56 AKTS**.\n*   **Alan Dışı Seçmeli Ders:** 1 adet, **2 AKTS**.\n\nToplamda **66 AKTS** değerinde seçmeli ders almanız gerekmektedir [BAİBÜ Bilgisayar Mühendisliği Programının Öğretim Planı, 2024-2025].\n\nHer seçmeli yuvası kendi havuzundaki derslerle, yuvanın AKTS'si kadar doldurulmalıdır; bir yuvadaki fazla AKTS başka bir yuvaya sayılmaz [BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 35, fıkra 1, bent a]. 2024 ve sonrası girişli öğrenciler için Alan Dışı Seçmeli Ders zorunludur; daha önceki girişliler için ise isteğe bağlıdır [BAİBÜ Alan Dışı Seçmeli Ders Yönergesi, Madde 7, fıkra 3; BAİBÜ Alan Dışı Seçmeli Ders Yönergesi, Geçici Madde 1, fıkra 1].\n\nKendi durumunuzu (hangi seçmeli dersleri tamamladığınızı) öğrenmek isterseniz, lütfen UBYS'den güncel tarihsel transkriptinizi yükleyiniz.",
+    "tool_calls": [
+     {
+      "name": "get_graduation_requirements",
+      "args": {}
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 94634.7,
+    "tokens": {
+     "input": 6013,
+     "output": 383,
+     "reasoning": 0
+    },
+    "answer_ok": 0,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "G05",
+    "answer": "3. sınıfın Salı günkü dersleri A şubesi için 18:15'te, B şubesi için 18:15'te bitmektedir [BAİBÜ Bilgisayar Mühendisliği Bölümü 2026-2027 Güz Dönemi Ders Programı].",
+    "tool_calls": [
+     {
+      "name": "get_course_schedule",
+      "args": {
+       "gun": "salı",
+       "sinif": 3
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 7971.7,
+    "tokens": {
+     "input": 5030,
+     "output": 94,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   },
+   {
+    "id": "G06",
+    "answer": "2026-2027 Güz döneminde Seçmeli VII yuvası için 7 ders açılmaktadır:\n\n*   **İleri Veri Tabanı Yönetim Sistemleri:** Perşembe 09:30-12:15\n*   **Sensor Ağları:** Pazartesi 15:30-18:15 (Derslik: 326)\n*   **Bilişim Hukuku:** Perşembe 12:30-15:15 (Derslik: 326)\n*   **Veri Madenciliği:** Perşembe 15:30-18:15\n*   **Nesnelerin İnterneti:** Salı 09:30-12:15 (Derslik: 227)\n*   **Yapay Sinir Ağları:** Çarşamba 12:30-15:15\n*   **Yapay Zeka:** Çarşamba 15:30-18:15 (Derslik: 327)\n\nAyrıca bu dönem Sayısal Sinyal İşleme, Robotik, Bulanık Mantık, E Ticaret ve Nanoteknoloji dersleri açılmamaktadır.\n\nKaynak: BAİBÜ Bilgisayar Mühendisliği Bölümü 2026-2027 Güz Dönemi Ders Programı (data/2026_27_Güz_Lisans_v2.pdf)",
+    "tool_calls": [
+     {
+      "name": "get_offered_electives",
+      "args": {
+       "yuva": "Seçmeli VII"
+      }
+     }
+    ],
+    "turns": 2,
+    "agent_ms": 4507.7,
+    "tokens": {
+     "input": 5209,
+     "output": 363,
+     "reasoning": 0
+    },
+    "answer_ok": 1,
+    "tool_dogru": 1,
+    "tool_adi_dogru": 1,
+    "gerekli_tool_dogru": 1,
+    "yan_etkisiz": 1,
+    "eksik_tool_lar": [],
+    "fazla_tool_lar": [],
+    "anlik_dogru": 1,
+    "anlik_gereksiz": 0
+   }
+  ],
+  "alt_kirilimlar": {
+   "grup:acilan_secmeli": {
+    "n": 3,
+    "answer_acc": 0.3333,
+    "tool_secimi_dogrulugu": 0.6667,
+    "tool_adi_dogrulugu": 0.6667,
+    "gerekli_tool_dogrulugu": 0.6667,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "grup:anlik_tool": {
+    "n": 15,
+    "answer_acc": 0.5,
+    "tool_secimi_dogrulugu": 0.2667,
+    "tool_adi_dogrulugu": 0.2667,
+    "hesap_dogrulugu": 0.3333,
+    "gerekli_tool_dogrulugu": 0.4,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 0.5333,
+    "anlik_tool_duyarliligi": 0.5,
+    "anlik_tool_gereksiz_orani": 0,
+    "haiku_dogrulugu": 0.5714
+   },
+   "grup:birlestirme": {
+    "n": 3,
+    "answer_acc": 0.3333,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1,
+    "gerekli_tool_dogrulugu": 1,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "grup:cekimser": {
+    "n": 3,
+    "answer_acc": 0.6667,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "grup:ders_programi": {
+    "n": 5,
+    "answer_acc": 0.4,
+    "tool_secimi_dogrulugu": 0.4,
+    "tool_adi_dogrulugu": 0.4,
+    "gerekli_tool_dogrulugu": 0.4,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "grup:mevzuat": {
+    "n": 10,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1,
+    "gerekli_tool_dogrulugu": 1,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "grup:sinir_tool": {
+    "n": 6,
+    "answer_acc": 0.8,
+    "tool_secimi_dogrulugu": 0.8333,
+    "tool_adi_dogrulugu": 0.8333,
+    "hesap_dogrulugu": 0.5,
+    "arac_hesap_dogrulugu": 1,
+    "gerekli_tool_dogrulugu": 0.8333,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "grup:takip": {
+    "n": 2,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1,
+    "gerekli_tool_dogrulugu": 1,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "grup:transkript": {
+    "n": 14,
+    "answer_acc": 0.9091,
+    "tool_secimi_dogrulugu": 0.9286,
+    "tool_adi_dogrulugu": 0.9286,
+    "hesap_dogrulugu": 0.8571,
+    "arac_hesap_dogrulugu": 1,
+    "gerekli_tool_dogrulugu": 1,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "grup:what_if": {
+    "n": 5,
+    "answer_acc": 0.25,
+    "tool_secimi_dogrulugu": 0.4,
+    "tool_adi_dogrulugu": 0.4,
+    "hesap_dogrulugu": 0,
+    "gerekli_tool_dogrulugu": 0.8,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "kategori:acilan_secmeli": {
+    "n": 1,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1,
+    "gerekli_tool_dogrulugu": 1,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "kategori:acilan_secmeli_acilmayan": {
+    "n": 1,
+    "answer_acc": 0,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1,
+    "gerekli_tool_dogrulugu": 1,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "kategori:acilan_secmeli_rektorluk": {
+    "n": 1,
+    "answer_acc": 0,
+    "tool_secimi_dogrulugu": 0,
+    "tool_adi_dogrulugu": 0,
+    "gerekli_tool_dogrulugu": 0,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "kategori:alan_disi_kayit_yili": {
+    "n": 3,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 0.6667,
+    "tool_adi_dogrulugu": 0.6667,
+    "gerekli_tool_dogrulugu": 1,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "kategori:anlik_ortalama": {
+    "n": 5,
+    "answer_acc": 0.3333,
+    "tool_secimi_dogrulugu": 0,
+    "tool_adi_dogrulugu": 0,
+    "hesap_dogrulugu": 0,
+    "gerekli_tool_dogrulugu": 0,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 0.4,
+    "anlik_tool_duyarliligi": 0.4,
+    "haiku_dogrulugu": 0
+   },
+   "kategori:anlik_program": {
+    "n": 4,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 0.5,
+    "tool_adi_dogrulugu": 0.5,
+    "hesap_dogrulugu": 1,
+    "gerekli_tool_dogrulugu": 1,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_duyarliligi": 1,
+    "haiku_dogrulugu": 0.75
+   },
+   "kategori:anlik_transkript": {
+    "n": 5,
+    "answer_acc": 0,
+    "tool_secimi_dogrulugu": 0.2,
+    "tool_adi_dogrulugu": 0.2,
+    "hesap_dogrulugu": 0.5,
+    "gerekli_tool_dogrulugu": 0.2,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 0.2,
+    "anlik_tool_duyarliligi": 0.2,
+    "haiku_dogrulugu": 1
+   },
+   "kategori:bu_donem_dersleri": {
+    "n": 1,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1,
+    "gerekli_tool_dogrulugu": 1,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "kategori:cekimser_kalma": {
+    "n": 3,
+    "answer_acc": 0.6667,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "kategori:ders_programi_ders": {
+    "n": 1,
+    "answer_acc": 0,
+    "tool_secimi_dogrulugu": 0,
+    "tool_adi_dogrulugu": 0,
+    "gerekli_tool_dogrulugu": 0,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "kategori:ders_programi_sinif": {
+    "n": 2,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1,
+    "gerekli_tool_dogrulugu": 1,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "kategori:ders_programi_sinif_sor": {
+    "n": 1,
+    "answer_acc": 0,
+    "tool_secimi_dogrulugu": 0,
+    "tool_adi_dogrulugu": 0,
+    "gerekli_tool_dogrulugu": 0,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "kategori:ders_programi_transkript": {
+    "n": 1,
+    "answer_acc": 0,
+    "tool_secimi_dogrulugu": 0,
+    "tool_adi_dogrulugu": 0,
+    "gerekli_tool_dogrulugu": 0,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "kategori:eksik_zorunlu": {
+    "n": 1,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1,
+    "gerekli_tool_dogrulugu": 1,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "kategori:erasmus_eslesmeyen": {
+    "n": 1,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1,
+    "hesap_dogrulugu": 1,
+    "arac_hesap_dogrulugu": 1,
+    "gerekli_tool_dogrulugu": 1,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "kategori:erasmus_otomatik": {
+    "n": 1,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1,
+    "gerekli_tool_dogrulugu": 1,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "kategori:erasmus_teyit": {
+    "n": 2,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1,
+    "hesap_dogrulugu": 1,
+    "gerekli_tool_dogrulugu": 1,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "kategori:gno_siniri": {
+    "n": 1,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1,
+    "hesap_dogrulugu": 1,
+    "arac_hesap_dogrulugu": 1,
+    "gerekli_tool_dogrulugu": 1,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "kategori:kural_birlestirme": {
+    "n": 3,
+    "answer_acc": 0.3333,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1,
+    "gerekli_tool_dogrulugu": 1,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "kategori:mevzuat_bulma": {
+    "n": 9,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1,
+    "gerekli_tool_dogrulugu": 1,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "kategori:secmeli_yuva": {
+    "n": 1,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1,
+    "hesap_dogrulugu": 0,
+    "gerekli_tool_dogrulugu": 1,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "kategori:sinir_genel": {
+    "n": 3,
+    "answer_acc": 0.6667,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1,
+    "gerekli_tool_dogrulugu": 1,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "kategori:sinir_transkript": {
+    "n": 3,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 0.6667,
+    "tool_adi_dogrulugu": 0.6667,
+    "hesap_dogrulugu": 0.5,
+    "arac_hesap_dogrulugu": 1,
+    "gerekli_tool_dogrulugu": 0.6667,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "kategori:takip_rewrite": {
+    "n": 2,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1,
+    "gerekli_tool_dogrulugu": 1,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "kategori:transkript_hesap": {
+    "n": 3,
+    "answer_acc": 0,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1,
+    "hesap_dogrulugu": 1,
+    "arac_hesap_dogrulugu": 1,
+    "gerekli_tool_dogrulugu": 1,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "kategori:transkript_yok": {
+    "n": 2,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1,
+    "gerekli_tool_dogrulugu": 1,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "kategori:what_if_acilmayan": {
+    "n": 2,
+    "answer_acc": 0,
+    "tool_secimi_dogrulugu": 0,
+    "tool_adi_dogrulugu": 0,
+    "hesap_dogrulugu": 0,
+    "gerekli_tool_dogrulugu": 0.5,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "kategori:what_if_bilinmeyen_ders": {
+    "n": 1,
+    "answer_acc": 1,
+    "tool_secimi_dogrulugu": 0,
+    "tool_adi_dogrulugu": 0,
+    "gerekli_tool_dogrulugu": 1,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "kategori:what_if_etkisiz_ders": {
+    "n": 1,
+    "answer_acc": 0,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1,
+    "hesap_dogrulugu": 0,
+    "gerekli_tool_dogrulugu": 1,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   },
+   "kategori:what_if_karsilastirma": {
+    "n": 1,
+    "tool_secimi_dogrulugu": 1,
+    "tool_adi_dogrulugu": 1,
+    "hesap_dogrulugu": 0,
+    "gerekli_tool_dogrulugu": 1,
+    "yan_etkisiz_orani": 1,
+    "anlik_tool_isabeti": 1,
+    "anlik_tool_gereksiz_orani": 0
+   }
+  }
+ },
+ "sure": {
+  "agent_sn": 2616.6,
+  "toplam_sn": 2616.6
+ },
+ "karsilastirma": {
+  "ust_deney": "EXP-005",
+  "ayni_veri_seti": true,
+  "metrikler": {
+   "answer_acc": {
+    "once": 0.875,
+    "sonra": 0.6786,
+    "fark": -0.1964,
+    "test": "McNemar (kesin)",
+    "p": 0.00341796875,
+    "kotulesen": 12,
+    "iyilesen": 1
+   },
+   "cevap_uzunlugu": {
+    "once": 613.2121,
+    "sonra": 591.5,
+    "fark": -21.7121,
+    "test": "Wilcoxon",
+    "p": 0.6570606270426204
+   },
+   "tool_secimi_dogrulugu": {
+    "once": 0.6032,
+    "sonra": 0.6825,
+    "fark": 0.0794,
+    "test": "McNemar (kesin)",
+    "p": 0.266845703125,
+    "kotulesen": 4,
+    "iyilesen": 9
+   },
+   "tool_adi_dogrulugu": {
+    "once": 0.6032,
+    "sonra": 0.6825,
+    "fark": 0.0794,
+    "test": "McNemar (kesin)",
+    "p": 0.266845703125,
+    "kotulesen": 4,
+    "iyilesen": 9
+   },
+   "hesap_dogrulugu": {
+    "once": 0.5,
+    "sonra": 0.4545,
+    "fark": -0.0455,
+    "test": "McNemar (kesin)",
+    "p": 1.0,
+    "kotulesen": 2,
+    "iyilesen": 1
+   },
+   "gerekli_tool_dogrulugu": {
+    "once": 0.8095,
+    "sonra": 0.7619,
+    "fark": -0.0476,
+    "test": "McNemar (kesin)",
+    "p": 0.453125,
+    "kotulesen": 5,
+    "iyilesen": 2
+   },
+   "yan_etkisiz_orani": {
+    "once": 1,
+    "sonra": 1,
+    "fark": 0,
+    "test": "McNemar (kesin)",
+    "p": 1.0,
+    "kotulesen": 0,
+    "iyilesen": 0
+   },
+   "anlik_tool_isabeti": {
+    "once": 0.8788,
+    "sonra": 0.8939,
+    "fark": 0.0152,
+    "test": "McNemar (kesin)",
+    "p": 1.0,
+    "kotulesen": 1,
+    "iyilesen": 2
+   },
+   "anlik_tool_duyarliligi": {
+    "once": 0.5714,
+    "sonra": 0.5,
+    "fark": -0.0714,
+    "test": "McNemar (kesin)",
+    "p": 1.0,
+    "kotulesen": 1,
+    "iyilesen": 0
+   },
+   "anlik_tool_gereksiz_orani": {
+    "once": 0.0385,
+    "sonra": 0,
+    "fark": -0.0385,
+    "test": "McNemar (kesin)",
+    "p": 0.5,
+    "kotulesen": 2,
+    "iyilesen": 0
+   },
+   "haiku_dogrulugu": {
+    "once": 0.7143,
+    "sonra": 0.5714,
+    "fark": -0.1429,
+    "test": "McNemar (kesin)",
+    "p": 1.0,
+    "kotulesen": 1,
+    "iyilesen": 0
+   }
+  },
+  "karar": {
+   "metrik": "answer_acc",
+   "beklenen_yon": "azalis",
+   "sonuc": "Anlamlı kötüleşme (p<0,05)",
+   "hipotez": "Doğrulandı"
+  }
+ }
+}

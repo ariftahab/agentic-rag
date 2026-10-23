@@ -17,7 +17,7 @@ Kalın hücre = parent'a göre değişen parametre.
 | EXP-003 | EXP-002 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | **agent_v4** | 3.5-flash-lite | 685 |
 | EXP-004 | EXP-003 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | **agent_v5** | 3.5-flash-lite | 685 |
 | EXP-005 | EXP-004 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | **agent_v7** | 3.5-flash-lite | 685 |
-| EXP-006 | EXP-005 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | agent_v7 | **3.1-flash-lite** | – |
+| EXP-006 | EXP-005 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | agent_v7 | **3.1-flash-lite** | 685 |
 
 ## 2. Results
 
@@ -28,7 +28,7 @@ Kalın hücre = parent'a göre değişen parametre.
 | EXP-003 | agent_v4: oturumun transkript durumu prompt'ta | v1 | – | – | – | – | – | – | tool seçimi ↓ kötüleşti (p=1.00, anlamlı değil) | ✗ |
 | EXP-004 | agent_v5: genel mezuniyet şartları için get_graduation_requirements | v1 | – | – | – | – | – | – | answer acc. ↑ iyileşti (p=0.38, anlamlı değil) | ~ |
 | EXP-005 | agent_v7 + sorular_v2: anlık tool baseline'ı (gemini-3.5-flash-lite) | v2 | – | – | – | – | – | – | referans (yeni soru seti, karşılaştırma yok) | – |
-| EXP-006 | Model karşılaştırması: gemini-3.1-flash-lite + agent_v7 (sorular_v2) | | | | | | | | koşulmadı | |
+| EXP-006 | Model karşılaştırması: gemini-3.1-flash-lite + agent_v7 (sorular_v2) | v2 | – | – | – | – | – | – | answer acc. ↓ kötüleşti (p<0.01, anlamlı) | ✓ |
 
 Hyp.: ✓ doğrulandı · ✗ doğrulanmadı · ~ yön doğru ama anlamlı değil
 
@@ -42,6 +42,7 @@ Tool seçimi: beklenen tool'lar doğru argümanlarla çağrıldı, beklenmeyen t
 | EXP-003 | v1 | 0.780 | 0.714 | 0.714 | 0.905 | 1.000 | 0.727 | 1.000 | – | – | – | 1.13 | 2.11 | 45 | ✓ |
 | EXP-004 | v1 | 0.854 | 0.691 | 0.691 | 0.833 | 1.000 | 0.727 | 1.000 | – | – | – | 1.22 | 2.13 | 45 | ✓ |
 | EXP-005 | v2 | 0.875 | 0.603 | 0.603 | 0.809 | 1.000 | 0.500 | 1.000 | 0.879 | 0.038 | 0.750 | 1.29 | 2.24 | 66 | ✓ |
+| EXP-006 | v2 | 0.679 | 0.682 | 0.682 | 0.762 | 1.000 | 0.455 | 1.000 | 0.894 | 0.000 | 0.571 | 0.98 | 2.03 | 66 | ✓ |
 
 ## 5. Notes
 
@@ -50,3 +51,4 @@ Tool seçimi: beklenen tool'lar doğru argümanlarla çağrıldı, beklenmeyen t
 - **EXP-003:** agent_v4: tool metriği 0,74 → 0,71 (zararsız ek çağrılar hata sayıldı), cevap 0,73 → 0,78 (anlamca ~0,87 → 0,93), hesap 0,64 → 0,73; transkript soruları düzeldi.
 - **EXP-004:** agent_v5: mezuniyet şartları sorusu tam ve kaynaklı (metrikler hata sayıyor, set eskidi); answer_acc 0,78 → 0,85; transkript yüklüyken "ADSD almam gerekiyor mu?" kötüleşti (yeni tool çaldı).
 - **EXP-005:** agent_v7 baseline (sorular_v2): anlık tool program/şube sorularında doğru, ortalama zinciri hiç kurulmadı (katsayılar sandbox'ta yok), geçmiş not sorularında rapora güvenip yanlış; gereksiz tetiklenme 2/52.
+- **EXP-006:** gemini-3.1-flash-lite: answer_acc 0,875 → 0,679 (p=0,003), 3 soru 503, latency ~4 kat; yanlış belge (lisansüstü not tablosu) ve tool sayılarını yeniden toplama hataları. Öneri: production 3.5-flash-lite.
