@@ -630,7 +630,21 @@ def _count_text(low, high):
     return str(low) if low == high else f"{low}-{high}"
 
 
-def history_text(transcript, report, plan, rules=None):
+def grade_table_text():
+    """Yönetmelikteki harf notu tablosu ve ortalama tanımı (agent_v13): devirde katsayılar bu tablodan alınır."""
+    import gpa  # gpa graduation'ı içe aktarır
+
+    lines = ["", f"HARF NOTLARI, KATSAYILAR VE ORTALAMA (ortalama hesaplarında bu katsayılar kullanılır) "
+                 f"[{gpa.REGULATION}, Madde 27, fıkra 1-2; {gpa.SOURCES['ortalama']}]"]
+    lines += [f"- {score}: {grade}, katsayı {coeff}" if coeff[0].isdigit() else f"- {score}: {grade}, {coeff}"
+              for score, grade, coeff in gpa.GRADE_TABLE]
+    lines.append("Ortalama: her dersin AKTS'si ile başarı notu katsayısının çarpımlarının toplamı, AKTS toplamına bölünür; "
+                 "virgülden sonra iki hane gösterilir, üçüncü haneye göre yuvarlama yapılmaz. Genel ağırlıklı not "
+                 "ortalamasına tekrar edilen derslerden alınan son not katılır.")
+    return "\n".join(lines)
+
+
+def history_text(transcript, report, plan, rules=None, coeff=None):
     """analyze_transcript'e eklenen ders geçmişi (agent_v12): dönem dönem bütün dersler ve harf notları, yarıyıl
     ortalamaları, harf notu dağılımı, başarısız olunan ve tekrarlanan dersler, mezuniyete kalan ders sayısı. EXP-008'de
     özette olmayan bilgiyi agent "yok" diye okudu ("kaldığın ders yok", kayıt yılından tahmin edilen dönem)."""
@@ -654,7 +668,7 @@ def history_text(transcript, report, plan, rules=None):
                      "henüz girilmedi).")
     for term, items in terms.items():
         label = f"{number[term]}. dönem" if term in number else "Yaz okulu"
-        avg = gpa.term_average(items)
+        avg = gpa.term_average(items, coeff or gpa.COEFF)
         head = f"- {label}, {term[0]}-{term[0] + 1} {term[1]}" + (f", YANO {avg:.2f}" if avg is not None else "")
         if term == current:
             head += " (bu dönem)"

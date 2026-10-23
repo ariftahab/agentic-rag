@@ -198,6 +198,16 @@ DEVİR: Bu sorunun devamı sana devredildi. Yukarıdaki konuşmayı ve tool sonu
 - Hesap bir yönetmelik kuralına dayanıyorsa (not tablosu, katsayılar, vize-final oranı, ortalama formülü) kuralı konuşmadaki tool sonuçlarından ya da search_regulations ile bul ve kaynağıyla kullan.
 - Görevin belirsiz kaldığı noktada (ör. şube) yaptığın varsayımı açıkça yaz.
 - Cevapta hesabın anlık üretildiğini ve doğrulanmadığını belirt. Son cevap doğrudan kullanıcıya gider: kısa, net, Türkçe ve kaynaklı."""
+# agent_v13: EXP-009'da Haiku katsayıları search_regulations'la aradı, Lisansüstü Eğitim Yönetmeliği'nin tablosunu
+# kullandı (GNO 3,50 → 3,01). Bu sürümde katsayılar ve ortalama tanımı analyze_transcript raporunda (Madde 27-28).
+_HANDOFF_RULES_LINE = ("- Hesap bir yönetmelik kuralına dayanıyorsa (not tablosu, katsayılar, vize-final oranı, ortalama formülü) "
+                       "kuralı konuşmadaki tool sonuçlarından ya da search_regulations ile bul ve kaynağıyla kullan.")
+_V13_HANDOFF_RULES_LINE = ("- Harf notu katsayıları ve ortalama formülü için analyze_transcript raporundaki \"HARF NOTLARI, "
+                           "KATSAYILAR VE ORTALAMA\" tablosunu kullan; konuşmada bu rapor yoksa önce analyze_transcript'i çağır. "
+                           "Diğer yönetmelik kurallarını (ör. vize-final oranı) konuşmadaki tool sonuçlarından ya da "
+                           "search_regulations ile bul ve kaynağıyla kullan.")
+assert _HANDOFF_RULES_LINE in HANDOFF_NOTE
+HANDOFF_NOTE_V13 = HANDOFF_NOTE.replace(_HANDOFF_RULES_LINE, _V13_HANDOFF_RULES_LINE)
 
 AGENT_PROMPTS = {"agent_v1": _AGENT_V1_SYSTEM, "agent_v2": _AGENT_V2_SYSTEM, "agent_v3": _AGENT_V3_SYSTEM,
                  "agent_v4": _AGENT_V4_SYSTEM, "agent_v5": _AGENT_V5_SYSTEM,
@@ -206,26 +216,31 @@ AGENT_PROMPTS = {"agent_v1": _AGENT_V1_SYSTEM, "agent_v2": _AGENT_V2_SYSTEM, "ag
                  "agent_v6": _AGENT_V5_SYSTEM, "agent_v7": _AGENT_V7_SYSTEM, "agent_v9": _AGENT_V9_SYSTEM,
                  "agent_v10": _AGENT_V10_SYSTEM,
                  # agent_v11: prompt v10 ile aynı; tool'lar yalnız mevzuattaki kuralları kullanır (REGULATION_RULES_PROMPTS).
-                 "agent_v11": _AGENT_V10_SYSTEM, "agent_v12": _AGENT_V12_SYSTEM}
+                 "agent_v11": _AGENT_V10_SYSTEM, "agent_v12": _AGENT_V12_SYSTEM,
+                 # agent_v13: prompt v12 ile aynı; rapora not tablosu, devir notunda katsayıların kaynağı (GRADE_TABLE_PROMPTS).
+                 "agent_v13": _AGENT_V12_SYSTEM}
 AGENT_PROMPT_VERSION = "agent_v4"
 # Sonradan eklenen tool yalnız onu anlatan sürümlerde açılır: eski sürümlerin deneyleri (EXP-002, EXP-003) aynı tool
 # listesiyle tekrar üretilebilsin.
-REQUIREMENTS_TOOL_PROMPTS = {"agent_v5", "agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12"}
+REQUIREMENTS_TOOL_PROMPTS = {"agent_v5", "agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13"}
 # Bu sürümlerde analyze_transcript kayıt yılını yazar, get_graduation_requirements transkript yüklüyse kişisel
 # sorular için analyze_transcript'e yönlendirir (EXP-004 aynı çıktılarla tekrar üretilebilsin).
-TRANSCRIPT_DETAIL_PROMPTS = {"agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12"}
+TRANSCRIPT_DETAIL_PROMPTS = {"agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13"}
 # Anlık tool (request_new_tool, codeact) yalnız bu sürümlerde açılır.
-CODE_TOOL_PROMPTS = {"agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12"}
+CODE_TOOL_PROMPTS = {"agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13"}
 # Bu sürümlerde request_new_tool tool olarak çalışmaz, devir sinyalidir (bkz. _AGENT_V9_SYSTEM).
-HANDOFF_PROMPTS = {"agent_v9", "agent_v10", "agent_v11", "agent_v12"}
+HANDOFF_PROMPTS = {"agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13"}
 # Not ortalaması tool'u (simulate_grades, gpa.py) yalnız bu sürümlerde açılır.
-GRADES_TOOL_PROMPTS = {"agent_v10", "agent_v11", "agent_v12"}
+GRADES_TOOL_PROMPTS = {"agent_v10", "agent_v11", "agent_v12", "agent_v13"}
 # Bu sürümlerde mezuniyet kuralları yalnız mevzuattaki metinle (graduation.load_rules(regulation_only=True)): toplam
 # AKTS Madde 22/1'deki 240; eski kural dosyasındaki "planın toplamı bağlayıcıdır" eklemesi (244) mevzuatta yok.
-REGULATION_RULES_PROMPTS = {"agent_v11", "agent_v12"}
+REGULATION_RULES_PROMPTS = {"agent_v11", "agent_v12", "agent_v13"}
 # Bu sürümlerde analyze_transcript ders geçmişini de yazar (dönemler, notlar, başarısız ve tekrarlanan dersler, kalan ders
 # sayısı); tool açıklaması da raporun içeriğini sayar.
-TRANSCRIPT_HISTORY_PROMPTS = {"agent_v12"}
+TRANSCRIPT_HISTORY_PROMPTS = {"agent_v12", "agent_v13"}
+# Bu sürümlerde analyze_transcript yönetmelikteki harf notu tablosunu ve ortalama tanımını da yazar; devirde Haiku
+# katsayıları oradan alır (HANDOFF_NOTE_V13).
+GRADE_TABLE_PROMPTS = {"agent_v13"}
 ANALYZE_TRANSCRIPT_HISTORY_DOC = """Oturumda yüklü transkripti öğretim planıyla karşılaştırır: şu an geçilen AKTS, bu dönemin dersleri
         geçilirse ulaşılacak AKTS, eksik zorunlu dersler (durumlarıyla), açık seçmeli yuvaları ve transkriptin ders
         geçmişi: dönem dönem bütün dersler ve harf notları, dönem sayısı, yarıyıl ortalamaları, harf notu dağılımı,
@@ -278,7 +293,7 @@ class CourseGrade(BaseModel):
 
 
 def make_tools(retriever, plan, transcript, confirmations, today, with_requirements=False, transcript_detail=False,
-               with_grades=False, rules=None, with_history=False,
+               with_grades=False, rules=None, with_history=False, with_grade_table=False,
                code_runner=None, generated=None, found=None):
     """Bu çağrıya (oturuma) bağlı tool'lar. `transcript` ve `confirmations` closure'da durur; LLM'in görebileceği
     argümanlar değildir. confirm_equivalence `confirmations` sözlüğünü yerinde günceller (çağıran taraf saklar)."""
@@ -302,7 +317,10 @@ def make_tools(retriever, plan, transcript, confirmations, today, with_requireme
             return NO_TRANSCRIPT
         report = graduation.evaluate(transcript, plan, rules, confirmations=confirmations)
         text = graduation.summary_text(report, plan, enrollment=transcript_detail)
-        return text + "\n" + graduation.history_text(transcript, report, plan, rules) if with_history else text
+        if with_history:
+            text += "\n" + graduation.history_text(transcript, report, plan, rules,
+                                                   coeff=gpa.COEFF_REGULATION if with_grade_table else None)
+        return text + "\n" + graduation.grade_table_text() if with_grade_table else text
 
     if with_history:
         analyze_transcript.__doc__ = ANALYZE_TRANSCRIPT_HISTORY_DOC
@@ -415,7 +433,8 @@ def make_tools(retriever, plan, transcript, confirmations, today, with_requireme
         """
         courses = [d.model_dump() if isinstance(d, BaseModel) else dict(d) for d in dersler]
         try:
-            report = gpa.simulate(transcript, plan, courses, target_gpa=hedef_gno or None, final_weight=final_agirligi)
+            report = gpa.simulate(transcript, plan, courses, target_gpa=hedef_gno or None, final_weight=final_agirligi,
+                                  coeff=gpa.COEFF_REGULATION if with_grade_table else gpa.COEFF)
         except ValueError as e:
             return f"Hesap yapılamadı: {e}"
         return gpa.report_text(report)
@@ -480,6 +499,8 @@ class AdvisorAgent:
         self.transcript_detail = prompt_version in TRANSCRIPT_DETAIL_PROMPTS
         self.handoff = prompt_version in HANDOFF_PROMPTS
         self.with_history = prompt_version in TRANSCRIPT_HISTORY_PROMPTS
+        self.with_grade_table = prompt_version in GRADE_TABLE_PROMPTS
+        self.handoff_note = HANDOFF_NOTE_V13 if self.with_grade_table else HANDOFF_NOTE
         # Anlık tool yalnız v7'de ve bir çalıştırıcı verildiyse açılır (testler sahtesini verir).
         self.code_runner = code_runner if prompt_version in CODE_TOOL_PROMPTS else None
         self.documents = external_documents(plan, schedule.load_schedule())
@@ -515,6 +536,7 @@ class AdvisorAgent:
         tools = make_tools(self.retriever, self.plan, transcript, {} if confirmations is None else confirmations, today,
                            with_requirements=self.with_requirements, transcript_detail=self.transcript_detail,
                            with_grades=self.with_grades, rules=self.rules, with_history=self.with_history,
+                           with_grade_table=self.with_grade_table,
                            code_runner=self.code_runner, generated=generated, found=found)
         by_name = {t.name: t for t in tools}
         llm = self.llm.bind_tools(tools)
@@ -581,7 +603,7 @@ class AdvisorAgent:
             self._collect_cited(result, found, documents)
             return result
         try:
-            out = self.code_runner.handoff(system + HANDOFF_NOTE, messages,
+            out = self.code_runner.handoff(system + self.handoff_note, messages,
                                            [t for t in tools if t.name != "request_new_tool"], execute, files)
         except Exception as e:  # log'da hangi aşamada olduğu görünsün
             record["hata"] = f"{type(e).__name__}: {str(e)[:300]}"

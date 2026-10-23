@@ -26,6 +26,20 @@ GRADES = [(90, "AA", 4.0), (85, "BA", 3.75), (80, "BB", 3.5), (75, "CB", 3.25), 
 COEFF = {g: c for _, g, c in GRADES}
 LOWEST_SCORE = {g: low for low, g, _ in GRADES}
 FAILING = {"FD", "FF"}
+# Madde 27/2: E/I ve DZ/NA notları not ortalamasında FF işlemi görür (katsayı 0,00, başarısız). Yalnız agent_v13'te
+# (coeff=COEFF_REGULATION); eski sürümler bu notları ortalamaya katmıyordu (fixture'larda bu notlar yok).
+COEFF_REGULATION = {**COEFF, "E": 0.0, "E/I": 0.0, "DZ": 0.0, "DZ/NA": 0.0}  # UBYS yazımı iki türlü olabilir
+FAILING_REGULATION = FAILING | {"E", "E/I", "DZ", "DZ/NA"}
+# Madde 27/1'in tablosu (puan, başarı notu, katsayı) ve 27/2'den E/I ile DZ/NA'nın FF işlemi görmesi; transkript
+# raporunda (agent_v13) devirde Haiku katsayıları buradan alır (EXP-009'da arama Lisansüstü Yönetmeliği'nin
+# tablosunu getirdi).
+GRADE_TABLE = [("90-100", "AA", "4,00"), ("85-89", "BA", "3,75"), ("80-84", "BB", "3,50"), ("75-79", "CB", "3,25"),
+               ("65-74", "CC", "3,00"), ("60-64", "DC", "2,50"), ("55-59", "DD", "2,00"),
+               ("50-54", "FD", "1,00 (Başarısız)"), ("49 ve aşağısı", "FF", "0,00 (Başarısız)"),
+               ("Eksik", "E/I", "0,00 (Başarısız; not ortalamasında FF işlemi görür)"),
+               ("Devamsız", "DZ/NA", "0,00 (Başarısız; not ortalamasında FF işlemi görür)"),
+               ("Başarılı", "B/S", "not ortalamasına katılmaz"), ("Başarısız", "BZ/U", "not ortalamasına katılmaz"),
+               ("Devam ediyor", "DE/P", "not ortalamasına katılmaz"), ("Muaf", "MU/EX", "not ortalamasına katılmaz")]
 DEFAULT_FINAL_WEIGHT = 60          # Madde 26/2: bilgi girilmemişse ara sınav %40, dönem sonu %60
 FINAL_WEIGHT_RANGE = (40, 70)      # Madde 26/1: dönem sonu sınavının etkisi en az %40, en çok %70
 
@@ -55,27 +69,27 @@ def _same(a, b):
     return graduation.name_similarity(a, b) == 1.0
 
 
-def _base(transcript):
+def _base(transcript, coeff=COEFF):
     """Transkriptteki her dersin son harf notu: {ders adı: (akts, harf)} (Madde 28/3: tekrar edilen derste son not;
     B/S gibi ortalamaya katılmayan notlar ve devam eden dersler dışarıda)."""
     last = {}
     for c in sorted(transcript["dersler"] if transcript else [], key=_term_key):
-        if c["not"] in COEFF:
+        if c["not"] in coeff:
             last[c["ad"]] = (c["akts"], c["not"])
     return last
 
 
-def _gpa(grades):
+def _gpa(grades, coeff=COEFF):
     total = sum(a for a, _ in grades.values())
-    return _truncate(sum(a * COEFF[g] for a, g in grades.values()) / total) if total else None
+    return _truncate(sum(a * coeff[g] for a, g in grades.values()) / total) if total else None
 
 
-def term_average(courses):
+def term_average(courses, coeff=COEFF):
     """Yarıyıl ağırlıklı not ortalaması (Madde 28/2): o dönem kayıtlanılan derslerin AKTS ağırlıklı katsayı
     ortalaması; Madde 27'deki harf notları esas (B ve notu henüz girilmemiş dersler dışarıda)."""
-    graded = [c for c in courses if c["not"] in COEFF]
+    graded = [c for c in courses if c["not"] in coeff]
     total = sum(c["akts"] for c in graded)
-    return _truncate(sum(c["akts"] * COEFF[c["not"]] for c in graded) / total) if total else None
+    return _truncate(sum(c["akts"] * coeff[c["not"]] for c in graded) / total) if total else None
 
 
 def _credits(course, transcript, plan):
@@ -94,12 +108,12 @@ def _credits(course, transcript, plan):
     return match["ad"], match["akts"]
 
 
-def _known_grade(course, final_weight):
+def _known_grade(course, final_weight, coeff=COEFF):
     """(puan, harf) ya da bilinmiyorsa (None, None)."""
     if course.get("harf"):
         grade = course["harf"].strip().upper()
-        if grade not in COEFF:
-            raise ValueError(f"Geçersiz harf notu: {course['harf']} (geçerli: {', '.join(COEFF)}).")
+        if grade not in coeff:
+            raise ValueError(f"Geçersiz harf notu: {course['harf']} (geçerli: {', '.join(coeff)}).")
         return None, grade
     if course.get("puan") is not None:
         return course["puan"], letter(course["puan"])
@@ -109,17 +123,20 @@ def _known_grade(course, final_weight):
     return None, None
 
 
-def simulate(transcript, plan, courses, target_gpa=None, final_weight=DEFAULT_FINAL_WEIGHT):
+def simulate(transcript, plan, courses, target_gpa=None, final_weight=DEFAULT_FINAL_WEIGHT, coeff=COEFF):
     """courses: [{"ad", "puan"?, "vize"?, "final"?, "harf"?, "akts"?}]. Notu bilinmeyen en fazla bir ders olabilir
     (adı ya da yalnız vizesi verilmiş): onun için her harf notunun puan/final eşiği ve yol açacağı GNO hesaplanır.
 
     GNO transkriptteki son notlardan yeniden hesaplanır (UBYS özetini tutturur, testli); verilen notlar aynı dersin
-    önceki notunun yerine geçer (bu dönem alınan ya da tekrar edilen ders) veya yeni ders olarak eklenir."""
-    base = _base(transcript)
+    önceki notunun yerine geçer (bu dönem alınan ya da tekrar edilen ders) veya yeni ders olarak eklenir.
+
+    coeff=COEFF_REGULATION (agent_v13): E ve DZ notları da ortalamaya 0,00 ile girer (Madde 27/2)."""
+    failing = FAILING_REGULATION if coeff is COEFF_REGULATION else FAILING
+    base = _base(transcript, coeff)
     rows, unknown = [], None
     for course in courses:
         name, credits = _credits(course, transcript, plan)
-        score, grade = _known_grade(course, final_weight)
+        score, grade = _known_grade(course, final_weight, coeff)
         row = {"ad": name, "akts": credits, "puan": score, "harf": grade, "vize": course.get("vize"),
                "tekrar": name in base}
         if grade is None:
@@ -127,7 +144,7 @@ def simulate(transcript, plan, courses, target_gpa=None, final_weight=DEFAULT_FI
                 raise ValueError("Notu bilinmeyen yalnız bir ders olabilir; diğer derslerin puanını ya da notunu ver.")
             unknown = row
         else:
-            row["gecer"] = grade not in FAILING
+            row["gecer"] = grade not in failing
         rows.append(row)
 
     def with_grades(extra):
@@ -140,12 +157,12 @@ def simulate(transcript, plan, courses, target_gpa=None, final_weight=DEFAULT_FI
 
     known = {r["ad"] or "?": (r["akts"], r["harf"]) for r in rows if r["harf"] and r["akts"]}
     report = {"dersler": rows, "final_agirligi": final_weight, "hedef_gno": target_gpa,
-              "transkript": transcript is not None, "mevcut_gno": _gpa(base),
+              "transkript": transcript is not None, "mevcut_gno": _gpa(base, coeff),
               "ozet_gno": (transcript or {}).get("obs_ozet", {}).get("gno"),
-              "verilen_derslerin_ortalamasi": _gpa(known) if unknown is None else None,
+              "verilen_derslerin_ortalamasi": _gpa(known, coeff) if unknown is None else None,
               "yeni_gno": None, "secenekler": None}
     if unknown is None:
-        report["yeni_gno"] = _gpa(with_grades(None)) if transcript is not None else None
+        report["yeni_gno"] = _gpa(with_grades(None), coeff) if transcript is not None else None
         if target_gpa is not None and report["yeni_gno"] is not None:
             report["hedef_saglandi"] = report["yeni_gno"] >= target_gpa
         return report
@@ -156,7 +173,7 @@ def simulate(transcript, plan, courses, target_gpa=None, final_weight=DEFAULT_FI
         if unknown["vize"] is not None:  # yalnız vize verilmiş: bu harf için gereken en düşük final
             finals = [f for f in range(101) if exam_score(unknown["vize"], f, final_weight) >= low]
             option["en_az_final"] = finals[0] if finals else None
-        new = _gpa(with_grades(grade)) if transcript is not None and unknown["akts"] else None
+        new = _gpa(with_grades(grade), coeff) if transcript is not None and unknown["akts"] else None
         option["yeni_gno"] = new
         option["hedef"] = None if target_gpa is None or new is None else new >= target_gpa
         options.append(option)
@@ -182,7 +199,7 @@ def report_text(report):
             score = f"{r['puan']} puan → " if r["puan"] is not None else ""
             status = "geçer" if r["gecer"] else "başarısız (ders tekrar alınır)"
             repeat = "; önceki notunun yerine geçer" if r["tekrar"] else ""
-            lines.append(f"- {name} ({_num(r['akts'])} AKTS): {score}{r['harf']} (katsayı {COEFF[r['harf']]:.2f}), "
+            lines.append(f"- {name} ({_num(r['akts'])} AKTS): {score}{r['harf']} (katsayı {COEFF_REGULATION[r['harf']]:.2f}), "
                          f"{status}{repeat} [{SOURCES['not']}]")
         else:
             given = f", vize {r['vize']}" if r["vize"] is not None else ""

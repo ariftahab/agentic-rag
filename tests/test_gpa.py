@@ -105,3 +105,34 @@ def test_report_text_cites_the_articles():
     assert "DC" in text and "3.06" in text
     for madde in ("Madde 27", "Madde 28"):
         assert f"BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, {madde}" in text
+
+
+def with_grade(transcript, name, grade, credits=6):
+    extra = {"yil": 2025, "donem": "Bahar", "kod": "X1", "ad": name, "kredi": 3, "akts": credits, "not": grade,
+             "erasmus": False}
+    return {**transcript, "dersler": transcript["dersler"] + [extra]}
+
+
+@pytest.mark.parametrize("grade", ["DZ", "E", "DZ/NA", "E/I"])
+def test_incomplete_and_nonattendance_count_as_ff_in_regulation_mode(grade):
+    # Madde 27/2: E/I ve DZ/NA not ortalamasında FF işlemi görür (agent_v13, coeff=COEFF_REGULATION).
+    base = t("ucuncu_sinif_2024")
+    ff = gpa.simulate(with_grade(base, "Uydurma Ders", "FF"), PLAN, [])["mevcut_gno"]
+    new = gpa.simulate(with_grade(base, "Uydurma Ders", grade), PLAN, [], coeff=gpa.COEFF_REGULATION)
+    assert new["mevcut_gno"] == ff < base["obs_ozet"]["gno"]
+    # Eski sürümler bu notları ortalamaya katmaz (EXP-008, EXP-009 aynı çıktılarla tekrar üretilebilsin).
+    assert gpa.simulate(with_grade(base, "Uydurma Ders", grade), PLAN, [])["mevcut_gno"] == base["obs_ozet"]["gno"]
+
+
+def test_regulation_mode_accepts_dz_as_a_letter_grade_input():
+    report = gpa.simulate(t("ucuncu_sinif_2024"), PLAN, [{"ad": "Algoritma Analizi", "harf": "DZ"}],
+                          coeff=gpa.COEFF_REGULATION)
+    assert report["dersler"][0]["gecer"] is False
+    with pytest.raises(ValueError, match="Geçersiz harf notu"):
+        gpa.simulate(t("ucuncu_sinif_2024"), PLAN, [{"ad": "Algoritma Analizi", "harf": "DZ"}])
+
+
+def test_term_average_counts_dz_only_in_regulation_mode():
+    courses = [{"akts": 6, "not": "AA"}, {"akts": 6, "not": "DZ"}]
+    assert gpa.term_average(courses) == 4.0
+    assert gpa.term_average(courses, gpa.COEFF_REGULATION) == 2.0

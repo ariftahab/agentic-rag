@@ -10,6 +10,7 @@ from pathlib import Path
 import pytest
 from langchain_core.messages import AIMessage, ToolMessage
 
+import gpa
 import graduation
 import schedule
 from agent import AdvisorAgent, NO_TRANSCRIPT
@@ -455,6 +456,37 @@ def test_agent_v12_prompt_lists_the_report_and_keeps_the_handoff():
     own_status = next(line for line in added if line.startswith("- Soran kendi durumunu"))
     assert "başarısız olunan ve tekrarlanan dersler" in own_status and "request_new_tool" in own_status
     assert "transkriptte belirli nottaki dersler" not in AGENT_PROMPTS["agent_v12"]
+
+
+def test_agent_v13_report_carries_the_regulation_grade_table():
+    # EXP-009: devirde Haiku katsayıları aramayla Lisansüstü Eğitim Yönetmeliği'nden aldı (GNO 3,50 → 3,01).
+    third = load_fixture("ucuncu_sinif_2024")
+    report = tool_reply("agent_v13", "analyze_transcript", third)
+    assert report.startswith(tool_reply("agent_v12", "analyze_transcript", third))   # v12 raporu aynen, sonuna ek
+    assert "HARF NOTLARI, KATSAYILAR VE ORTALAMA" not in tool_reply("agent_v12", "analyze_transcript", third)
+    table = report[report.index("HARF NOTLARI, KATSAYILAR VE ORTALAMA"):]
+    assert "Madde 27, fıkra 1-2" in table and "Madde 28, fıkra 2-3" in table
+    for line in ("- 80-84: BB, katsayı 3,50", "- 60-64: DC, katsayı 2,50", "- 49 ve aşağısı: FF, katsayı 0,00 (Başarısız)",
+                 "- Başarılı: B/S, not ortalamasına katılmaz"):
+        assert line in table
+    # Tablo gpa.py'nin hesapta kullandığı katsayılarla aynı.
+    for low, grade, coeff in gpa.GRADES:
+        assert f": {grade}, katsayı {coeff:.2f}".replace(".", ",") in table
+
+
+def test_agent_v13_handoff_note_points_to_the_report_table():
+    from agent import AGENT_PROMPTS, HANDOFF_NOTE, HANDOFF_NOTE_V13
+    assert AGENT_PROMPTS["agent_v13"] == AGENT_PROMPTS["agent_v12"]
+    changed = [line for line in HANDOFF_NOTE_V13.splitlines() if line not in HANDOFF_NOTE.splitlines()]
+    assert len(changed) == 1 and "HARF NOTLARI, KATSAYILAR VE ORTALAMA" in changed[0]
+    assert "önce analyze_transcript'i çağır" in changed[0]
+    for version, note in (("agent_v13", HANDOFF_NOTE_V13), ("agent_v12", HANDOFF_NOTE)):
+        runner = FakeHandoffRunner()
+        llm = ScriptedChatModel([AIMessage("", tool_calls=[{"name": "request_new_tool", "args": {"gorev": "ortalama"},
+                                                            "id": "1"}])])
+        AdvisorAgent(retriever=None, llm=llm, plan=graduation.load_plan(), prompt_version=version,
+                     code_runner=runner).ask("Erasmus dersleri sayılmasaydı ortalamam?", transcript=SAMPLE)
+        assert runner.received["system"].endswith(note)
 
 
 def test_history_on_a_first_term_transcript():
