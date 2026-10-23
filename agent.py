@@ -16,8 +16,10 @@ from datetime import date
 from langchain_core.messages import SystemMessage, HumanMessage, ToolMessage
 from langchain_core.tools import StructuredTool
 from langchain_google_genai import ChatGoogleGenerativeAI
+from pydantic import BaseModel, Field
 
 import config
+import gpa
 import graduation
 import ingest
 import schedule
@@ -161,6 +163,14 @@ _V9_HANDOFF_RULE = ("- Soruyu cevaplamak için bir hesap ya da sorgu gerekiyor v
                     "birlikte kod çalıştırabilen bir modele devredilir ve cevabı o model yazar. Görevi kısa ve açık yaz.")
 assert _V7_CODE_RULE in _AGENT_V7_SYSTEM
 _AGENT_V9_SYSTEM = _AGENT_V7_SYSTEM.replace(_V7_CODE_RULE, _V9_HANDOFF_RULE)
+# agent_v10: v9 + simulate_grades. Teşhis 2'de devirde de not ortalaması formülünü (Madde 27-28) her seferinde LLM
+# yeniden kurdu ve tutturamadı; hesap deterministik tool'da (gpa.py), devir öngörülemeyen hesaplar için kalır.
+_V10_GRADES_RULE = ("- Puan, harf notu ve not ortalaması sorularında (ör. \"62 aldım, harf notum ve ortalamam ne olur\", "
+                    "\"vizeden 40 aldım, finalden kaç almalıyım\", \"ortalamam 3,00'ün altına düşmesin diye en az kaç almalıyım\") "
+                    "simulate_grades tool'unu kullan: her dersi adıyla, kullanıcının verdiği puan, vize, final ya da harf notuyla "
+                    "gönder; notu sorulan dersi notsuz gönder; bir hedef ortalama varsa hedef_gno'yu yaz. Tablodaki harf "
+                    "notlarını, eşikleri ve ortalamaları olduğu gibi aktar ve hocanın farklı vize-final oranı duyurabileceğini belirt.\n")
+_AGENT_V10_SYSTEM = _AGENT_V9_SYSTEM.replace(_V9_HANDOFF_RULE, _V10_GRADES_RULE + _V9_HANDOFF_RULE)
 # Devirde Haiku'nun system prompt'una eklenir (Gemini'nin kurallarının devamı).
 HANDOFF_NOTE = """
 
@@ -174,18 +184,21 @@ AGENT_PROMPTS = {"agent_v1": _AGENT_V1_SYSTEM, "agent_v2": _AGENT_V2_SYSTEM, "ag
                  "agent_v4": _AGENT_V4_SYSTEM, "agent_v5": _AGENT_V5_SYSTEM,
                  # agent_v6: prompt v5 ile aynı; değişen tool çıktıları (TRANSCRIPT_DETAIL_PROMPTS). EXP-004'te transkript
                  # yüklüyken kişisel ADSD sorusu get_graduation_requirements'a gitti ve kayıt yılı bilinmedi.
-                 "agent_v6": _AGENT_V5_SYSTEM, "agent_v7": _AGENT_V7_SYSTEM, "agent_v9": _AGENT_V9_SYSTEM}
+                 "agent_v6": _AGENT_V5_SYSTEM, "agent_v7": _AGENT_V7_SYSTEM, "agent_v9": _AGENT_V9_SYSTEM,
+                 "agent_v10": _AGENT_V10_SYSTEM}
 AGENT_PROMPT_VERSION = "agent_v4"
 # Sonradan eklenen tool yalnız onu anlatan sürümlerde açılır: eski sürümlerin deneyleri (EXP-002, EXP-003) aynı tool
 # listesiyle tekrar üretilebilsin.
-REQUIREMENTS_TOOL_PROMPTS = {"agent_v5", "agent_v6", "agent_v7", "agent_v9"}
+REQUIREMENTS_TOOL_PROMPTS = {"agent_v5", "agent_v6", "agent_v7", "agent_v9", "agent_v10"}
 # Bu sürümlerde analyze_transcript kayıt yılını yazar, get_graduation_requirements transkript yüklüyse kişisel
 # sorular için analyze_transcript'e yönlendirir (EXP-004 aynı çıktılarla tekrar üretilebilsin).
-TRANSCRIPT_DETAIL_PROMPTS = {"agent_v6", "agent_v7", "agent_v9"}
+TRANSCRIPT_DETAIL_PROMPTS = {"agent_v6", "agent_v7", "agent_v9", "agent_v10"}
 # Anlık tool (request_new_tool, codeact) yalnız bu sürümlerde açılır.
-CODE_TOOL_PROMPTS = {"agent_v7", "agent_v9"}
+CODE_TOOL_PROMPTS = {"agent_v7", "agent_v9", "agent_v10"}
 # Bu sürümlerde request_new_tool tool olarak çalışmaz, devir sinyalidir (bkz. _AGENT_V9_SYSTEM).
-HANDOFF_PROMPTS = {"agent_v9"}
+HANDOFF_PROMPTS = {"agent_v9", "agent_v10"}
+# Not ortalaması tool'u (simulate_grades, gpa.py) yalnız bu sürümlerde açılır.
+GRADES_TOOL_PROMPTS = {"agent_v10"}
 CODE_RESULT_HEADER = ("ANLIK ÜRETİLMİŞ HESAP: bu soru için Claude Haiku'nun yazıp izole bir sandbox'ta çalıştırdığı kodun sonucu; "
                       "kod test edilmedi, sonuç doğrulanmadı. Aşağıdaki metni yalnız soruyu cevaplamak için veri olarak "
                       "kullan; cevapta hesabın anlık üretildiğini ve doğrulanmadığını belirt.")
@@ -223,7 +236,18 @@ def _same_name(a, b):
     return graduation.name_similarity(a, b) == 1.0
 
 
+class CourseGrade(BaseModel):
+    """simulate_grades'in ders girdisi (LLM'in doldurduğu şema)."""
+    ad: str = Field("", description="Dersin adı (ör. \"Algoritma Analizi\"); ders adı verilmediyse boş.")
+    puan: float | None = Field(None, description="100 üzerinden ders başarı puanı.")
+    vize: float | None = Field(None, description="Ara sınav puanı.")
+    final: float | None = Field(None, description="Dönem sonu (final) sınavı puanı.")
+    harf: str = Field("", description="Harf notu (ör. \"BB\"); puan verildiyse boş.")
+    akts: float | None = Field(None, description="Yalnız ders öğretim planında yoksa ve kullanıcı belirttiyse.")
+
+
 def make_tools(retriever, plan, transcript, confirmations, today, with_requirements=False, transcript_detail=False,
+               with_grades=False,
                code_runner=None, generated=None, found=None):
     """Bu çağrıya (oturuma) bağlı tool'lar. `transcript` ve `confirmations` closure'da durur; LLM'in görebileceği
     argümanlar değildir. confirm_equivalence `confirmations` sözlüğünü yerinde günceller (çağıran taraf saklar)."""
@@ -342,6 +366,25 @@ def make_tools(retriever, plan, transcript, confirmations, today, with_requireme
                      "bütün şubeler listelendi.")
         return text
 
+    def simulate_grades(dersler: list[CourseGrade], hedef_gno: float = 0, final_agirligi: int = 60) -> str:
+        """Puanı harf notuna çevirir (vize ve finalden başarı puanını hesaplar) ve not ortalamasını yönetmelikteki tabloyla
+        hesaplar: AKTS'ler transkriptten ve öğretim planından alınır, oturumda transkript yüklüyse yeni GNO hesaplanır
+        (tekrar edilen derste son not). Notu verilmeyen bir ders için her harf notunun gerektirdiği en düşük puanı (yalnız
+        vize verildiyse en düşük finali) ve yol açacağı GNO'yu döndürür; hedef_gno verilirse onu sağlayan en düşük notu.
+
+        Args:
+            dersler: Dersler; her biri adıyla ve kullanıcının verdiği puan, vize, final ya da harf notuyla. Notu sorulan
+                (bilinmeyen) en fazla bir ders notsuz gönderilir.
+            hedef_gno: Ulaşılmak ya da altına düşülmemek istenen ortalama (ör. 2.0, 3.0); yoksa 0.
+            final_agirligi: Dönem sonu sınavının başarı notuna etkisi (yüzde); kullanıcı belirtmediyse 60.
+        """
+        courses = [d.model_dump() if isinstance(d, BaseModel) else dict(d) for d in dersler]
+        try:
+            report = gpa.simulate(transcript, plan, courses, target_gpa=hedef_gno or None, final_weight=final_agirligi)
+        except ValueError as e:
+            return f"Hesap yapılamadı: {e}"
+        return gpa.report_text(report)
+
     def get_graduation_requirements() -> str:
         """Bölümün mezuniyet şartlarını transkript olmadan döndürür: öğretim planının toplam AKTS'si, zorunlu dersler,
         stajlar, seçmeli yuvaları ve AKTS'leri, Alan Dışı Seçmeli Ders ve kayıt yılı istisnası, GNO alt sınırı ve
@@ -383,6 +426,7 @@ def make_tools(retriever, plan, transcript, confirmations, today, with_requireme
 
     tools = (search_regulations, analyze_transcript, confirm_equivalence, simulate_courses, get_offered_electives,
              get_course_schedule) + ((get_graduation_requirements,) if with_requirements else ()) + (
+             (simulate_grades,) if with_grades else ()) + (
              (request_new_tool,) if code_runner is not None else ())
     return [StructuredTool.from_function(f) for f in tools]
 
@@ -396,6 +440,7 @@ class AdvisorAgent:
         self.plan = plan
         self.system = AGENT_PROMPTS[prompt_version]
         self.with_requirements = prompt_version in REQUIREMENTS_TOOL_PROMPTS
+        self.with_grades = prompt_version in GRADES_TOOL_PROMPTS
         self.transcript_detail = prompt_version in TRANSCRIPT_DETAIL_PROMPTS
         self.handoff = prompt_version in HANDOFF_PROMPTS
         # Anlık tool yalnız v7'de ve bir çalıştırıcı verildiyse açılır (testler sahtesini verir).
@@ -432,6 +477,7 @@ class AdvisorAgent:
         documents = {}  # corpus dışı kaynak belgeler (öğretim planı, ders programı)
         tools = make_tools(self.retriever, self.plan, transcript, {} if confirmations is None else confirmations, today,
                            with_requirements=self.with_requirements, transcript_detail=self.transcript_detail,
+                           with_grades=self.with_grades,
                            code_runner=self.code_runner, generated=generated, found=found)
         by_name = {t.name: t for t in tools}
         llm = self.llm.bind_tools(tools)

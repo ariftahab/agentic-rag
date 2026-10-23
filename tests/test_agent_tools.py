@@ -383,10 +383,26 @@ def test_handoff_without_a_transcript_sends_no_transcript_file():
     assert sorted(runner.received["files"]) == ["ders_programi.json", "ogretim_plani.json"]
 
 
-def test_agent_v9_prompt_replaces_only_the_new_tool_rule():
+def test_only_agent_v10_sees_the_grades_tool_and_it_uses_the_session_transcript():
+    llm = ScriptedChatModel([AIMessage("", tool_calls=[{"name": "simulate_grades", "id": "1", "args": {
+        "dersler": [{"ad": "Fizik I", "puan": 62}]}}]), AIMessage("cevap")])
+    AdvisorAgent(retriever=None, llm=llm, plan=PLAN, prompt_version="agent_v10",
+                 code_runner=FakeHandoffRunner()).ask("Fizik I'den 62 aldım, ortalamam?", transcript=SAMPLE)
+    content = next(m for m in llm.received[-1] if isinstance(m, ToolMessage)).content
+    assert "DC" in content and "yeni GNO: 2.75" in content            # FF yerine DC: (6·3 + 6·2,5) / 12
+    assert "simulate_grades" in llm.tools
+    for version in ("agent_v7", "agent_v9"):
+        llm = ScriptedChatModel([AIMessage("cevap")])
+        AdvisorAgent(retriever=None, llm=llm, plan=PLAN, prompt_version=version, code_runner=FakeRunner()).ask("x")
+        assert "simulate_grades" not in llm.tools
+
+
+def test_prompt_versions_v9_and_v10_change_one_rule_each():
     from agent import AGENT_PROMPTS
-    v7, v9 = AGENT_PROMPTS["agent_v7"].splitlines(), AGENT_PROMPTS["agent_v9"].splitlines()
+    v7, v9, v10 = (AGENT_PROMPTS[v].splitlines() for v in ("agent_v7", "agent_v9", "agent_v10"))
     assert [line for line in v9 if line not in v7] == [next(l for l in v9 if "devredilir" in l)]
+    added = [line for line in v10 if line not in v9]
+    assert len(added) == 1 and "simulate_grades" in added[0] and [line for line in v9 if line not in v10] == []
 
 
 # --- Kaynaklar (#16, #17): cevabın dayandığı chunk'lar ve corpus dışı belgeler ---
