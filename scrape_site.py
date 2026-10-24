@@ -83,7 +83,12 @@ def parse_date(text):
 def _clean_title(a):
     for badge in a.select("span.blink"):  # "Yeni", "Önemli" etiketleri
         badge.decompose()
-    return a.get_text(" ", strip=True)
+    return _strip_invisible(a.get_text(" ", strip=True))
+
+
+def _strip_invisible(text):
+    """Görünmez karakterleri atar (bölüm sayfasında bir başlık zero-width space ile başlıyordu, 2026-10-24)."""
+    return re.sub("[\u200b-\u200d\ufeff]", "", text).strip()
 
 
 def parse_list(soup, base_url):
@@ -233,7 +238,7 @@ def build_record(item, detail, summarizer, birim):
     ozet = (summary["ozet"] if summary else None) or None  # boş metin (yalnız resim/ek) da özetsiz
     if ozet and detail["yonlendirmeler"]:
         ozet += "\nYönlendirme: " + "; ".join(f"{r['ad']} ({r['link']})" for r in detail["yonlendirmeler"])
-    return {"link": item["link"], "baslik": detail["baslik"] or item["baslik"], "tarih": detail["tarih"] or item["tarih"],
+    return {"link": item["link"], "baslik": _strip_invisible(detail["baslik"] or item["baslik"]), "tarih": detail["tarih"] or item["tarih"],
             "birim": birim,
             "metin": text, "ozet": ozet, "tarihler": summary["tarihler"] if summary else [],
             "ekler": detail["ekler"] + detail["yonlendirmeler"]}

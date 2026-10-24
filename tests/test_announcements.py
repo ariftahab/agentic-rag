@@ -92,6 +92,15 @@ def test_parse_list_reads_link_title_and_iso_date():
     assert items[1]["tarih"] == "2024-03-13"
 
 
+def test_invisible_characters_are_removed_from_titles():
+    html = ('<div class="blog-post-inner"><ul><li><a href="/x/1">\u200b2026-2027 Güz Dönemi Ders Programı</a>'
+            ' - <span class="event-date"> 02 Eylül 2026 Çarşamba </span></li></ul></div>')
+    item = scrape_site.parse_list(BeautifulSoup(html, "html.parser"), "http://bm.muhendislik.ibu.edu.tr/tr/news")[0]
+    assert item["baslik"] == "2026-2027 Güz Dönemi Ders Programı"
+    detail = {"baslik": "\u200b2026-2027 Güz Dönemi Ders Programı", "tarih": None, "metin": "kısa",
+              "ekler": [], "yonlendirmeler": []}
+    assert scrape_site.build_record(item, detail, None, "b")["baslik"] == "2026-2027 Güz Dönemi Ders Programı"
+
 def test_short_redirect_announcement_skips_llm_and_copies_links():
     url = "https://muhendislik.ibu.edu.tr/tr/news-detail/2026-af-yasasi-basvuru/22828"
     detail = scrape_site.parse_detail(BeautifulSoup(DETAIL_HTML, "html.parser"), url)
