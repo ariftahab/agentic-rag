@@ -42,7 +42,7 @@ Durum: agent varsayılanı `agent_v4`; en yeni sürüm `agent_v7` (v6 + anlık t
   doğru. Bedeli gecikme (4,3 sn → 10,5-11,8 sn; kullanıcı: önemli değil) ve ücret (koşu 0,27 $, caching'le 0,12 $; Gemini
   ücretsiz kotadaydı ama deneyleri yarıda kesiyordu). Yeni hata türleri: çok değerli hesabı elle toplama, kodda iki
   şubeyi çift sayma, kaynaksız genel bilgi ekleme, ders programı sorgularında gereksiz kod. "Bu dönem haftada kaç saat
-  derse giriyorum?" (27; h1'de 14,5, h2'de 29) **çözülmeyecek** (kullanıcı kararı: bulgu olarak kalır).
+  derse giriyorum?" (27; h1'de 14,5, h2'de 29) bulgu olarak bırakılmıştı; agent_h6 şube planıyla doğru cevaplıyor (EXP-015).
 - **Duyurular ve personel (2026-10-23, yalnız branch `exp/haiku-agent`; a4961a6, e9063cc, c755e33, 1d7d161):**
   `scrape_site.py` her gece Mühendislik Fakültesi ve üniversite geneli duyuru sayfalarını tarar, yeni duyuruyu bir
   kez Haiku ile özetler (linkler kodla kopyalanır) ve `data/duyurular.db`'ye yazar (git'e girmez). agent_h3 = h2 +
@@ -54,8 +54,18 @@ Durum: agent varsayılanı `agent_v4`; en yeni sürüm `agent_v7` (v6 + anlık t
   1/15, h3 13-14/15; answer_acc 0,83 → 0,96 (p<0,05), eski sorular anlamca aynı, gecikme ~10 sn. "Bilgisayar
   Donanımı ana bilim dalı başkanı kim?" boş döndü (personel tool'u parantezdeki birimi aramıyordu); **EXP-014
   (agent_h4, tam koşu yok):** arama birimi de kapsar, görev adıyla eşleşen öne alınır; teşhiste düzeldi, EXP-013'ün
-  diğer personel çağrıları aynı sonucu verir. Branch'in web agent'ı h4. Açık: hafif tool kayması (staj raporu
-  sorusu duyuruları da aradı).
+  diğer personel çağrıları aynı sonucu verir. Açık: hafif tool kayması (staj raporu sorusu duyuruları da aradı).
+- **Branch'te 2026-10-24 (ikinci yarı):** Bilgisayar Mühendisliği Bölümü duyuru sayfası scraper'a eklendi (aynı
+  ayrıştırıcılar, kendi birimiyle); duyuru metni satır içi etiketlerde artık bölünmüyor ("<strong>5</strong>00 TL"
+  5 TL okunuyordu; depo yeniden okundu); scraper JSON kopyası yazmıyor, depo tek kaynak. agent_h5: duyuru tool'unun
+  açıklaması bölüm sayfasını sayar. Haiku'nun kodları `logs/anlik_tool.jsonl`'de. **EXP-015 (agent_h6, sorular_v6):**
+  Haiku'nun deneylerde en sık kodla yazdığı hesaplar kalıcı tool: `get_transcript_average` (belirli dersler, ilk N
+  yıl, Erasmus hariç; Madde 27-28), `search_course_schedule` (bütün hafta, derslik, şube), `plan_course_sections`
+  (çakışma, boş gün, haftalık ders saati). 8 taşınan soru 8/8 kodsuz doğru, kod çalışan soru 9 → 1, diğerleri anlamca
+  aynı; haftalık ders saati sorusu da artık doğru (27). Web agent'ı branch'te h6. **Açık:** (1) duyuru eklerindeki
+  PDF'ler okunmuyor (yalnız link); (2) gece taraması zamanlanmamış (scraper elle çalışıyor); (3) genel kaynağın
+  5 gün sınırı: tarama bir gün atlanırsa o günün genel duyuruları hiç alınmaz. 90 güne çıkarma değişikliği git
+  stash'te (geriye dönük 131 duyuru, maliyet yüzünden şimdilik yapılmadı, kullanıcı kararı).
 - **(Çözüldü, EXP-008) Sonraki iş adayı (EXP-005 bulgusu):** puan → harf notu → ortalama zinciri hiç kurulmuyor: yönetmelikteki katsayı
   tablosu (BB 3,50) ve GNO kuralları sandbox'ta yok, agent mevzuattan bulduğunu göreve aktarmıyor, Haiku standart YÖK
   tablosunu varsayıyor. Seçenekler: not tablosunu sandbox'a dosya olarak vermek ya da deterministik bir GNO what-if tool'u.
