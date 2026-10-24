@@ -62,10 +62,15 @@ Durum: agent varsayılanı `agent_v4`; en yeni sürüm `agent_v7` (v6 + anlık t
   Haiku'nun deneylerde en sık kodla yazdığı hesaplar kalıcı tool: `get_transcript_average` (belirli dersler, ilk N
   yıl, Erasmus hariç; Madde 27-28), `search_course_schedule` (bütün hafta, derslik, şube), `plan_course_sections`
   (çakışma, boş gün, haftalık ders saati). 8 taşınan soru 8/8 kodsuz doğru, kod çalışan soru 9 → 1, diğerleri anlamca
-  aynı; haftalık ders saati sorusu da artık doğru (27). Web agent'ı branch'te h6. **Açık:** (1) duyuru eklerindeki
-  PDF'ler okunmuyor (yalnız link); (2) gece taraması zamanlanmamış (scraper elle çalışıyor); (3) genel kaynağın
-  5 gün sınırı: tarama bir gün atlanırsa o günün genel duyuruları hiç alınmaz. 90 güne çıkarma değişikliği git
-  stash'te (geriye dönük 131 duyuru, maliyet yüzünden şimdilik yapılmadı, kullanıcı kararı).
+  aynı; haftalık ders saati sorusu da artık doğru (27). Web agent'ı branch'te h6. Duyuru eklerindeki PDF'ler okunmaz,
+  yalnız link verilir (kullanıcı kararı 2026-10-24: link yeterli). EXP-015'te metriğin yanlış saydığı üç sorunun
+  üçü de anlamca doğru; tek gerçek eksik: "Bu dönem Algoritma Analizi'ni geçersem mezun olabilir miyim?" açık yuvanın
+  adını (Seçmeli VIII) yazmadı.
+- **Gece taraması (bir ara yapılacak, kullanıcı kararı 2026-10-24):** `scrape_site.py` için Windows Görev
+  Zamanlayıcı'da her gece çalışan bir görev kurulacak; şu an scraper elle çalışıyor. Genel kaynak her taramada yalnız
+  son 5 günü alıyor: tarama bir gün atlanırsa o günün genel duyuruları hiç alınmaz. 90 güne çıkarma değişikliği
+  branch'te git stash'te (yalnız yerelde); uygulanırsa ilk taramada geriye dönük ~131 duyuru çekilir (maliyet yüzünden
+  şimdilik yapılmadı).
 - **(Çözüldü, EXP-008) Sonraki iş adayı (EXP-005 bulgusu):** puan → harf notu → ortalama zinciri hiç kurulmuyor: yönetmelikteki katsayı
   tablosu (BB 3,50) ve GNO kuralları sandbox'ta yok, agent mevzuattan bulduğunu göreve aktarmıyor, Haiku standart YÖK
   tablosunu varsayıyor. Seçenekler: not tablosunu sandbox'a dosya olarak vermek ya da deterministik bir GNO what-if tool'u.
