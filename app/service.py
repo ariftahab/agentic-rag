@@ -13,6 +13,8 @@ Tek istisna delete(): yöneticinin istediği bir soru-cevap (ör. uygunsuz soru)
 
 Agent (transkriptli danışmanlık) istekleri ayrı bir dosyaya, yalnız metadata olarak yazılır:
   logs/agent.jsonl          agent soru-cevapları: soru, cevap, tool çağrıları (argümanlarıyla), süre, hata türü
+  logs/anlik_tool.jsonl     Haiku'nun yazıp çalıştırdığı kodlar (soru, kod, çıktı, Haiku'nun cevabı); "id" ile
+                            agent.jsonl'e bağlı. İşe yarayan hesaplar buradan kalıcı tool'a çevrilir.
 Transkript yükleme hiçbir şey yazmaz: PDF bellekte okunur, sonuç istemciye döner ve unutulur.
 """
 import io
@@ -75,6 +77,7 @@ class ChatService:
         self.feedback_log = log_dir / "geri_bildirim.jsonl"
         self.evaluation_log = log_dir / "degerlendirme.jsonl"
         self.agent_log = log_dir / "agent.jsonl"
+        self.code_log = log_dir / "anlik_tool.jsonl"
         self._chunks = {c.metadata["chunk_id"]: c for c in bot.retriever.chunks}
         # Sunucu açılırken bir kez okunur: hangi kod sürümü cevap veriyor? (commit edilmemiş değişiklik varsa "-dirty")
         commit = _git("rev-parse", "--short", "HEAD")
@@ -235,6 +238,7 @@ class ChatService:
                                    + [self._document_info(d) for d in result.get("documents", [])])
             if result.get("generated_code"):  # request_new_tool'un ürettiği kod: hangi anlık tool'lar istendi (#18)
                 record["uretilen_kod"] = result["generated_code"]
+                self._log_code(record, result["generated_code"])
         except Exception as e:
             record["hata"] = type(e).__name__
             raise
@@ -245,6 +249,16 @@ class ChatService:
             self._agent_ids.add(record["id"])
         return {"id": record["id"], "answer": result["answer"], "tool_calls": result["tool_calls"],
                 "sources": record["kaynaklar"], "confirmations": confirmations, "latency_ms": record["latency_ms"]}
+
+    def _log_code(self, record, generated):
+        """Kod çalışan her soru için anlik_tool.jsonl'e bir satır: yalnız kod adımları ve çıktıları (tool çağrıları ve ara
+        metinler agent.jsonl'de)."""
+        codes = [{"kod": step["kod"], "cikti": step["cikti"]}
+                 for item in generated for step in item.get("adimlar", []) if step["tip"] == "kod"]
+        if codes:
+            self._append(self.code_log, {"id": record["id"], "zaman": record["zaman"], "soru": record["soru"],
+                                         "transkript": record["transkript"], "kodlar": codes,
+                                         "haiku_cevabi": generated[-1].get("haiku_cevabi")})
 
     def feedback(self, answer_id, rating, note=None):
         """rating: 1 (👍) ya da -1 (👎). Bilinmeyen bir cevap kimliği için KeyError."""
@@ -314,7 +328,8 @@ class ChatService:
         # Okuma-yazma arasında başka bir istek dosyaya satır eklemesin diye kilit bütün işlem boyunca tutulur.
         with self._lock:
             removed = {path.name: self._remove_id(path, answer_id)
-                       for path in (self.chat_log, self.agent_log, self.feedback_log, self.evaluation_log)}
+                       for path in (self.chat_log, self.agent_log, self.code_log, self.feedback_log,
+                                    self.evaluation_log)}
             self._known_ids.discard(answer_id)
             self._agent_ids.discard(answer_id)
         return removed

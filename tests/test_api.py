@@ -198,12 +198,33 @@ def test_generated_code_is_logged(tmp_path):
         AIMessage(ANSWER),
     ], prompt_version="agent_v7", code_runner=FakeCodeRunner())
     assert client.post("/agent/ask", json={"question": "3. sınıfın haftada kaç saat dersi var?"}).status_code == 200
-    record = json.loads(log_text(tmp_path))
+    record = json.loads((tmp_path / "agent.jsonl").read_text(encoding="utf-8"))
     [item] = record["uretilen_kod"]
     assert (item["gorev"], item["haiku_cevabi"]) == ("haftalık ders saati", "Toplam 21 saat.")
     assert item["adimlar"] == [{"tip": "kod", "kod": "print(21)", "cikti": "21\n"}]
     assert record["cevap"] == ANSWER                        # Gemini'nin son cümlesi ayrı: kim neyi yazdı görünür
 
+
+
+def test_generated_code_also_goes_to_its_own_log(tmp_path):
+    # Haiku'nun yazdığı kodlar ayrı dosyada: işe yarayanlar kalıcı tool'a çevrilmek için buradan taranır.
+    client = make_client(tmp_path, [
+        AIMessage("", tool_calls=[{"name": "request_new_tool", "id": "1", "args": {"gorev": "haftalık ders saati"}}]),
+        AIMessage(ANSWER),
+    ], prompt_version="agent_v7", code_runner=FakeCodeRunner())
+    client.post("/agent/ask", json={"question": "3. sınıfın haftada kaç saat dersi var?"})
+    agent_record = json.loads((tmp_path / "agent.jsonl").read_text(encoding="utf-8"))
+    [record] = [json.loads(line) for line in (tmp_path / "anlik_tool.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert record["id"] == agent_record["id"]
+    assert record["soru"] == "3. sınıfın haftada kaç saat dersi var?"
+    assert record["kodlar"] == [{"kod": "print(21)", "cikti": "21\n"}]
+    assert record["haiku_cevabi"] == "Toplam 21 saat."
+
+
+def test_answer_without_code_writes_no_code_log(tmp_path):
+    client = make_client(tmp_path, confirm_then_answer())
+    client.post("/agent/ask", json={"question": QUESTION, "transcript": SAMPLE})
+    assert not (tmp_path / "anlik_tool.jsonl").exists()
 
 class FailingCodeRunner:
     def run(self, task, files):
