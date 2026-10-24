@@ -153,6 +153,48 @@ def test_staff_search_by_name_and_role_not_unit():
     assert "bulunamadı" in announcements.staff_text(announcements.search_staff(STAFF, "Mehmet"), "Mehmet")
 
 
+# Birim aramasının tuzakları: aynı birimde ana bilim dalı başkanı ve öğretim üyesi, birim adında "Bölüm Başkanlığı"
+# geçen araştırma görevlisi, başka birimin ana bilim dalı başkanı.
+STAFF_UNITS = {"personel": [
+    {"ad": "Prof. Dr. Hünkar Kayhan", "dahili": None, "eposta": "hunkar_k@ibu.edu.tr",
+     "gorevler": ["Bölüm Başkanı (Bilgisayar Mühendisliği Bölümü Başkanlığı)",
+                  "Ana Bilim Dalı Başkanı (Bilgisayar Yazılımı Ana Bilim Dalı Başkanlığı)"]},
+    {"ad": "Doç. Dr. Ali Çalım", "dahili": None, "eposta": "ali.calim@ibu.edu.tr",
+     "gorevler": ["Bölüm Başkan Yardımcısı (Bilgisayar Mühendisliği Bölümü Başkanlığı)"]},
+    {"ad": "Arş. Gör. Alperen Akgül", "dahili": None, "eposta": "alperen.akgul@ibu.edu.tr",
+     "gorevler": ["Araştırma Görevlisi (Bilgisayar Mühendisliği Bölümü Başkanlığı)"]},
+    {"ad": "Doç. Dr. Mehmet Dinçer Erbaş", "dahili": "5889", "eposta": "dincer.erbas@ibu.edu.tr",
+     "gorevler": ["Ana Bilim Dalı Başkanı (Bilgisayar Donanımı Ana Bilim Dalı Başkanlığı)"]},
+    {"ad": "Dr. Öğr. Üyesi Mehmet Milli", "dahili": None, "eposta": "mehmet.milli@ibu.edu.tr",
+     "gorevler": ["Öğretim Üyesi (Bilgisayar Donanımı Ana Bilim Dalı Başkanlığı)"]},
+]}
+
+
+def _names(sorgu):
+    return [p["ad"] for p in announcements.search_staff_by_unit(STAFF_UNITS, sorgu)]
+
+
+def test_unit_search_finds_head_of_named_unit():
+    assert _names("Bilgisayar Donanımı ana bilim dalı başkanı") == ["Doç. Dr. Mehmet Dinçer Erbaş"]
+    assert announcements.search_staff(STAFF_UNITS, "Bilgisayar Donanımı ana bilim dalı başkanı") == []  # h3
+
+
+def test_unit_search_lists_everyone_in_unit_without_role():
+    assert _names("Bilgisayar Donanımı") == ["Doç. Dr. Mehmet Dinçer Erbaş", "Dr. Öğr. Üyesi Mehmet Milli"]
+
+
+def test_unit_search_keeps_role_matches_ahead_of_unit_only_matches():
+    # Akgül'de "bölüm başkanı" yalnız birim adında geçer: görev adıyla eşleşenler varken dönmez.
+    assert _names("bölüm başkanı") == ["Doç. Dr. Ali Çalım", "Prof. Dr. Hünkar Kayhan"]
+    assert _names("ana bilim dalı başkanı") == ["Doç. Dr. Mehmet Dinçer Erbaş", "Prof. Dr. Hünkar Kayhan"]
+
+
+def test_unit_search_by_name_and_empty_query_unchanged():
+    assert _names("Ali Çalım") == ["Doç. Dr. Ali Çalım"]
+    assert len(_names("")) == 5
+    assert _names("Makine Mühendisliği bölüm başkanı") == []
+
+
 def test_staff_file_has_emails_for_everyone():
     staff = announcements.load_staff()
     assert staff["personel"] and all(p["eposta"].endswith("@ibu.edu.tr") for p in staff["personel"])
@@ -187,3 +229,15 @@ def test_h3_agent_has_site_tools_and_older_versions_do_not(conn, tmp_path):
     AdvisorAgent(retriever=None, llm=None, plan={"zorunlu_dersler": []}, prompt_version="agent_h2",
                  code_runner=old).ask("soru")
     assert "get_announcements" not in old.received["tools"]
+
+
+def test_h4_staff_tool_searches_units_and_h3_does_not(tmp_path):
+    from agent import make_tools
+    query = {"sorgu": "Bilgisayar Donanımı ana bilim dalı başkanı"}
+    tools = {flag: {t.name: t for t in make_tools(None, {"zorunlu_dersler": []}, None, {}, None,
+                                                   site_db=tmp_path / "d.db", staff_by_unit=flag)}
+             for flag in (False, True)}
+    assert "bulunamadı" in tools[False]["get_academic_staff"].invoke(query)
+    assert "Mehmet Dinçer Erbaş" in tools[True]["get_academic_staff"].invoke(query)
+    assert AdvisorAgent(None, None, {"zorunlu_dersler": []}, prompt_version="agent_h4").staff_by_unit
+    assert not AdvisorAgent(None, None, {"zorunlu_dersler": []}, prompt_version="agent_h3").staff_by_unit

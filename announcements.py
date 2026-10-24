@@ -153,6 +153,26 @@ def search_staff(staff, sorgu=""):
     return out
 
 
+def search_staff_by_unit(staff, sorgu=""):
+    """search_staff + görevin parantezdeki birimi (agent_h4). EXP-013'te "Bilgisayar Donanımı ana bilim dalı başkanı"
+    boş döndü: "Bilgisayar Donanımı" yalnız birimde geçiyor. Kelimelerin hepsi aynı görevin adında, biriminde ya da
+    kişinin adında geçmeli; adda ve görev adında eşleşen kelime sayısı en yüksek olanlar döner. Böylece "bölüm
+    başkanı" araması, kelimeler yalnız biriminde ("Bölüm Başkanlığı") geçen araştırma görevlisini döndürmez."""
+    words = set(tokenize(sorgu or ""))
+    scored = []
+    for p in sorted(staff["personel"], key=lambda p: p["ad"]):
+        scores = []
+        for g in p["gorevler"] or [""]:
+            role, _, unit = g.partition(" (")
+            own = set(tokenize(p["ad"] + " " + role))
+            if words <= own | set(tokenize(unit)):
+                scores.append(len(words & own))
+        if scores:
+            scored.append((max(scores), p))
+    best = max((s for s, _ in scored), default=0)
+    return [p for s, p in scored if s == best]
+
+
 def staff_text(people, sorgu=""):
     if not people:
         return (f'"{sorgu}" ile eşleşen öğretim elemanı bulunamadı. Liste yalnız Bilgisayar Mühendisliği Bölümü '
