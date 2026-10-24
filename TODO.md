@@ -51,9 +51,11 @@ Durum: agent varsayılanı `agent_v4`; en yeni sürüm `agent_v7` (v6 + anlık t
   branch'te h3. **EXP-012/013 (2026-10-24):** sorular_v5 (v4 + 14 duyuru/personel sorusu; bölüm başkanı sorusu
   artık personelden cevaplanıyor), deneyler sabit gün (2026-10-24) ve duyuru snapshot'ıyla (`eval/duyurular_v1.json`,
   38 duyuru; runner değişikliği yalnız branch'te, production canlı depoyu okur). h2 baseline'ı yeni sorularda anlamca
-  1/15, h3 13-14/15; answer_acc 0,83 → 0,96 (p<0,05), eski sorular anlamca aynı, gecikme ~10 sn. **Açık:** personel
-  tool'u görevin parantezdeki birimini aramıyor; "Bilgisayar Donanımı ana bilim dalı başkanı kim?" boş döndü (agent
-  görev adıyla yeniden denemedi). Hafif tool kayması: staj raporu sorusu duyuruları da aradı.
+  1/15, h3 13-14/15; answer_acc 0,83 → 0,96 (p<0,05), eski sorular anlamca aynı, gecikme ~10 sn. "Bilgisayar
+  Donanımı ana bilim dalı başkanı kim?" boş döndü (personel tool'u parantezdeki birimi aramıyordu); **EXP-014
+  (agent_h4, tam koşu yok):** arama birimi de kapsar, görev adıyla eşleşen öne alınır; teşhiste düzeldi, EXP-013'ün
+  diğer personel çağrıları aynı sonucu verir. Branch'in web agent'ı h4. Açık: hafif tool kayması (staj raporu
+  sorusu duyuruları da aradı).
 - **(Çözüldü, EXP-008) Sonraki iş adayı (EXP-005 bulgusu):** puan → harf notu → ortalama zinciri hiç kurulmuyor: yönetmelikteki katsayı
   tablosu (BB 3,50) ve GNO kuralları sandbox'ta yok, agent mevzuattan bulduğunu göreve aktarmıyor, Haiku standart YÖK
   tablosunu varsayıyor. Seçenekler: not tablosunu sandbox'a dosya olarak vermek ya da deterministik bir GNO what-if tool'u.

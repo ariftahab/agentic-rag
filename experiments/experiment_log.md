@@ -25,6 +25,7 @@ Kalın hücre = parent'a göre değişen parametre.
 | EXP-011 | EXP-010 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | **agent_h2** | claude-haiku-5-5 | 685 |
 | EXP-012 | EXP-011 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | agent_h2 | claude-haiku-5-5 | 685 |
 | EXP-013 | EXP-012 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | **agent_h3** | claude-haiku-5-5 | 685 |
+| EXP-014 | EXP-013 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | **agent_h4** | claude-haiku-5-5 | – |
 
 ## 2. Results
 
@@ -43,6 +44,7 @@ Kalın hücre = parent'a göre değişen parametre.
 | EXP-011 | agent_h2: tek model Haiku + çok değerli hesaplar kodda; prompt caching (sorular_v4, branch exp/haiku-agent) | v4 | – | – | – | – | – | – | hesap = değişmedi (p=1.00, anlamlı değil) | ✗ |
 | EXP-012 | agent_h2 baseline'ı sorular_v5'te (duyuru ve personel soruları; branch exp/haiku-agent) | v5 | – | – | – | – | – | – | referans (yeni soru seti, karşılaştırma yok) | – |
 | EXP-013 | agent_h3: duyuru ve personel tool'ları (sorular_v5, branch exp/haiku-agent) | v5 | – | – | – | – | – | – | answer acc. ↑ iyileşti (p=0.01, anlamlı) | ✓ |
+| EXP-014 | agent_h4: personel araması görevin birimini de arar (sorular_v5, branch exp/haiku-agent; tam koşu yok) | | | | | | | | koşulmadı | |
 
 Hyp.: ✓ doğrulandı · ✗ doğrulanmadı · ~ yön doğru ama anlamlı değil
 
@@ -79,3 +81,4 @@ Tool seçimi: beklenen tool'lar doğru argümanlarla çağrıldı, beklenmeyen t
 - **EXP-011:** agent_h2: cevaplar 56/56, haftalık saat kodla ama şube çift sayıldı (29, doğrusu 27); ders programı sorgularında gereksiz kod; caching'le koşu 0,27 → 0,12 $.
 - **EXP-012:** agent_h2 sorular_v5'te: eski 69 soru EXP-011 ile aynı; duyuru/personel soruları anlamca 1/15 (tool yok).
 - **EXP-013:** agent_h3: answer_acc 0,83 → 0,96 (p<0,05); duyuru/personel anlamca 13-14/15 (h2 1/15); birim adıyla personel araması boş dönüyor.
+- **EXP-014:** agent_h4: personel araması birimi de arıyor; Bilgisayar Donanımı ana bilim dalı başkanı düzeldi, diğer çağrılar aynı (tam koşu yok).
