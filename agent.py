@@ -598,14 +598,14 @@ class AdvisorAgent:
         return cls(Retriever(cfg, store, chunks), llm, graduation.load_plan(), prompt_version=prompt_version,
                    code_runner=codeact.CodeRunner() if prompt_version in CODE_TOOL_PROMPTS else None)
 
-    def ask(self, question, history=None, transcript=None, on_tool_call=None, confirmations=None):
+    def ask(self, question, history=None, transcript=None, on_tool_call=None, confirmations=None, today=None):
         """Cevap üretir. `on_tool_call(name, args)` verilirse her tool çağrısında çağrılır (terminalde göstermek için).
         `confirmations` oturumun eşdeğerlik teyitleridir ({plan dışı ders kodu: plan ders kodu | None}); transkript
         gibi çağıran taraf saklar, confirm_equivalence yerinde günceller.
 
         Dönüş: {"answer", "tool_calls": [{"name", "args"}], "turns", "usage"}.
         """
-        today = date.today()
+        today = today or date.today()  # deneyler sabit bir gün verir (soru setinin 'bugun' alanı)
         generated = []  # request_new_tool'un ürettiği kodlar (log için)
         found = []      # cevabın dayandığı chunk'lar: search_regulations sonuçları ve tool çıktılarındaki kural atıfları
         documents = {}  # corpus dışı kaynak belgeler (öğretim planı, ders programı)

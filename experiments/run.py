@@ -18,7 +18,7 @@ import re
 import statistics
 import sys
 import time
-from datetime import datetime
+from datetime import date, datetime
 
 import config
 from experiments import evaluation as ev
@@ -250,11 +250,26 @@ def answer_rows(bot, items, wait):
     return rows, True
 
 
-def make_agent(exp_id, cfg):
+def site_snapshot(name):
+    """Soru setinin duyuru anlık görüntüsünden (eval/<ad>.json) geçici bir depo kurar; production deposu
+    (data/duyurular.db) her gece değiştiği için deneyler onu kullanmaz. Dönüş: veritabanı yolu."""
+    import tempfile
+    from pathlib import Path
+    import announcements
+    path = Path(tempfile.mkdtemp(prefix="duyurular_")) / "duyurular.db"
+    conn = announcements.connect(path)
+    try:
+        announcements.import_json(conn, config.ROOT / "eval" / f"{name}.json")
+    finally:
+        conn.close()
+    return path
+
+
+def make_agent(exp_id, cfg, site_db=None):
     """Deneyin agent'ı: config'teki retrieval hattı (search_regulations), LLM modeli ve agent prompt'u.
 
     Model agent.AGENT_LLM_MODEL sabitinden değil config'ten alınır; böylece kullanılan model sonuçta kayıtlıdır.
-    Dönüş: (agent, index manifest'i)."""
+    site_db: duyuru tool'unun deposu (yalnız agent_h3 kullanır). Dönüş: (agent, index manifest'i)."""
     from langchain_google_genai import ChatGoogleGenerativeAI
     import graduation
     import ingest
@@ -266,7 +281,8 @@ def make_agent(exp_id, cfg):
     if cfg.prompt_version in SINGLE_MODEL_PROMPTS:  # tek model (agent_h1): döngünün tamamı config'teki Claude modelinde
         import codeact
         agent = AdvisorAgent(Retriever(cfg, store, chunks), None, graduation.load_plan(),
-                             prompt_version=cfg.prompt_version, code_runner=codeact.CodeRunner(model=cfg.llm_model))
+                             prompt_version=cfg.prompt_version, code_runner=codeact.CodeRunner(model=cfg.llm_model),
+                             site_db=site_db)
         return agent, manifest
     llm = ChatGoogleGenerativeAI(model=cfg.llm_model, temperature=cfg.llm_temperature, max_retries=2,
                                  timeout=REQUEST_TIMEOUT_S)
@@ -278,7 +294,7 @@ def make_agent(exp_id, cfg):
     return agent, manifest
 
 
-def agent_rows(agent, items, wait, plan, transcripts_dir=None):
+def agent_rows(agent, items, wait, plan, transcripts_dir=None, today=None):
     """Her soruyu agent'a sorar; cevap, tool çağrıları (ad + argümanlar), tur sayısı ve agent metrikleri.
 
     Soru alanları: 'gecmis' (takip sorusu), 'transkript' (fixture adı; oturumdaki transkript), 'teyitler'
@@ -302,7 +318,7 @@ def agent_rows(agent, items, wait, plan, transcripts_dir=None):
         started = time.perf_counter()
         try:
             out = agent.ask(item["soru"], item.get("gecmis"), transcript=transcript,
-                            confirmations=dict(item.get("teyitler") or {}))
+                            confirmations=dict(item.get("teyitler") or {}), today=today)
             row = {"id": item["id"], "answer": out["answer"], "tool_calls": out["tool_calls"], "turns": out["turns"],
                    "agent_ms": round((time.perf_counter() - started) * 1000, 1)}
             if out.get("usage"):
@@ -453,11 +469,14 @@ def run_agent(exp_id, exp, cfg, diff, dataset, dataset_hash, wait):
     """
     import graduation
     from agent import MAX_TURNS
-    agent, manifest = make_agent(exp_id, cfg)
+    # Soru seti sabit bir gün ve duyuru anlık görüntüsü verebilir (sorular_v5); vermezse bugün ve deposuz koşulur.
+    today = date.fromisoformat(dataset["bugun"]) if dataset.get("bugun") else None
+    site = dataset.get("duyuru_deposu")
+    agent, manifest = make_agent(exp_id, cfg, site_db=site_snapshot(site) if site else None)
     items = dataset["sorular"]
     names = sorted({q["transkript"] for q in items if q.get("transkript")})
     started = time.perf_counter()
-    rows, complete = agent_rows(agent, items, wait, graduation.load_plan(), ev.TRANSCRIPTS_DIR)
+    rows, complete = agent_rows(agent, items, wait, graduation.load_plan(), ev.TRANSCRIPTS_DIR, today=today)
     agent_s = time.perf_counter() - started
 
     env = ev.environment(cfg)
@@ -475,7 +494,10 @@ def run_agent(exp_id, exp, cfg, diff, dataset, dataset_hash, wait):
         "environment": env,
         "agent": {"prompt_version": cfg.prompt_version, "max_tur": MAX_TURNS,
                   # Agent bugünün tarihini prompt'a ve ders programı tool'una verir ("yarın" sorularında cevap değişir).
-                  "bugun": datetime.now().date().isoformat(),
+                  "bugun": (today or datetime.now().date()).isoformat(),
+                  "duyuru_deposu": {"dosya": f"eval/{site}.json",
+                                    "hash": ev.file_hash(config.ROOT / "eval" / f"{site}.json")} if site else None,
+                  "personel_hash": ev.file_hash(config.STAFF_PATH),
                   "plan_hash": ev.file_hash(config.PLAN_PATH), "kurallar_hash": ev.file_hash(graduation.RULES_PATH)},
         "retrieval": None,
         "llm": {"tamamlandi": complete, "metrics": agent_metrics(rows), "per_question": rows,

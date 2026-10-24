@@ -201,7 +201,7 @@ class FakeAgent:
         self.replies = replies
         self.received = []
 
-    def ask(self, question, history=None, transcript=None, on_tool_call=None, confirmations=None):
+    def ask(self, question, history=None, transcript=None, on_tool_call=None, confirmations=None, today=None):
         self.received.append({"question": question, "history": history, "transcript": transcript,
                               "confirmations": confirmations})
         reply = self.replies[question]
@@ -392,7 +392,7 @@ def sandbox(tmp_path, monkeypatch):
     monkeypatch.setattr(ev, "TRANSCRIPTS_DIR", TRANSCRIPTS)
     monkeypatch.setattr(ev, "environment", lambda cfg: {"git_commit": "test", "git_dirty": False})
     agent = FakeAgent(REPLIES)
-    monkeypatch.setattr(run, "make_agent", lambda exp_id, cfg: (agent, {"chunks": 123}))
+    monkeypatch.setattr(run, "make_agent", lambda exp_id, cfg, site_db=None: (agent, {"chunks": 123}))
     datasets = lambda name: ev.load_dataset(name)
     return tmp_path, datasets
 
@@ -436,7 +436,7 @@ def test_agent_follow_up_compares_new_metrics_with_parent(sandbox, monkeypatch):
              "params": {**AGENT_EXP["params"], "llm_model": "gemini-3.1-flash-lite"}}
     (tmp_path / "configs" / "EXP-901.json").write_text(json.dumps(child, ensure_ascii=False), encoding="utf-8")
     better = {**REPLIES, ITEMS["D03"]["soru"]: ("...", calls(("get_course_schedule", {"gun": "perşembe", "sinif": 4})))}
-    monkeypatch.setattr(run, "make_agent", lambda exp_id, cfg: (FakeAgent(better), {"chunks": 123}))
+    monkeypatch.setattr(run, "make_agent", lambda exp_id, cfg, site_db=None: (FakeAgent(better), {"chunks": 123}))
     run.run("EXP-901", use_llm=True, wait=0, rerun=False, datasets=datasets)
     comp = json.loads((tmp_path / "results" / "EXP-901.json").read_text(encoding="utf-8"))["karsilastirma"]
     assert comp["ayni_veri_seti"]

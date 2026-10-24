@@ -86,6 +86,12 @@ def export_json(conn, birim, path):
     return path
 
 
+def import_json(conn, path):
+    """export_json biçimindeki bir dosyanın duyurularını depoya yazar (deneylerin sabit anlık görüntüsü için)."""
+    for record in json.loads(path.read_text(encoding="utf-8")):
+        save_announcement(conn, record)
+
+
 def search(conn, konu="", tarihten_beri=None, limit=MAX_RESULTS):
     """Tarih filtresi SQL'de; konu varsa sorgu köklerinden en az biri başlıkta ya da metinde geçen duyurular BM25
     skoruyla sıralanır, yoksa en yeniler. limit=None bütün eşleşenleri döndürür. Dönüş: dict listesi (metin hariç)."""
