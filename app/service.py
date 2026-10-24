@@ -37,7 +37,8 @@ from agent import AdvisorAgent
 # Branch exp/haiku-agent: web'deki agent tek model Claude Haiku: döngünün tamamı, hazır tool'lar ve anlık kod
 # (code_execution) aynı modelde, Gemini yok. agent_h3 = agent_h2 (EXP-011) + duyuru ve akademik personel tool'ları;
 # agent_h4 = h3 + personel araması birimi de arar (EXP-014). Klasik RAG (RagBot) production config'iyle aynı kalır.
-WEB_AGENT_PROMPT_VERSION = "agent_h5"
+# agent_h6 = h5 + transkriptten alt küme ortalaması, bütün haftada program araması, şube planı (EXP-015).
+WEB_AGENT_PROMPT_VERSION = "agent_h6"
 from rag import RagBot, source_label
 
 LOG_DIR = config.ROOT / "logs"
