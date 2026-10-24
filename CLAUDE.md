@@ -58,8 +58,8 @@ yerelde `C:\GitHub\RAG-Study-Notes`); oradaki değişiklikler orada ayrıca comm
 ## Commit kuralları
 - Her commit tek bir mantıksal değişiklik; Conventional Commits, İngilizce, ilk satır ≤ 70 karakter, gövdede yalnız neden.
   Claude `Co-Authored-By` satırı **eklenmez** (tez için commit geçmişi kullanıcının çalışması olarak atıf alır).
-- Branch açılmaz, her şey `main` üzerinde (kullanıcı açıkça istemedikçe). Push'u kullanıcı yapar: Claude yerelde
-  commit'ler ve push komutunu verir (her iki repo için).
+- Branch açılmaz, her şey `main` üzerinde (kullanıcı açıkça istemedikçe). Claude commit'ten sonra push'u da
+  kendisi yapar (her iki repo için; 2026-10-24 izni). Force push önce sorulur.
 - Bug fix ve UI düzeltmelerinde her deneme commit'lenmez; kullanıcı "çalışıyor" deyince yapılanlar özetlenip
   commit'lenir (frontend_backend_log da o zaman yazılır).
 
