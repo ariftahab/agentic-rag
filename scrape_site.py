@@ -1,10 +1,12 @@
-"""Mühendislik Fakültesi ve üniversite geneli duyurularını çeker, data/duyurular.db'ye yazar (announcements.py); her kaynağın duyuruları ayrıca data/duyurular/<kaynak>_duyurular.json'a
+"""Mühendislik Fakültesi, Bilgisayar Mühendisliği Bölümü ve üniversite geneli duyurularını çeker, data/duyurular.db'ye yazar (announcements.py); her kaynağın duyuruları ayrıca data/duyurular/<kaynak>_duyurular.json'a
 (okunabilir kopya). Her gece çalışacak: aynı link ikinci kez işlenmez, yalnız yeni duyurular özetlenir.
 
 Siteler (2026-10-23 incelemesi):
 - Mühendislik (muhendislik.ibu.edu.tr/tr/news): robots.txt yok (adres ana sayfayı döndürüyor). Liste sayfalamasız, bütün
   duyurular tek sayfada (div.blog-post-inner > ul > li: a[href] + span.event-date "09 Ekim 2026 Cuma"). Detayda başlık
   div.widget-main-title h4, metin div.blog-post-inner > div.
+- Bilgisayar Mühendisliği (bm.muhendislik.ibu.edu.tr/tr/news, 2026-10-24): fakülte sayfasıyla aynı sistem, aynı
+  ayrıştırıcılar; robots.txt yok (ana sayfayı döndürüyor). Liste sayfalamasız, 2022'den beri 49 duyuru.
 - Genel (www.ibu.edu.tr, PageID=1349): robots.txt yok (404). Liste sayfalamasız (~1700 duyuru, 2023'ten beri):
   div.duyurular div.liste > div > a[href] (ajanda.ibu.edu.tr), div.date span (gün) + i (ay; yıl yazmaz, sıradan çıkarılır),
   div.als h4 (başlık). Detay ajanda.ibu.edu.tr'de (WordPress; robots.txt yalnız /wp-admin/'i kapatır, REST API 401):
@@ -14,7 +16,7 @@ PDF ya da başka birimin sayfası): kısa metin LLM'e gitmez, kendisi özettir; 
 yazmaz, uyduramaz). Akademik personel taranmaz: liste data/personel_bilgisayar.json'da sabit (announcements.py).
 
 Komut satırı:
-    python scrape_site.py [--kaynak muhendislik|genel] [--limit 3] [--gun 90]
+    python scrape_site.py [--kaynak muhendislik|bm|genel] [--limit 3] [--gun 90]
 """
 import argparse
 import json
@@ -159,6 +161,8 @@ def parse_general_detail(soup, url):
 SOURCES = {
     "muhendislik": {"birim": "Mühendislik Fakültesi", "url": config.ANNOUNCEMENTS_URL, "list": parse_list,
                     "detail": parse_detail, "gun": 90},
+    "bm": {"birim": "Bilgisayar Mühendisliği Bölümü", "url": config.BM_ANNOUNCEMENTS_URL, "list": parse_list,
+           "detail": parse_detail, "gun": 90},
     "genel": {"birim": "BAİBÜ (üniversite geneli)", "url": config.GENERAL_ANNOUNCEMENTS_URL, "list": parse_general_list,
               "detail": parse_general_detail, "gun": 5},
 }

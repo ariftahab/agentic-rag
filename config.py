@@ -25,6 +25,7 @@ EXPERIMENTS_DIR = ROOT / "experiments"
 ANNOUNCEMENTS_DB = DATA_DIR / "duyurular.db"
 ANNOUNCEMENTS_EXPORT_DIR = DATA_DIR / "duyurular"  # kaynak başına okunabilir JSON kopyası
 ANNOUNCEMENTS_URL = "https://muhendislik.ibu.edu.tr/tr/news"
+BM_ANNOUNCEMENTS_URL = "http://bm.muhendislik.ibu.edu.tr/tr/news"  # Bilgisayar Mühendisliği Bölümü (https yok)
 GENERAL_ANNOUNCEMENTS_URL = "https://www.ibu.edu.tr/Website/Contents.aspx?PageID=1349&LangID=1"
 STAFF_URL = "https://muhendislik.ibu.edu.tr/tr/akademikpersonel"  # personel listesinin kaynağı (taranmaz)
 STAFF_PATH = DATA_DIR / "personel_bilgisayar.json"
