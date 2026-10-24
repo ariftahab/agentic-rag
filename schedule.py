@@ -4,6 +4,7 @@ buradan okur. RAG'a girmez; LLM kullanılmaz.
 Komut satırı (veriyi yeniden üretmek için):
     python schedule.py
 """
+import itertools
 import json
 import re
 from datetime import date, timedelta
@@ -11,6 +12,7 @@ from datetime import date, timedelta
 import pdfplumber
 
 import config
+import gpa
 import graduation
 
 PDF_PATH = config.DATA_DIR / "2026_27_Güz_Lisans_v2.pdf"
@@ -312,6 +314,168 @@ def offered_electives_text(offered, slot_name=None):
         for slot in offered["yuvalar"]:
             lines += ["", *_slot_lines(slot)]
     return "\n".join(lines + ["", f"Kaynak: {offered['kaynak']}"])
+
+
+# --- Bütün haftada arama ve şube planı (agent_h6) ---
+# EXP-005 - EXP-013'te "Yapay Zeka hangi gün?", "327'de pazartesi hangi dersler var?", "İşletim Sistemleri I'i B
+# şubesinden alırsam neyle çakışır?" ve "Cuma boş kalsın, hangi şubeler?" sorularında Haiku program dosyasını her
+# seferinde kodla süzdü; lookup() tek bir günü ve yalnız sınıf/ders filtresini biliyor.
+MAX_EXAMPLES = 3
+
+
+def _words(text):
+    return set(gpa.course_key(text).split())
+
+
+def _course_matches(lesson_name, wanted):
+    key = gpa.course_key(lesson_name)
+    return any(gpa.course_key(ALIASES.get(w.strip(), w)) == key for w in wanted)
+
+
+def _day_name(text):
+    t = gpa.course_key(text)
+    return next((d for d in DAYS if gpa.course_key(d) == t), None)
+
+
+def _order(lesson):
+    return DAYS.index(lesson["gun"]), lesson["saatler"][0], lesson["sinif"]
+
+
+def find_lessons(data, courses=None, room=None, section=None, grade=None, day=None):
+    """Bütün haftanın ders blokları; filtreler: ders adları, derslik (numara, kısaltma ya da adı), şube, sınıf, gün adı."""
+    rows = data["dersler"]
+    if courses:
+        rows = [b for b in rows if _course_matches(b["ders"], courses)]
+    if room:
+        want = _words(room)
+        rows = [b for b in rows if b["derslik"] and (gpa.course_key(b["derslik"]) == gpa.course_key(room)
+                                                     or want <= _words(ROOMS.get(b["derslik"], b["derslik"])))]
+    if section:
+        rows = [b for b in rows if (b["sube"] or "") == section.strip().upper()]
+    if grade:
+        rows = [b for b in rows if b["sinif"] == grade]
+    if day:
+        rows = [b for b in rows if b["gun"] == _day_name(day)]
+    return sorted(rows, key=_order)
+
+
+def _block_line(b, data):
+    time = f"{b['gun']} {b['saatler'][0][:5]}-{b['saatler'][-1][-5:]}"
+    room = data["derslikler"].get(b["derslik"], b["derslik"]) or "derslik belirtilmemiş"
+    extra = ", ".join(x for x in (f"{b['sube']} şubesi" if b["sube"] else "", b["yuva"] or "") if x)
+    return f"- {time} {b['ders']}" + (f" ({extra})" if extra else "") + f", {b['sinif']}. sınıf, {room}"
+
+
+def week_text(rows, data):
+    if not rows:
+        return f"Bu filtreyle {data['donem']} ders programında ders yok."
+    return "\n".join([f"{data['donem']} ders programından:"] + [_block_line(b, data) for b in rows]
+                     + [f"Kaynak: {data['kaynak']}"])
+
+
+def _slots(lessons):
+    return [(b["gun"], s) for b in lessons for s in b["saatler"]]
+
+
+def plan_sections(data, codes, choices=None, free_days=None):
+    """Öğrencinin dersleri (plan kodları) + istenen dersler/şubeler için şube kombinasyonları.
+
+    choices: [{"ders", "sube"}]; şube verilirse o derste yalnız o şube denenir, ders listede yoksa eklenir.
+    free_days: boş kalması istenen gün adları. Bir ders saati iki derste birden olmamalı.
+    Dönüş: {"dersler": {ders: [şube]}, "sabit": {ders: şube}, "cakismalar": sabit şubeyle çakışan diğer ders blokları,
+    "uygun_sayisi", "ornekler": [{"secim", "dersler", "ders_saati"}], "programda_yok", "programda_olmayan_kodlar"}."""
+    by_course = {}
+    for b in data["dersler"]:
+        if b["kod"] in codes:
+            by_course.setdefault(b["ders"], []).append(b)
+    missing_codes = sorted(set(codes) - {b["kod"] for b in data["dersler"]})
+    fixed, missing = {}, []
+    for choice in choices or []:
+        lessons = [b for b in data["dersler"] if _course_matches(b["ders"], [choice["ders"]])]
+        section = (choice.get("sube") or "").strip().upper()
+        if not lessons or (section and not any((b["sube"] or "") == section for b in lessons)):
+            missing.append(choice["ders"] + (f" ({section} şubesi)" if section and lessons else ""))
+            continue
+        name = lessons[0]["ders"]
+        by_course[name] = lessons
+        if section:
+            fixed[name] = section
+    options = {}
+    for name, lessons in sorted(by_course.items()):
+        sections = sorted({b["sube"] or "" for b in lessons})
+        if name in fixed:
+            sections = [fixed[name]]
+        options[name] = {s: [b for b in lessons if (b["sube"] or "") == s] for s in sections}
+
+    clashes = []
+    for name, section in fixed.items():
+        taken = set(_slots(options[name][section]))
+        for other, by_section in options.items():
+            if other == name:
+                continue
+            hits = [(s, b) for s, bs in by_section.items() for b in bs if taken & set(_slots([b]))]
+            every = all(taken & set(_slots(bs)) for bs in by_section.values())
+            for s, b in hits:
+                clashes.append({"ders": other, "sube": s, "gun": b["gun"], "saatler": b["saatler"],
+                                "kesin": every, "sabit_ders": name, "sabit_sube": section})
+
+    free = {_day_name(d) for d in free_days or []} - {None}
+    names = list(options)
+    valid, examples, usable = 0, [], {n: set() for n in names}
+    for combo in itertools.product(*(options[n].items() for n in names)):
+        lessons = [b for _, bs in combo for b in bs]
+        slots = _slots(lessons)
+        if len(slots) != len(set(slots)) or any(b["gun"] in free for b in lessons):
+            continue
+        valid += 1
+        for n, (s, _) in zip(names, combo):
+            usable[n].add(s)
+        if len(examples) < MAX_EXAMPLES:
+            examples.append({"secim": {n: s for n, (s, _) in zip(names, combo)},
+                             "dersler": sorted(lessons, key=_order), "ders_saati": len(slots)})
+    return {"dersler": {n: list(options[n]) for n in names}, "sabit": fixed, "cakismalar": clashes,
+            "bos_gunler": sorted(free, key=DAYS.index), "uygun_sayisi": valid, "ornekler": examples,
+            "uygun_subeler": {n: sorted(usable[n]) for n in names},
+            "programda_yok": missing, "programda_olmayan_kodlar": missing_codes}
+
+
+def plan_text(plan, data):
+    """plan_course_sections tool'unun metni: çakışmalar, uygun kombinasyon sayısı, örnekler ve haftalık ders saati."""
+    lines = [f"ŞUBE PLANI ({data['donem']}, deterministik)"]
+    if plan["programda_yok"]:
+        lines.append(f"Ders programında bulunamayan: {', '.join(plan['programda_yok'])}.")
+    courses = [f"{n} ({', '.join(s + ' şubesi' if s else 'tek şube' for s in ss)})" for n, ss in plan["dersler"].items()]
+    lines.append("Dersler: " + ("; ".join(courses) if courses else "yok") + ".")
+    if plan["bos_gunler"]:
+        lines.append(f"Boş kalması istenen gün: {', '.join(plan['bos_gunler'])}.")
+    for name, section in plan["sabit"].items():
+        mine = [c for c in plan["cakismalar"] if c["sabit_ders"] == name]
+        if not mine:
+            lines.append(f"{name} {section} şubesi diğer derslerin hiçbir şubesiyle çakışmıyor.")
+            continue
+        lines.append(f"{name} {section} şubesiyle çakışanlar:")
+        for c in mine:
+            sure = "bu dersin her şubesi çakışıyor" if c["kesin"] else "başka şubesi seçilebilir"
+            label = f"{c['sube']} şubesi" if c["sube"] else "tek şube"
+            lines.append(f"- {c['ders']} ({label}): {c['gun']} {c['saatler'][0][:5]}-{c['saatler'][-1][-5:]} ({sure})")
+    if plan["uygun_sayisi"] == 0:
+        lines.append("Bu koşullarla çakışmasız bir şube kombinasyonu yok.")
+    else:
+        lines.append("Uygun kombinasyonlarda ders başına seçilebilecek şubeler:")
+        for name, sections in plan["uygun_subeler"].items():
+            if len(plan["dersler"][name]) > 1:
+                which = (f"yalnız {sections[0]} şubesi" if len(sections) == 1
+                         else " ya da ".join(s + " şubesi" for s in sections))
+                lines.append(f"- {name}: {which}")
+        lines.append(f"Çakışmasız uygun kombinasyon sayısı: {plan['uygun_sayisi']}"
+                     + (f" (ilk {len(plan['ornekler'])} tanesi aşağıda)" if plan["uygun_sayisi"] > len(plan["ornekler"])
+                        else "") + ".")
+        for i, combo in enumerate(plan["ornekler"], 1):
+            picks = ", ".join(f"{n} {s} şubesi" if s else n for n, s in combo["secim"].items())
+            lines.append(f"{i}. {picks}; haftada {combo['ders_saati']} ders saati")
+            lines += ["   " + _block_line(b, data) for b in combo["dersler"]]
+    lines.append("Ders saati: programdaki her 45 dakikalık ders bir ders saati. Kaynak: " + data["kaynak"])
+    return "\n".join(lines)
 
 
 if __name__ == "__main__":

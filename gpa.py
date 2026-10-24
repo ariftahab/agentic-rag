@@ -11,6 +11,7 @@ Kaynak: BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 26 (ba�
 28 (AKTS ağırlıklı ortalama, iki hane, yuvarlamasız, tekrar edilen derste son not).
 """
 import math
+import re
 
 import graduation
 
@@ -244,4 +245,70 @@ def report_text(report):
                                  f"{safe['harf']} (en az {safe['en_az_puan']} puan).")
     lines.append(f"GNO AKTS ağırlıklıdır, virgülden sonra iki hane alınır (yuvarlama yok), tekrar edilen derste son not "
                  f"geçerlidir [{SOURCES['ortalama']}]. Harf notu ve katsayılar [{SOURCES['not']}].")
+    return "\n".join(lines)
+
+
+# --- Transkriptin bir kısmından ortalama (agent_h6) ---
+# EXP-010 - EXP-013'te "Matematik I, II ve Lineer Cebir'den ortalamam?", "birinci sınıfın sonunda ortalamam?" ve
+# "Erasmus dersleri sayılmasaydı ortalamam?" sorularında Haiku her seferinde katsayı tablosunu kodun içine elle yazdı
+# ve tekrar edilen derste son not kuralını uygulamadı.
+
+ROMAN_DIGITS = {"1": "i", "2": "ii", "3": "iii", "4": "iv", "5": "v", "6": "vi", "7": "vii", "8": "viii"}
+
+
+def course_key(name):
+    """Ders adının karşılaştırma anahtarı: Türkçe küçük harf, noktalama yok, tek başına rakam Roma rakamına çevrilir
+    ("matematik 1" ve "Matematik-1" → "matematik i"); "Matematik I" ile "Matematik II" farklı kalır."""
+    words = re.sub(r"\W+", " ", name.replace("I", "ı").replace("İ", "i").lower()).split()
+    return " ".join(ROMAN_DIGITS.get(w, w) for w in words).replace("ı", "i")
+
+
+def subset_average(transcript, courses=None, years=0, exclude_erasmus=False, coeff=COEFF):
+    """Transkriptin bir kısmının AKTS ağırlıklı ortalaması (Madde 28).
+
+    courses: yalnız bu dersler (ad; rakam ya da Roma rakamı); years: yalnız ilk N akademik yılın dersleri (o tarihteki
+    ortalama: sonraki tekrarlar sayılmaz); exclude_erasmus: Erasmus'ta alınan dersler hiç alınmamış gibi. Her derste
+    süzülen kayıtlar içindeki son not geçerlidir (Madde 28/3).
+    Dönüş: {"gno", "akts", "dersler": [{"ad", "akts", "not"}], "bulunamayan", "filtre"}."""
+    rows = list(transcript["dersler"])
+    if exclude_erasmus:
+        rows = [c for c in rows if not c.get("erasmus")]
+    if years:
+        first = min(c["yil"] for c in transcript["dersler"])
+        rows = [c for c in rows if c["yil"] < first + years]
+    last = _base({"dersler": rows}, coeff)
+    missing = []
+    if courses:
+        wanted = {course_key(n): n for n in courses}
+        picked = {ad: v for ad, v in last.items() if course_key(ad) in wanted}
+        found = {course_key(ad) for ad in picked}
+        missing = [n for k, n in wanted.items() if k not in found]
+        last = picked
+    return {"gno": _gpa(last, coeff), "akts": sum(a for a, _ in last.values()),
+            "dersler": [{"ad": ad, "akts": a, "not": g} for ad, (a, g) in sorted(last.items())],
+            "bulunamayan": missing,
+            "filtre": {"dersler": list(courses or []), "yil_sayisi": years, "erasmus_haric": exclude_erasmus}}
+
+
+def _tr(value):
+    return f"{value:.2f}".replace(".", ",")
+
+
+def subset_text(result, coeff=COEFF):
+    """Agent'a dönen metin: ortalama, hangi derslerle hesaplandığı ve kural kaynakları."""
+    f = result["filtre"]
+    scope = [f"yalnız {', '.join(f['dersler'])}" if f["dersler"] else "",
+             f"ilk {f['yil_sayisi']} akademik yılın sonundaki durum" if f["yil_sayisi"] else "",
+             "Erasmus'ta alınan dersler hariç" if f["erasmus_haric"] else ""]
+    head = "TRANSKRİPTTEN ORTALAMA (yönetmelikteki tabloyla, deterministik)"
+    lines = [head + (": " + "; ".join(s for s in scope if s) if any(scope) else "")]
+    if result["gno"] is None:
+        lines.append("Bu filtreyle notlu ders yok; ortalama hesaplanamadı.")
+    else:
+        lines.append(f"Ortalama: {_tr(result['gno'])} ({result['akts']} AKTS, {len(result['dersler'])} ders).")
+        lines += [f"- {c['ad']}: {c['akts']} AKTS, {c['not']} (katsayı {_tr(coeff[c['not']])})" for c in result["dersler"]]
+    if result["bulunamayan"]:
+        lines.append(f"Transkriptte notlu olarak bulunamayan: {', '.join(result['bulunamayan'])}.")
+    lines.append(f"AKTS ağırlıklı ortalama, virgülden sonra iki hane (yuvarlama yok), tekrar edilen derste son not "
+                 f"[{SOURCES['ortalama']}]. Harf notu katsayıları [{SOURCES['not']}].")
     return "\n".join(lines)

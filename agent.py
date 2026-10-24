@@ -248,6 +248,16 @@ _SITE_RULES = ("- Duyuru, ilan, son başvuru ve etkinlik sorularında (ör. \"bu
                "bu system prompt'tan gelir.\n")
 _AGENT_H3_SYSTEM = _AGENT_H2_SYSTEM.replace(_H1_CODE_RULE, _SITE_RULES + _H1_CODE_RULE)
 assert _AGENT_H3_SYSTEM != _AGENT_H2_SYSTEM
+# agent_h6: h5 + Haiku'nun deneylerde en sık kodla yazdığı iki hesap kalıcı tool (logs/anlik_tool.jsonl taraması,
+# 2026-10-24): transkriptin bir kısmından ortalama, bütün haftada program araması ve şube planı / çakışma.
+_H6_RULES = ("- Transkriptin bir kısmının ortalaması sorularında (ör. belirli derslerin ortalaması, birinci sınıfın sonundaki "
+             "ortalama, Erasmus dersleri sayılmadan ortalama) get_transcript_average tool'unu kullan.\n"
+             "- Bir dersin hangi gün ve saatte olduğu, bir derslikte ya da şubede hangi derslerin bulunduğu sorularında "
+             "search_course_schedule tool'unu, belirli bir tarihin ya da günün dersleri için get_course_schedule'ı kullan.\n"
+             "- Şube seçimi, ders çakışması ve haftalık ders saati sorularında (ör. \"B şubesinden alırsam neyle çakışır\", "
+             "\"Cuma boş kalsın\") plan_course_sections tool'unu kullan.\n")
+_AGENT_H6_SYSTEM = _AGENT_H3_SYSTEM.replace(_H1_CODE_RULE, _H6_RULES + _H1_CODE_RULE)
+assert _AGENT_H6_SYSTEM != _AGENT_H3_SYSTEM
 
 AGENT_PROMPTS = {"agent_v1": _AGENT_V1_SYSTEM, "agent_v2": _AGENT_V2_SYSTEM, "agent_v3": _AGENT_V3_SYSTEM,
                  "agent_v4": _AGENT_V4_SYSTEM, "agent_v5": _AGENT_V5_SYSTEM,
@@ -264,39 +274,44 @@ AGENT_PROMPTS = {"agent_v1": _AGENT_V1_SYSTEM, "agent_v2": _AGENT_V2_SYSTEM, "ag
                  "agent_h4": _AGENT_H3_SYSTEM,
                  # agent_h5: prompt h3 ile aynı; duyuru tool'unun açıklaması ve "bulunamadı" mesajı bölüm sayfasını da sayar
                  # (SITE_SOURCES_V2_PROMPTS).
-                 "agent_h5": _AGENT_H3_SYSTEM}
+                 "agent_h5": _AGENT_H3_SYSTEM,
+                 # agent_h6: h5 + get_transcript_average, search_course_schedule, plan_course_sections (H6_TOOL_PROMPTS).
+                 "agent_h6": _AGENT_H6_SYSTEM}
 AGENT_PROMPT_VERSION = "agent_v4"
 # Sonradan eklenen tool yalnız onu anlatan sürümlerde açılır: eski sürümlerin deneyleri (EXP-002, EXP-003) aynı tool
 # listesiyle tekrar üretilebilsin.
-REQUIREMENTS_TOOL_PROMPTS = {"agent_v5", "agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5"}
+REQUIREMENTS_TOOL_PROMPTS = {"agent_v5", "agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6"}
 # Bu sürümlerde analyze_transcript kayıt yılını yazar, get_graduation_requirements transkript yüklüyse kişisel
 # sorular için analyze_transcript'e yönlendirir (EXP-004 aynı çıktılarla tekrar üretilebilsin).
-TRANSCRIPT_DETAIL_PROMPTS = {"agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5"}
+TRANSCRIPT_DETAIL_PROMPTS = {"agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6"}
 # Anlık tool (request_new_tool, codeact) yalnız bu sürümlerde açılır.
-CODE_TOOL_PROMPTS = {"agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5"}
+CODE_TOOL_PROMPTS = {"agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6"}
 # Bu sürümlerde request_new_tool tool olarak çalışmaz, devir sinyalidir (bkz. _AGENT_V9_SYSTEM).
 HANDOFF_PROMPTS = {"agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13"}
 # Not ortalaması tool'u (simulate_grades, gpa.py) yalnız bu sürümlerde açılır.
-GRADES_TOOL_PROMPTS = {"agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5"}
+GRADES_TOOL_PROMPTS = {"agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6"}
 # Bu sürümlerde mezuniyet kuralları yalnız mevzuattaki metinle (graduation.load_rules(regulation_only=True)): toplam
 # AKTS Madde 22/1'deki 240; eski kural dosyasındaki "planın toplamı bağlayıcıdır" eklemesi (244) mevzuatta yok.
-REGULATION_RULES_PROMPTS = {"agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5"}
+REGULATION_RULES_PROMPTS = {"agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6"}
 # Bu sürümlerde analyze_transcript ders geçmişini de yazar (dönemler, notlar, başarısız ve tekrarlanan dersler, kalan ders
 # sayısı); tool açıklaması da raporun içeriğini sayar.
-TRANSCRIPT_HISTORY_PROMPTS = {"agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5"}
+TRANSCRIPT_HISTORY_PROMPTS = {"agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6"}
 # Bu sürümlerde analyze_transcript yönetmelikteki harf notu tablosunu ve ortalama tanımını da yazar; devirde Haiku
 # katsayıları oradan alır (HANDOFF_NOTE_V13).
-GRADE_TABLE_PROMPTS = {"agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5"}
+GRADE_TABLE_PROMPTS = {"agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6"}
 # Tek model (branch exp/haiku-agent): döngünün tamamı CodeRunner'ın modeliyle; LLM (Gemini) kullanılmaz.
-SINGLE_MODEL_PROMPTS = {"agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5"}
+SINGLE_MODEL_PROMPTS = {"agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6"}
 # Duyuru ve akademik personel tool'ları (announcements.py) yalnız bu sürümlerde açılır.
-SITE_TOOL_PROMPTS = {"agent_h3", "agent_h4", "agent_h5"}
+SITE_TOOL_PROMPTS = {"agent_h3", "agent_h4", "agent_h5", "agent_h6"}
 # Bu sürümlerde get_academic_staff görevin parantezdeki birimini de arar (announcements.search_staff_by_unit). EXP-013'te
 # "Bilgisayar Donanımı ana bilim dalı başkanı kim?" boş döndü; agent_h3 eski aramayla tekrar üretilebilsin.
-STAFF_UNIT_SEARCH_PROMPTS = {"agent_h4", "agent_h5"}
+STAFF_UNIT_SEARCH_PROMPTS = {"agent_h4", "agent_h5", "agent_h6"}
 # Bu sürümlerde get_announcements'ın açıklaması ve "bulunamadı" mesajı Bilgisayar Mühendisliği Bölümü duyurularını da
 # sayar (2026-10-24'te taranmaya başladı); h3/h4 eski açıklamayı görür.
-SITE_SOURCES_V2_PROMPTS = {"agent_h5"}
+SITE_SOURCES_V2_PROMPTS = {"agent_h5", "agent_h6"}
+# Transkriptten alt küme ortalaması (gpa.subset_average) ve ders programı araması / şube planı (schedule.find_lessons,
+# plan_sections) tool'ları yalnız bu sürümlerde açılır.
+H6_TOOL_PROMPTS = {"agent_h6"}
 ANNOUNCEMENTS_DOC_V2 = """Bilgisayar Mühendisliği Bölümü (ders ve sınav programları, derslerle ilgili duyurular), Mühendislik
         Fakültesi (son 90 gün) ve üniversite geneli (son günler) duyurularında (sınav, başvuru, kayıt, etkinlik, burs vb.)
         arar ve en ilgili en fazla 5 duyurunun başlığını, birimini, yayın tarihini, özetini, önemli tarihlerini, eklerini
@@ -358,10 +373,16 @@ class CourseGrade(BaseModel):
     akts: float | None = Field(None, description="Yalnız ders öğretim planında yoksa ve kullanıcı belirttiyse.")
 
 
+class SectionChoice(BaseModel):
+    """plan_course_sections'ın ders girdisi."""
+    ders: str = Field(description="Dersin adı (ör. \"İşletim Sistemleri I\").")
+    sube: str = Field("", description="İstenen şube (ör. \"B\"); şube fark etmiyorsa boş.")
+
+
 def make_tools(retriever, plan, transcript, confirmations, today, with_requirements=False, transcript_detail=False,
                with_grades=False, rules=None, with_history=False, with_grade_table=False,
                code_runner=None, generated=None, found=None, site_db=None, staff_by_unit=False,
-               site_sources_v2=False):
+               site_sources_v2=False, h6_tools=False):
     """Bu çağrıya (oturuma) bağlı tool'lar. `transcript` ve `confirmations` closure'da durur; LLM'in görebileceği
     argümanlar değildir. confirm_equivalence `confirmations` sözlüğünü yerinde günceller (çağıran taraf saklar)."""
 
@@ -576,10 +597,68 @@ def make_tools(retriever, plan, transcript, confirmations, today, with_requireme
         search = announcements.search_staff_by_unit if staff_by_unit else announcements.search_staff
         return announcements.staff_text(search(announcements.load_staff(), sorgu), sorgu)
 
+    def get_transcript_average(dersler: list[str] | None = None, yil_sayisi: int = 0,
+                               erasmus_haric: bool = False) -> str:
+        """Yüklü transkriptin bir kısmının AKTS ağırlıklı not ortalamasını yönetmelikteki tabloyla hesaplar (tekrar edilen
+        derste son not): yalnız belirli dersler, ilk N akademik yılın sonundaki durum ya da Erasmus'ta alınan dersler
+        hariç. Hangi derslerle ve hangi notlarla hesaplandığını da döndürür.
+
+        Args:
+            dersler: Yalnız bu derslerin ortalaması (ör. ["Matematik I", "Lineer Cebir"]); bütün dersler için boş.
+            yil_sayisi: İlk kaç akademik yılın sonundaki ortalama (ör. birinci sınıfın sonu için 1); yoksa 0.
+            erasmus_haric: Erasmus'ta alınan dersler hiç alınmamış gibi hesaplansın mı.
+        """
+        if transcript is None:
+            return "Transkript yüklü değil. Kullanıcıdan UBYS'den indirdiği tarihsel transkripti yüklemesini iste."
+        coeff = gpa.COEFF_REGULATION if with_grade_table else gpa.COEFF
+        result = gpa.subset_average(transcript, courses=dersler, years=yil_sayisi, exclude_erasmus=erasmus_haric,
+                                    coeff=coeff)
+        return gpa.subset_text(result, coeff)
+
+    def search_course_schedule(ders: str = "", derslik: str = "", sube: str = "", sinif: int = 0, gun: str = "") -> str:
+        """Bilgisayar Mühendisliği bu dönemki haftalık ders programında bütün haftayı arar ve eşleşen ders bloklarını gün,
+        saat, şube, sınıf ve derslikle döndürür (ör. bir dersin hangi gün ve saatte olduğu, bir derslikteki dersler).
+
+        Args:
+            ders: Ders adı (ör. "Yapay Zeka"); boşsa bütün dersler.
+            derslik: Derslik numarası, kısaltması ya da adı (ör. "327", "B.L.", "bilgisayar laboratuvarı"); yoksa boş.
+            sube: Şube harfi (ör. "B"); yoksa boş.
+            sinif: Sınıf (1-4); yoksa 0.
+            gun: Gün adı (ör. "pazartesi"); bütün hafta için boş.
+        """
+        data = schedule.load_schedule()
+        rows = schedule.find_lessons(data, courses=[ders] if ders else None, room=derslik or None,
+                                     section=sube or None, grade=sinif or None, day=gun or None)
+        return schedule.week_text(rows, data)
+
+    def plan_course_sections(dersler: list[SectionChoice] | None = None, bos_gunler: list[str] | None = None) -> str:
+        """Öğrencinin bu dönemki dersleri (transkript yüklüyse) ve verilen dersler için şube kombinasyonlarını hesaplar:
+        verilen şubenin hangi derslerle çakıştığı, boş kalması istenen günlerde dersi olmayan çakışmasız kombinasyonlar
+        (sayısı ve ilk üçü) ve her kombinasyonun haftalık ders saati.
+
+        Args:
+            dersler: Eklenecek ya da şubesi sabitlenecek dersler (ör. [{"ders": "İşletim Sistemleri I", "sube": "B"}]);
+                transkriptteki bu dönemin dersleri zaten dahil.
+            bos_gunler: Boş kalması istenen günler (ör. ["cuma"]); yoksa boş.
+        """
+        choices = [d.model_dump() if isinstance(d, BaseModel) else dict(d) for d in dersler or []]
+        if transcript is None and not choices:
+            return ("Transkript yüklü değil ve ders verilmedi. Kullanıcıya bu dönem hangi dersleri aldığını sor ya da "
+                    "transkriptini yüklemesini iste.")
+        codes = schedule.current_course_codes(transcript) if transcript is not None else set()
+        data = schedule.load_schedule()
+        result = schedule.plan_sections(data, codes, choices=choices, free_days=bos_gunler)
+        text = schedule.plan_text(result, data)
+        if result["programda_olmayan_kodlar"] and transcript is not None:
+            names = sorted({c["ad"] for c in transcript["dersler"] if c["kod"] in result["programda_olmayan_kodlar"]})
+            text += f"\nBu dönem alınan ama bölüm ders programında olmayan dersler: {', '.join(names)}."
+        return text
+
     tools = (search_regulations, analyze_transcript, confirm_equivalence, simulate_courses, get_offered_electives,
              get_course_schedule) + ((get_graduation_requirements,) if with_requirements else ()) + (
              (simulate_grades,) if with_grades else ()) + (
              (get_announcements, get_academic_staff) if site_db is not None else ()) + (
+             (get_transcript_average, search_course_schedule, plan_course_sections) if h6_tools else ()) + (
              (request_new_tool,) if code_runner is not None else ())
     return [StructuredTool.from_function(f) for f in tools]
 
@@ -609,6 +688,7 @@ class AdvisorAgent:
         self.site_db = (site_db or config.ANNOUNCEMENTS_DB) if prompt_version in SITE_TOOL_PROMPTS else None
         self.staff_by_unit = prompt_version in STAFF_UNIT_SEARCH_PROMPTS
         self.site_sources_v2 = prompt_version in SITE_SOURCES_V2_PROMPTS
+        self.h6_tools = prompt_version in H6_TOOL_PROMPTS
         self.documents = external_documents(plan, schedule.load_schedule())
         # (belge, madde) -> maddenin ilk chunk'ı: kural atıflarını kaynağa çevirmek için.
         self._articles = {}
@@ -644,7 +724,8 @@ class AdvisorAgent:
                            with_grades=self.with_grades, rules=self.rules, with_history=self.with_history,
                            with_grade_table=self.with_grade_table,
                            code_runner=self.code_runner, generated=generated, found=found, site_db=self.site_db,
-                           staff_by_unit=self.staff_by_unit, site_sources_v2=self.site_sources_v2)
+                           staff_by_unit=self.staff_by_unit, site_sources_v2=self.site_sources_v2,
+                           h6_tools=self.h6_tools)
         by_name = {t.name: t for t in tools}
         system = self.system.format(no_answer=config.NO_ANSWER, today=today.strftime("%d.%m.%Y"),
                                     transcript_state=TRANSCRIPT_LOADED if transcript else TRANSCRIPT_MISSING)
