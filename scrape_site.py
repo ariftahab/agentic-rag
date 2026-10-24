@@ -136,6 +136,25 @@ def _links(body, url):
     return files, redirects
 
 
+BLOCK_TAGS = ["p", "div", "li", "ul", "ol", "table", "tr", "h1", "h2", "h3", "h4", "h5", "h6", "blockquote", "pre",
+              "section", "article"]
+
+
+def _text(body):
+    """Duyuru metni: satır sonu yalnız <br>'de ve blok etiketlerin sınırında; satır içi etiketler (strong, em, a) metni
+    bölmez. get_text("\n") her etiketin arasına satır sonu koyuyordu: "<strong>SINAV ÜCRETİ: 5</strong>00 TL" iki
+    satıra düştü ve özet ücreti 5 TL yazdı (2026-10-24)."""
+    if body is None:
+        return ""
+    for br in body.find_all("br"):
+        br.replace_with("\n")
+    for tag in body.find_all(BLOCK_TAGS):
+        tag.insert_before("\n")
+        tag.insert_after("\n")
+    lines = (" ".join(line.split()) for line in body.get_text("").splitlines())
+    return "\n".join(line for line in lines if line)
+
+
 def parse_detail(soup, url):
     """Mühendislik detay sayfası → {"baslik", "tarih", "metin", "ekler", "yonlendirmeler"}."""
     inner = soup.select_one("div.blog-post-inner")
@@ -145,7 +164,7 @@ def parse_detail(soup, url):
     when = inner.find("h4") if inner else None
     return {"baslik": title.get_text(" ", strip=True) if title else "",
             "tarih": parse_date(when.get_text(" ", strip=True)) if when else None,
-            "metin": body.get_text("\n", strip=True) if body else "",
+            "metin": _text(body),
             "ekler": files, "yonlendirmeler": redirects}
 
 
@@ -158,7 +177,7 @@ def parse_general_detail(soup, url):
     when = (datetime.fromisoformat(published["content"]).astimezone(TURKEY_TZ).date().isoformat()
             if published and published.get("content") else None)
     return {"baslik": title.get_text(" ", strip=True) if title else "", "tarih": when,
-            "metin": body.get_text("\n", strip=True) if body else "", "ekler": files, "yonlendirmeler": redirects}
+            "metin": _text(body), "ekler": files, "yonlendirmeler": redirects}
 
 
 # Kaynak → birim adı, liste adresi, ayrıştırıcılar, yalnız son kaç günün duyuruları (ilk doldurma da geceki koşu da;

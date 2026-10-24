@@ -156,6 +156,20 @@ def test_general_list_infers_year_from_order_and_detail_uses_turkey_time():
     assert detail["ekler"] == [{"ad": "tıklayınız", "link": "https://ajanda.ibu.edu.tr/liste.pdf"}]
 
 
+# 2026-10-24: ajanda.ibu.edu.tr'deki İngilizce seviye tespit sınavı duyurusu. Etiketler arasına satır sonu konunca
+# "5" ile "00 TL" ayrı satırlara düştü ve özet ücreti 5 TL yazdı.
+INLINE_BOLD_HTML = """<article><div class="td-post-content">
+<p><strong>SINAV TARİHİ:</strong> 10 Kasım 2026<br />
+<strong>SINAV ÜCRETİ: 5</strong>00 TL <a href="https://x/form">başvuru</a> için <em>tıklayınız</em>.</p>
+<ul><li>Kimlik kartı</li><li>Kurşun kalem</li></ul><div>Son paragraf</div></div></article>"""
+
+
+def test_inline_tags_do_not_split_text_but_blocks_and_breaks_do():
+    detail = scrape_site.parse_general_detail(BeautifulSoup(INLINE_BOLD_HTML, "html.parser"), "https://ajanda.ibu.edu.tr/x/")
+    lines = detail["metin"].splitlines()
+    assert lines == ["SINAV TARİHİ: 10 Kasım 2026", "SINAV ÜCRETİ: 500 TL başvuru için tıklayınız.",
+                     "Kimlik kartı", "Kurşun kalem", "Son paragraf"]
+
 def test_unparseable_summary_is_none():
     assert scrape_site.parse_summary("Özet: duyuru af hakkında") is None
     assert scrape_site.parse_summary('```json\n{"ozet": "Kısa özet.", "tarihler": []}\n```') == \
