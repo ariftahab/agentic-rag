@@ -6,7 +6,7 @@
  "neden": "agent_h3'ün duyuru ve personel tool'ları deneyle ölçülmedi; sorular_v5 bunlar için 14 yeni soru ekliyor ve 'Bilgisayar Mühendisliği bölüm başkanı kim?' sorusunu çekimserlikten personel sorusuna çeviriyor. h3'ün katkısını ayırmak için önce tool'suz agent_h2 aynı sette koşulur. Ayrıca v4'ten gelen 69 değişmemiş soru EXP-011 ile aynı agent'la tekrar koşulmuş olur: tek koşu varyansının bir ölçüsü.",
  "hipotez": "Yeni duyuru ve personel sorularında agent_h2 çoğunlukla 'bilgim yok' der ya da mevzuattan cevap arar; cevap doğruluğu düşük (yalnız depoda olmayan konuyu soran iki çekimser soru tesadüfen doğru sayılabilir). v4'ten gelen sorularda cevaplar EXP-011'e yakın (56/56 seviyesi); farklar varyanstır. Ölçülemeyen: tek koşuda model değişkenliğinin tam büyüklüğü.",
  "birincil_metrik": "answer_acc",
- "beklenen_yon": "dusus",
+ "beklenen_yon": "azalis",
  "params": {
   "mod": "agent",
   "corpus": "v1",
