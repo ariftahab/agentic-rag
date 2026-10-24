@@ -282,3 +282,15 @@ def test_h4_staff_tool_searches_units_and_h3_does_not(tmp_path):
     assert "Mehmet Dinçer Erbaş" in tools[True]["get_academic_staff"].invoke(query)
     assert AdvisorAgent(None, None, {"zorunlu_dersler": []}, prompt_version="agent_h4").staff_by_unit
     assert not AdvisorAgent(None, None, {"zorunlu_dersler": []}, prompt_version="agent_h3").staff_by_unit
+
+
+def test_h5_announcement_tool_names_department_and_h4_does_not(tmp_path):
+    from agent import make_tools
+    tools = {flag: {t.name: t for t in make_tools(None, {"zorunlu_dersler": []}, None, {}, None,
+                                                   site_db=tmp_path / "d.db", site_sources_v2=flag)}
+             for flag in (False, True)}
+    assert "Bilgisayar Mühendisliği Bölümü" in tools[True]["get_announcements"].description
+    assert "Bilgisayar Mühendisliği Bölümü" not in tools[False]["get_announcements"].description
+    assert "bm.muhendislik.ibu.edu.tr" in tools[True]["get_announcements"].invoke({"konu": "uzay"})
+    assert "bm.muhendislik.ibu.edu.tr" not in tools[False]["get_announcements"].invoke({"konu": "uzay"})
+    assert AdvisorAgent(None, None, {"zorunlu_dersler": []}, prompt_version="agent_h5").site_sources_v2

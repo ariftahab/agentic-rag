@@ -261,36 +261,52 @@ AGENT_PROMPTS = {"agent_v1": _AGENT_V1_SYSTEM, "agent_v2": _AGENT_V2_SYSTEM, "ag
                  "agent_v13": _AGENT_V12_SYSTEM, "agent_h1": _AGENT_H1_SYSTEM,
                  "agent_h2": _AGENT_H2_SYSTEM, "agent_h3": _AGENT_H3_SYSTEM,
                  # agent_h4: prompt h3 ile aynı; personel araması görevin birimini de arar (STAFF_UNIT_SEARCH_PROMPTS).
-                 "agent_h4": _AGENT_H3_SYSTEM}
+                 "agent_h4": _AGENT_H3_SYSTEM,
+                 # agent_h5: prompt h3 ile aynı; duyuru tool'unun açıklaması ve "bulunamadı" mesajı bölüm sayfasını da sayar
+                 # (SITE_SOURCES_V2_PROMPTS).
+                 "agent_h5": _AGENT_H3_SYSTEM}
 AGENT_PROMPT_VERSION = "agent_v4"
 # Sonradan eklenen tool yalnız onu anlatan sürümlerde açılır: eski sürümlerin deneyleri (EXP-002, EXP-003) aynı tool
 # listesiyle tekrar üretilebilsin.
-REQUIREMENTS_TOOL_PROMPTS = {"agent_v5", "agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4"}
+REQUIREMENTS_TOOL_PROMPTS = {"agent_v5", "agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5"}
 # Bu sürümlerde analyze_transcript kayıt yılını yazar, get_graduation_requirements transkript yüklüyse kişisel
 # sorular için analyze_transcript'e yönlendirir (EXP-004 aynı çıktılarla tekrar üretilebilsin).
-TRANSCRIPT_DETAIL_PROMPTS = {"agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4"}
+TRANSCRIPT_DETAIL_PROMPTS = {"agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5"}
 # Anlık tool (request_new_tool, codeact) yalnız bu sürümlerde açılır.
-CODE_TOOL_PROMPTS = {"agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4"}
+CODE_TOOL_PROMPTS = {"agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5"}
 # Bu sürümlerde request_new_tool tool olarak çalışmaz, devir sinyalidir (bkz. _AGENT_V9_SYSTEM).
 HANDOFF_PROMPTS = {"agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13"}
 # Not ortalaması tool'u (simulate_grades, gpa.py) yalnız bu sürümlerde açılır.
-GRADES_TOOL_PROMPTS = {"agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4"}
+GRADES_TOOL_PROMPTS = {"agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5"}
 # Bu sürümlerde mezuniyet kuralları yalnız mevzuattaki metinle (graduation.load_rules(regulation_only=True)): toplam
 # AKTS Madde 22/1'deki 240; eski kural dosyasındaki "planın toplamı bağlayıcıdır" eklemesi (244) mevzuatta yok.
-REGULATION_RULES_PROMPTS = {"agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4"}
+REGULATION_RULES_PROMPTS = {"agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5"}
 # Bu sürümlerde analyze_transcript ders geçmişini de yazar (dönemler, notlar, başarısız ve tekrarlanan dersler, kalan ders
 # sayısı); tool açıklaması da raporun içeriğini sayar.
-TRANSCRIPT_HISTORY_PROMPTS = {"agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4"}
+TRANSCRIPT_HISTORY_PROMPTS = {"agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5"}
 # Bu sürümlerde analyze_transcript yönetmelikteki harf notu tablosunu ve ortalama tanımını da yazar; devirde Haiku
 # katsayıları oradan alır (HANDOFF_NOTE_V13).
-GRADE_TABLE_PROMPTS = {"agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4"}
+GRADE_TABLE_PROMPTS = {"agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5"}
 # Tek model (branch exp/haiku-agent): döngünün tamamı CodeRunner'ın modeliyle; LLM (Gemini) kullanılmaz.
-SINGLE_MODEL_PROMPTS = {"agent_h1", "agent_h2", "agent_h3", "agent_h4"}
+SINGLE_MODEL_PROMPTS = {"agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5"}
 # Duyuru ve akademik personel tool'ları (announcements.py) yalnız bu sürümlerde açılır.
-SITE_TOOL_PROMPTS = {"agent_h3", "agent_h4"}
+SITE_TOOL_PROMPTS = {"agent_h3", "agent_h4", "agent_h5"}
 # Bu sürümlerde get_academic_staff görevin parantezdeki birimini de arar (announcements.search_staff_by_unit). EXP-013'te
 # "Bilgisayar Donanımı ana bilim dalı başkanı kim?" boş döndü; agent_h3 eski aramayla tekrar üretilebilsin.
-STAFF_UNIT_SEARCH_PROMPTS = {"agent_h4"}
+STAFF_UNIT_SEARCH_PROMPTS = {"agent_h4", "agent_h5"}
+# Bu sürümlerde get_announcements'ın açıklaması ve "bulunamadı" mesajı Bilgisayar Mühendisliği Bölümü duyurularını da
+# sayar (2026-10-24'te taranmaya başladı); h3/h4 eski açıklamayı görür.
+SITE_SOURCES_V2_PROMPTS = {"agent_h5"}
+ANNOUNCEMENTS_DOC_V2 = """Bilgisayar Mühendisliği Bölümü (ders ve sınav programları, derslerle ilgili duyurular), Mühendislik
+        Fakültesi (son 90 gün) ve üniversite geneli (son günler) duyurularında (sınav, başvuru, kayıt, etkinlik, burs vb.)
+        arar ve en ilgili en fazla 5 duyurunun başlığını, birimini, yayın tarihini, özetini, önemli tarihlerini, eklerini
+        ve linkini döndürür.
+
+        Args:
+            konu: Aranan konu, kısa (ör. "vize", "ders programı", "yatay geçiş"); en son duyurular için boş.
+            tarihten_beri: Yalnız bu tarihte ve sonra yayımlanan duyurular, YYYY-AA-GG (ör. bu hafta için haftanın
+                pazartesi günü); zaman sınırı yoksa boş.
+        """
 ANALYZE_TRANSCRIPT_HISTORY_DOC = """Oturumda yüklü transkripti öğretim planıyla karşılaştırır: şu an geçilen AKTS, bu dönemin dersleri
         geçilirse ulaşılacak AKTS, eksik zorunlu dersler (durumlarıyla), açık seçmeli yuvaları ve transkriptin ders
         geçmişi: dönem dönem bütün dersler ve harf notları, dönem sayısı, yarıyıl ortalamaları, harf notu dağılımı,
@@ -344,7 +360,8 @@ class CourseGrade(BaseModel):
 
 def make_tools(retriever, plan, transcript, confirmations, today, with_requirements=False, transcript_detail=False,
                with_grades=False, rules=None, with_history=False, with_grade_table=False,
-               code_runner=None, generated=None, found=None, site_db=None, staff_by_unit=False):
+               code_runner=None, generated=None, found=None, site_db=None, staff_by_unit=False,
+               site_sources_v2=False):
     """Bu çağrıya (oturuma) bağlı tool'lar. `transcript` ve `confirmations` closure'da durur; LLM'in görebileceği
     argümanlar değildir. confirm_equivalence `confirmations` sözlüğünü yerinde günceller (çağıran taraf saklar)."""
 
@@ -541,9 +558,14 @@ def make_tools(retriever, plan, transcript, confirmations, today, with_requireme
         conn = announcements.connect(site_db)
         try:
             results = announcements.search(conn, konu, tarihten_beri or None, limit=None)
-            return announcements.announcements_text(results, conn, tarihten_beri or None)
+            return announcements.announcements_text(
+                results, conn, tarihten_beri or None,
+                not_found=announcements.NOT_FOUND_V2 if site_sources_v2 else announcements.NOT_FOUND)
         finally:
             conn.close()
+
+    if site_sources_v2:  # StructuredTool açıklamayı docstring'den okur
+        get_announcements.__doc__ = ANNOUNCEMENTS_DOC_V2
 
     def get_academic_staff(sorgu: str = "") -> str:
         """Bilgisayar Mühendisliği Bölümü akademik personelini (unvan, görev, e-posta, dahili telefon) döndürür.
@@ -586,6 +608,7 @@ class AdvisorAgent:
         # Duyuru ve personel tool'ları yalnız h3'te; testler geçici bir veritabanı verir.
         self.site_db = (site_db or config.ANNOUNCEMENTS_DB) if prompt_version in SITE_TOOL_PROMPTS else None
         self.staff_by_unit = prompt_version in STAFF_UNIT_SEARCH_PROMPTS
+        self.site_sources_v2 = prompt_version in SITE_SOURCES_V2_PROMPTS
         self.documents = external_documents(plan, schedule.load_schedule())
         # (belge, madde) -> maddenin ilk chunk'ı: kural atıflarını kaynağa çevirmek için.
         self._articles = {}
@@ -621,7 +644,7 @@ class AdvisorAgent:
                            with_grades=self.with_grades, rules=self.rules, with_history=self.with_history,
                            with_grade_table=self.with_grade_table,
                            code_runner=self.code_runner, generated=generated, found=found, site_db=self.site_db,
-                           staff_by_unit=self.staff_by_unit)
+                           staff_by_unit=self.staff_by_unit, site_sources_v2=self.site_sources_v2)
         by_name = {t.name: t for t in tools}
         system = self.system.format(no_answer=config.NO_ANSWER, today=today.strftime("%d.%m.%Y"),
                                     transcript_state=TRANSCRIPT_LOADED if transcript else TRANSCRIPT_MISSING)
