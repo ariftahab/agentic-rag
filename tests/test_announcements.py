@@ -116,22 +116,19 @@ def test_short_redirect_announcement_skips_llm_and_copies_links():
     assert "Yönlendirme:" in record["ozet"] and "oidb.ibu.edu.tr/tr/news-detail/af-yasasi/13038" in record["ozet"]
 
 
-def test_department_source_saves_under_its_unit_and_own_file(conn, tmp_path, monkeypatch):
-    """Bilgisayar Mühendisliği sayfası fakülteyle aynı sistem: aynı ayrıştırıcılar, ayrı birim ve ayrı JSON kopyası."""
+def test_department_source_saves_under_its_unit(conn):
+    """Bilgisayar Mühendisliği sayfası fakülteyle aynı sistem: aynı ayrıştırıcılar, depoda kendi birimiyle."""
     class FakeFetcher:
         def get(self, url):
             html = LIST_HTML if url == scrape_site.config.BM_ANNOUNCEMENTS_URL else DETAIL_HTML
             return BeautifulSoup(html, "html.parser")
     class NoLLM:  # detay metni kısa: özet LLM'siz
         calls, model = 0, "yok"
-    monkeypatch.setattr(scrape_site.config, "ANNOUNCEMENTS_EXPORT_DIR", tmp_path / "duyurular")
     saved = scrape_site.scrape_announcements(FakeFetcher(), conn, NoLLM(), "bm", today=scrape_site.date(2026, 10, 24))
     assert saved == 1  # 2024 tarihli satır 90 günün dışında
     rows = conn.execute("SELECT birim, link FROM duyurular WHERE link LIKE 'http://bm.%'").fetchall()
     assert [(r["birim"], r["link"]) for r in rows] == [
         ("Bilgisayar Mühendisliği Bölümü", "http://bm.muhendislik.ibu.edu.tr/tr/news-detail/af-2-liste/23247")]
-    exported = json.loads((tmp_path / "duyurular" / "bm_duyurular.json").read_text(encoding="utf-8"))
-    assert [e["birim"] for e in exported] == ["Bilgisayar Mühendisliği Bölümü"]
 
 
 GENERAL_LIST_HTML = """<div class="duyurular"><div class="liste">

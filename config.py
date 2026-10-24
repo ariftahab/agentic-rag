@@ -23,7 +23,6 @@ EXPERIMENTS_DIR = ROOT / "experiments"
 # Duyurular (scrape_site.py yazar, agent'ın get_announcements tool'u okur) ve Bilgisayar Mühendisliği akademik
 # personeli (sabit liste, get_academic_staff). Corpus'a ve index'e girmez.
 ANNOUNCEMENTS_DB = DATA_DIR / "duyurular.db"
-ANNOUNCEMENTS_EXPORT_DIR = DATA_DIR / "duyurular"  # kaynak başına okunabilir JSON kopyası
 ANNOUNCEMENTS_URL = "https://muhendislik.ibu.edu.tr/tr/news"
 BM_ANNOUNCEMENTS_URL = "http://bm.muhendislik.ibu.edu.tr/tr/news"  # Bilgisayar Mühendisliği Bölümü (https yok)
 GENERAL_ANNOUNCEMENTS_URL = "https://www.ibu.edu.tr/Website/Contents.aspx?PageID=1349&LangID=1"

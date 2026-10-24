@@ -81,7 +81,8 @@ def save_announcement(conn, record):
 
 
 def export_json(conn, birim, path):
-    """Bir birimin duyurularını okunabilir JSON'a yazar (yeniden eskiye; metin dahil). Dönüş: dosya yolu."""
+    """Bir birimin duyurularını JSON'a yazar (yeniden eskiye; metin dahil). Scraper artık kopya yazmıyor (depo tek kaynak,
+    2026-10-24); bu fonksiyon deneylerin sabit anlık görüntüsü (eval/duyurular_vN.json) için kalır. Dönüş: dosya yolu."""
     rows = conn.execute("SELECT * FROM duyurular WHERE birim = ? ORDER BY tarih DESC, link", (birim,)).fetchall()
     data = [{**dict(r), "tarihler": json.loads(r["tarihler"]), "ekler": json.loads(r["ekler"])} for r in rows]
     path.parent.mkdir(parents=True, exist_ok=True)

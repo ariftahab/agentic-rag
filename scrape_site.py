@@ -1,5 +1,4 @@
-"""Mühendislik Fakültesi, Bilgisayar Mühendisliği Bölümü ve üniversite geneli duyurularını çeker, data/duyurular.db'ye yazar (announcements.py); her kaynağın duyuruları ayrıca data/duyurular/<kaynak>_duyurular.json'a
-(okunabilir kopya). Her gece çalışacak: aynı link ikinci kez işlenmez, yalnız yeni duyurular özetlenir.
+"""Mühendislik Fakültesi, Bilgisayar Mühendisliği Bölümü ve üniversite geneli duyurularını çeker, data/duyurular.db'ye yazar (announcements.py). Her gece çalışacak: aynı link ikinci kez işlenmez, yalnız yeni duyurular özetlenir.
 
 Siteler (2026-10-23 incelemesi):
 - Mühendislik (muhendislik.ibu.edu.tr/tr/news): robots.txt yok (adres ana sayfayı döndürüyor). Liste sayfalamasız, bütün
@@ -283,9 +282,7 @@ def scrape_announcements(fetcher, conn, summarizer, source="muhendislik", days=N
         announcements.save_announcement(conn, record)
         saved += 1
         log.info("Kaydedildi: %s | %s | özet: %s", record["tarih"], record["baslik"], "var" if record["ozet"] else "YOK")
-    path = announcements.export_json(conn, src["birim"], config.ANNOUNCEMENTS_EXPORT_DIR / f"{source}_duyurular.json")
-    log.info("[%s] Bitti: %d kayıt, %d LLM çağrısı (%s); kopya: %s.", source, saved, summarizer.calls - calls,
-             summarizer.model, path)
+    log.info("[%s] Bitti: %d kayıt, %d LLM çağrısı (%s).", source, saved, summarizer.calls - calls, summarizer.model)
     return saved
 
 
