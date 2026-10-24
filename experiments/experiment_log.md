@@ -2,7 +2,7 @@
 
 > Otomatik üretilir (`python -m experiments.report`). Production: **EXP-007**. Ayrıntılar: `experiments/results/EXP-*.json`.
 
-**Dataset:** `eval/sorular_v1.json` vv1 (45 soru: 42 tool beklentili, 11 hesaplı) · `eval/sorular_v2.json` vv2 (66 soru: 63 tool beklentili, 22 hesaplı) · `eval/sorular_v3.json` vv3 (66 soru: 63 tool beklentili, 22 hesaplı). Bir chunk, doğru kaynak belgelerden birine aitse ve o belgede birebir geçen evidence cümlesini içeriyorsa relevant sayılır. Farklı setlerle koşulan deneyler birbiriyle karşılaştırılmaz.  
+**Dataset:** `eval/sorular_v1.json` vv1 (45 soru: 42 tool beklentili, 11 hesaplı) · `eval/sorular_v2.json` vv2 (66 soru: 63 tool beklentili, 22 hesaplı) · `eval/sorular_v3.json` vv3 (66 soru: 63 tool beklentili, 22 hesaplı) · `eval/sorular_v4.json` vv4 (70 soru: 67 tool beklentili, 26 hesaplı) · `eval/sorular_v5.json` vv5 (84 soru: 82 tool beklentili, 26 hesaplı). Bir chunk, doğru kaynak belgelerden birine aitse ve o belgede birebir geçen evidence cümlesini içeriyorsa relevant sayılır. Farklı setlerle koşulan deneyler birbiriyle karşılaştırılmaz.  
 **Kural:** Her deney parent'ından tek bir parametre farklı. Hypothesis deneyden önce yazılır. p < 0,05 = anlamlı (McNemar / Wilcoxon, aynı sorular üzerinde).  
 **Sabit parametreler:** `corpus=v1`, `device=cuda`, `reranker_dtype=fp16`, `fixed_answers=summer_v1`, `citation_style=madde`, `pdf_parser=pdfplumber`, `chunking=structural_v2`, `chunk_size=1500`, `chunk_overlap=150`, `embedding_model=bge-m3`, `normalize_embeddings=✓`, `retrieval=hybrid`, `vector_k=30`, `bm25_k=30`, `rrf_k=60`, `reranker_model=bge-reranker`, `reranker_max_length=512`, `rerank_candidates=30`, `final_k=5`, `llm_temperature=0.3`
 
@@ -20,6 +20,11 @@ Kalın hücre = parent'a göre değişen parametre.
 | EXP-006 | EXP-005 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | agent_v7 | **3.1-flash-lite** | 685 |
 | EXP-007 | EXP-001 | rag | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | v1 | **3.5-flash-lite** | – |
 | EXP-008 | EXP-005 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | **agent_v10** | 3.5-flash-lite | 685 |
+| EXP-009 | EXP-008 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | **agent_v12** | 3.5-flash-lite | – |
+| EXP-010 | EXP-009 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | **agent_h1** | **claude-haiku-5-5** | 685 |
+| EXP-011 | EXP-010 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | **agent_h2** | claude-haiku-5-5 | 685 |
+| EXP-012 | EXP-011 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | agent_h2 | claude-haiku-5-5 | 685 |
+| EXP-013 | EXP-012 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | **agent_h3** | claude-haiku-5-5 | – |
 
 ## 2. Results
 
@@ -33,6 +38,11 @@ Kalın hücre = parent'a göre değişen parametre.
 | EXP-006 | Model karşılaştırması: gemini-3.1-flash-lite + agent_v7 (sorular_v2) | v2 | – | – | – | – | – | – | answer acc. ↓ kötüleşti (p<0.01, anlamlı) | ✓ |
 | EXP-007 | Production modeli gemini-3.5-flash-lite (klasik RAG yolu) | | | | | | | | koşulmadı | |
 | EXP-008 | agent_v10: devir + simulate_grades (sorular_v3) | v3 | – | – | – | – | – | – | referans (yeni soru seti, karşılaştırma yok) | – |
+| EXP-009 | agent_v12: transkript raporuna ders geçmişi + raporda yoksa devir (sorular_v4) | | | | | | | | koşulmadı | |
+| EXP-010 | agent_h1: tek model Claude Haiku 5.5, Gemini yok (sorular_v4, branch exp/haiku-agent) | v4 | – | – | – | – | – | – | answer acc.: ölçülmedi | beklemede |
+| EXP-011 | agent_h2: tek model Haiku + çok değerli hesaplar kodda; prompt caching (sorular_v4, branch exp/haiku-agent) | v4 | – | – | – | – | – | – | hesap = değişmedi (p=1.00, anlamlı değil) | ✗ |
+| EXP-012 | agent_h2 baseline'ı sorular_v5'te (duyuru ve personel soruları; branch exp/haiku-agent) | v5 | – | – | – | – | – | – | referans (yeni soru seti, karşılaştırma yok) | – |
+| EXP-013 | agent_h3: duyuru ve personel tool'ları (sorular_v5, branch exp/haiku-agent) | | | | | | | | koşulmadı | |
 
 Hyp.: ✓ doğrulandı · ✗ doğrulanmadı · ~ yön doğru ama anlamlı değil
 
@@ -48,6 +58,9 @@ Tool seçimi: beklenen tool'lar doğru argümanlarla çağrıldı, beklenmeyen t
 | EXP-005 | v2 | 0.875 | 0.603 | 0.603 | 0.809 | 1.000 | 0.500 | 1.000 | 0.879 | 0.038 | 0.750 | 1.29 | 2.24 | 66 | ✓ |
 | EXP-006 | v2 | 0.679 | 0.682 | 0.682 | 0.762 | 1.000 | 0.455 | 1.000 | 0.894 | 0.000 | 0.571 | 0.98 | 2.03 | 66 | ✓ |
 | EXP-008 | v3 | 0.857 | 0.698 | 0.698 | 0.841 | 1.000 | 0.773 | 1.000 | 0.894 | 0.053 | 1.000 | 1.17 | 2.02 | 66 | ✓ |
+| EXP-010 | v4 | 1.000 | 0.687 | 0.687 | 0.940 | 1.000 | 0.962 | 1.000 | 0.929 | 0.032 | 1.000 | 1.54 | 2.06 | 70 | ✓ |
+| EXP-011 | v4 | 1.000 | 0.642 | 0.642 | 0.925 | 1.000 | 0.962 | 1.000 | 0.914 | 0.065 | 1.000 | 1.53 | 2.07 | 70 | ✓ |
+| EXP-012 | v5 | 0.829 | 0.500 | 0.500 | 0.768 | 1.000 | 0.962 | 1.000 | 0.917 | 0.079 | 1.000 | 1.46 | 2.07 | 84 | ✓ |
 
 ## 5. Notes
 
@@ -59,3 +72,5 @@ Tool seçimi: beklenen tool'lar doğru argümanlarla çağrıldı, beklenmeyen t
 - **EXP-006:** gemini-3.1-flash-lite: answer_acc 0,875 → 0,679 (p=0,003), 3 soru 503, latency ~4 kat; yanlış belge (lisansüstü not tablosu) ve tool sayılarını yeniden toplama hataları. Öneri: production 3.5-flash-lite.
 - **EXP-007:** Production RagBot modeli 3.1-flash-lite → 3.5-flash-lite (EXP-006'ya dayanarak, koşulmadı).
 - **EXP-008:** agent_v10: ortalama soruları 5/5 doğru, hesap_dogrulugu 0,50 → 0,77, devir cevapları 5/5; kalan: rapora güvenen yanlış tool seçimi (kaldığım dersler, dönem, ders sayısı), bir gereksiz devir, katsayı aktarım hatası.
+- **EXP-010:** agent_h1 (tek model Haiku 5.5): cevaplar 56/56, hesap anlamca 24/26 (haftalık saat elle toplanıp yanlış), gereksiz devirler kalktı, ~0,27 $/koşu; gecikme 4,3 → 10,5 sn.
+- **EXP-011:** agent_h2: cevaplar 56/56, haftalık saat kodla ama şube çift sayıldı (29, doğrusu 27); ders programı sorgularında gereksiz kod; caching'le koşu 0,27 → 0,12 $.
