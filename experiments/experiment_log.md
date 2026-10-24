@@ -24,7 +24,7 @@ Kalın hücre = parent'a göre değişen parametre.
 | EXP-010 | EXP-009 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | **agent_h1** | **claude-haiku-5-5** | 685 |
 | EXP-011 | EXP-010 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | **agent_h2** | claude-haiku-5-5 | 685 |
 | EXP-012 | EXP-011 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | agent_h2 | claude-haiku-5-5 | 685 |
-| EXP-013 | EXP-012 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | **agent_h3** | claude-haiku-5-5 | – |
+| EXP-013 | EXP-012 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | **agent_h3** | claude-haiku-5-5 | 685 |
 
 ## 2. Results
 
@@ -42,7 +42,7 @@ Kalın hücre = parent'a göre değişen parametre.
 | EXP-010 | agent_h1: tek model Claude Haiku 5.5, Gemini yok (sorular_v4, branch exp/haiku-agent) | v4 | – | – | – | – | – | – | answer acc.: ölçülmedi | beklemede |
 | EXP-011 | agent_h2: tek model Haiku + çok değerli hesaplar kodda; prompt caching (sorular_v4, branch exp/haiku-agent) | v4 | – | – | – | – | – | – | hesap = değişmedi (p=1.00, anlamlı değil) | ✗ |
 | EXP-012 | agent_h2 baseline'ı sorular_v5'te (duyuru ve personel soruları; branch exp/haiku-agent) | v5 | – | – | – | – | – | – | referans (yeni soru seti, karşılaştırma yok) | – |
-| EXP-013 | agent_h3: duyuru ve personel tool'ları (sorular_v5, branch exp/haiku-agent) | | | | | | | | koşulmadı | |
+| EXP-013 | agent_h3: duyuru ve personel tool'ları (sorular_v5, branch exp/haiku-agent) | v5 | – | – | – | – | – | – | answer acc. ↑ iyileşti (p=0.01, anlamlı) | ✓ |
 
 Hyp.: ✓ doğrulandı · ✗ doğrulanmadı · ~ yön doğru ama anlamlı değil
 
@@ -61,6 +61,7 @@ Tool seçimi: beklenen tool'lar doğru argümanlarla çağrıldı, beklenmeyen t
 | EXP-010 | v4 | 1.000 | 0.687 | 0.687 | 0.940 | 1.000 | 0.962 | 1.000 | 0.929 | 0.032 | 1.000 | 1.54 | 2.06 | 70 | ✓ |
 | EXP-011 | v4 | 1.000 | 0.642 | 0.642 | 0.925 | 1.000 | 0.962 | 1.000 | 0.914 | 0.065 | 1.000 | 1.53 | 2.07 | 70 | ✓ |
 | EXP-012 | v5 | 0.829 | 0.500 | 0.500 | 0.768 | 1.000 | 0.962 | 1.000 | 0.917 | 0.079 | 1.000 | 1.46 | 2.07 | 84 | ✓ |
+| EXP-013 | v5 | 0.957 | 0.622 | 0.622 | 0.927 | 1.000 | 0.885 | 1.000 | 0.941 | 0.040 | 1.000 | 1.63 | 2.14 | 84 | ✓ |
 
 ## 5. Notes
 
@@ -74,3 +75,5 @@ Tool seçimi: beklenen tool'lar doğru argümanlarla çağrıldı, beklenmeyen t
 - **EXP-008:** agent_v10: ortalama soruları 5/5 doğru, hesap_dogrulugu 0,50 → 0,77, devir cevapları 5/5; kalan: rapora güvenen yanlış tool seçimi (kaldığım dersler, dönem, ders sayısı), bir gereksiz devir, katsayı aktarım hatası.
 - **EXP-010:** agent_h1 (tek model Haiku 5.5): cevaplar 56/56, hesap anlamca 24/26 (haftalık saat elle toplanıp yanlış), gereksiz devirler kalktı, ~0,27 $/koşu; gecikme 4,3 → 10,5 sn.
 - **EXP-011:** agent_h2: cevaplar 56/56, haftalık saat kodla ama şube çift sayıldı (29, doğrusu 27); ders programı sorgularında gereksiz kod; caching'le koşu 0,27 → 0,12 $.
+- **EXP-012:** agent_h2 sorular_v5'te: eski 69 soru EXP-011 ile aynı; duyuru/personel soruları anlamca 1/15 (tool yok).
+- **EXP-013:** agent_h3: answer_acc 0,83 → 0,96 (p<0,05); duyuru/personel anlamca 13-14/15 (h2 1/15); birim adıyla personel araması boş dönüyor.

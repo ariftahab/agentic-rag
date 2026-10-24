@@ -31,6 +31,6 @@
   "reranker_dtype": "fp16",
   "fixed_answers": "summer_v1"
  },
- "notlar": "",
- "kisa_not": ""
+ "notlar": "Sonuç (temiz commit 328ea59, branch exp/haiku-agent, --bekle 5, 84/84 soru, hata yok; bugün 2026-10-24, duyuru snapshot'ı duyurular_v1). answer_acc 0,829. v4'ten gelen 69 değişmemiş soruda cevap, hesap ve tool sonuçları EXP-011 ile birebir aynı (tek koşu varyansı bu sette düşük). Yeni 14 soru + bölüm başkanı sorusunda metrik 3/15, anlamca 1/15: yalnız 'Makine Mühendisliği bölüm başkanı kim?' doğru biçimde cevapsız kaldı; af sonuçları ve yatay geçiş sorularında 'ilan' kelimesi 'bilgim yok' cevabında tesadüfen geçti (yanlış pozitif). h2'de duyuru ve personel tool'u yok: mevzuat arayıp 'bilgim yok' diyor ya da akademik takvimden yakın ama farklı tarih veriyor (muafiyet sınavı için Eylül tarihleri). Hipotez doğrulandı (baseline).",
+ "kisa_not": "agent_h2 sorular_v5'te: eski 69 soru EXP-011 ile aynı; duyuru/personel soruları anlamca 1/15 (tool yok)."
 }
