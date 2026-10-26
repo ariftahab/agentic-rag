@@ -66,11 +66,13 @@ Durum: agent varsayılanı `agent_v4`; en yeni sürüm `agent_v7` (v6 + anlık t
   yalnız link verilir (kullanıcı kararı 2026-10-24: link yeterli). EXP-015'te metriğin yanlış saydığı üç sorunun
   üçü de anlamca doğru; tek gerçek eksik: "Bu dönem Algoritma Analizi'ni geçersem mezun olabilir miyim?" açık yuvanın
   adını (Seçmeli VIII) yazmadı.
-- **Gece taraması (bir ara yapılacak, kullanıcı kararı 2026-10-24):** `scrape_site.py` için Windows Görev
-  Zamanlayıcı'da her gece çalışan bir görev kurulacak; şu an scraper elle çalışıyor. Genel kaynak her taramada yalnız
-  son 5 günü alıyor: tarama bir gün atlanırsa o günün genel duyuruları hiç alınmaz. 90 güne çıkarma değişikliği
-  branch'te git stash'te (yalnız yerelde); uygulanırsa ilk taramada geriye dönük ~131 duyuru çekilir (maliyet yüzünden
-  şimdilik yapılmadı).
+- **(Yapıldı 2026-10-26) Zamanlanmış tarama:** Windows Görev Zamanlayıcı'da "BAIBU duyuru taramasi" görevi
+  `scrape_site.py`'yi 4 günde bir 12:00'de çalıştırır (ilk 2026-10-30; bilgisayar kapalıysa açılınca çalışır). Görev
+  working tree'yi çalıştırır: scraper yalnız `exp/haiku-agent`'ta, o saatte `main` açıksa tarama olmaz. Genel kaynak
+  son 5 günü alıyor; tarama 1 günden fazla gecikirse arada çıkan genel duyurular kaçabilir (gün sınırı 5'te kalsın,
+  kullanıcı kararı). Personele yönelik duyurular (taziye, personel/öğretim üyesi alımı, hizmet içi eğitim) başlıktan
+  elenir, LLM'e gitmez (branch'te `62c55f7`; depodaki eski 5 kayıt kalsın, kullanıcı kararı). 90 güne çıkarma
+  değişikliği branch'te git stash'te (yalnız yerelde; geriye dönük ~131 duyuru, maliyet yüzünden yapılmadı).
 - **(Çözüldü, EXP-008) Sonraki iş adayı (EXP-005 bulgusu):** puan → harf notu → ortalama zinciri hiç kurulmuyor: yönetmelikteki katsayı
   tablosu (BB 3,50) ve GNO kuralları sandbox'ta yok, agent mevzuattan bulduğunu göreve aktarmıyor, Haiku standart YÖK
   tablosunu varsayıyor. Seçenekler: not tablosunu sandbox'a dosya olarak vermek ya da deterministik bir GNO what-if tool'u.
