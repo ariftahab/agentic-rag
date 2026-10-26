@@ -38,6 +38,9 @@ REQUEST_TIMEOUT_S = 20
 SHORT_TEXT = 300      # bundan kısa metin özetlenmez, kendisi özettir (yönlendirme duyuruları)
 TURKEY_TZ = timezone(timedelta(hours=3))
 FILE_EXTENSIONS = (".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", ".zip", ".rar", ".jpg", ".png")
+# Yalnız personeli ilgilendiren duyurular başlıktan elenir: detay çekilmez, LLM'e gitmez, depoya yazılmaz (2026-10-26)
+STAFF_ONLY_TITLE = re.compile(r"taziye|vefat|başsağlığı|personel alım|öğretim üyesi alım|öğretim elemanı alım|"
+                              r"hizmet içi eğitim")
 MONTHS = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"]
 
 log = logging.getLogger("scrape_site")
@@ -71,6 +74,11 @@ class Fetcher:
         response.raise_for_status()
         # bayt verilir: www.ibu.edu.tr windows-1254 bildiriyor ama UTF-8 gönderiyor; BeautifulSoup kodlamayı baytlardan bulur
         return BeautifulSoup(response.content, "html.parser")
+
+
+def is_staff_only(title):
+    """Türkçe küçük harf: str.lower() "İ"yi "i̇", "I"yı "i" yapar."""
+    return bool(STAFF_ONLY_TITLE.search(title.replace("İ", "i").replace("I", "ı").lower()))
 
 
 def parse_date(text):
@@ -269,9 +277,12 @@ def scrape_announcements(fetcher, conn, summarizer, source="muhendislik", days=N
     items = src["list"](fetcher.get(src["url"]), src["url"])
     known = announcements.known_links(conn)
     new = [i for i in items if i["tarih"] >= cutoff and i["link"] not in known]
+    staff_only = [i for i in new if is_staff_only(i["baslik"])]
+    new = [i for i in new if not is_staff_only(i["baslik"])]
     if limit:
         new = new[:limit]
-    log.info("[%s] Listede %d duyuru; son %d günde yeni %d (eşik %s).", source, len(items), days, len(new), cutoff)
+    log.info("[%s] Listede %d duyuru; son %d günde yeni %d, personele yönelik elenen %d (eşik %s).", source,
+             len(items), days, len(new), len(staff_only), cutoff)
     saved, calls = 0, summarizer.calls
     for item in new:
         try:

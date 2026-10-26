@@ -131,6 +131,15 @@ def test_department_source_saves_under_its_unit(conn):
         ("Bilgisayar Mühendisliği Bölümü", "http://bm.muhendislik.ibu.edu.tr/tr/news-detail/af-2-liste/23247")]
 
 
+def test_staff_only_titles_are_skipped_before_detail_and_llm():
+    for title in ["Taziye mesajı (… vefatı)", "Sözleşmeli Personel Alımı İle İlgili Duyuru",
+                  "22/10/2026 Tarihli Öğretim Üyesi alımı ilanı", "İÇ KONTROL HİZMET İÇİ EĞİTİMİ"]:
+        assert scrape_site.is_staff_only(title), title
+    for title in ["Yemek Bursu Tanımlama Duyurusu", "TÜBİTAK 2209-A Bilgilendirme Toplantısı",
+                  "İngilizce Seviye Tespit Sınavı"]:
+        assert not scrape_site.is_staff_only(title), title
+
+
 GENERAL_LIST_HTML = """<div class="duyurular"><div class="liste">
 <div class="col-md-6"><a href="https://ajanda.ibu.edu.tr/yemek-bursu/"><div class="date"><span>23</span><i>Ekim</i></div>
 <div class="als"><h4>Yemek Bursu Tanımlama Duyurusu</h4><p>Kurumsal Haber Portalı</p></div></a></div>
