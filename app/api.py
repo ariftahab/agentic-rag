@@ -85,6 +85,9 @@ class AgentAskResponse(BaseModel):
     sources: list[Source] = Field(description="Cevabın dayandığı mevzuat maddeleri ve belgeler")
     confirmations: dict[str, str | None] = Field(description="Güncel teyitler; istemci bir sonraki isteğe ekler")
     latency_ms: int
+    usage: dict[str, int] | None = Field(default=None, description=(
+        "Bu cevabın ham token sayıları (input, output, reasoning; modele göre cache_read, cache_write). "
+        "Maliyet istemcide hesaplanır."))
 
 
 class FeedbackRequest(BaseModel):

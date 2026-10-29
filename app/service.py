@@ -249,7 +249,8 @@ class ChatService:
             self._known_ids.add(record["id"])
             self._agent_ids.add(record["id"])
         return {"id": record["id"], "answer": result["answer"], "tool_calls": result["tool_calls"],
-                "sources": record["kaynaklar"], "confirmations": confirmations, "latency_ms": record["latency_ms"]}
+                "sources": record["kaynaklar"], "confirmations": confirmations, "latency_ms": record["latency_ms"],
+                "usage": result.get("usage")}
 
     def _log_code(self, record, generated):
         """Kod çalışan her soru için anlik_tool.jsonl'e bir satır: yalnız kod adımları ve çıktıları (tool çağrıları ve ara
