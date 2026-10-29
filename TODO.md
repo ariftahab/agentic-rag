@@ -32,6 +32,14 @@ branch'te de). Production adayı agent `agent_h6` (Haiku tek model).
   transkript durumu, sandbox dosyaları) → bunları "uydurulmuş" sayıp 36/53 soruda "eksik" dedi; kapsam uyarıları
   istedi; doğru cevaplar kararsızlaştı.
 
+**Teşhis (2026-10-29 gece, commit'siz `agent_h8`):** denetleyiciye bağlam (tarih, bölüm, transkript durumu, sandbox
+dosyaları) + "eksik" yalnız yanlış bilgi / cevapsız parça / aranmamış kural (`codeact.REVIEW_SYSTEM_V2`). dev'in 10
+sorusunda (h7'de kötüleşen 4, düzelen 2, şeref sorusu, 3 kontrol): yanlış alarm kalktı (10 sorunun 1'inde "eksik"; h7'de
+çoğunda), süre h6'nın ~1,3 katı (17 → 22 sn). Anlamca h6 7/10, h7 5/10, h8 6/10: çift anadal bölümüne geçiş düzeldi;
+çift anadal diploması ve bütünleme sorularında agent'ın ilk taslağı yanlıştı ve denetleyici "tamam" dedi (hükmü getiren
+chunk hiç bulunmamıştı, denetleyici yalnız getirilen kanıtla tutarlılığı görebiliyor). **Kullanıcı kararı: reflection
+loop bırakıldı, `agent_h6` kalıyor; h8 kodu geri alındı (commit edilmedi).**
+
 **Sıradaki (karar bekliyor):** reflection'ın **2. ve son denemesi** (2 deneme kuralı): denetleyiciye agent'ın bağlamını
 vermek + yalnız yanlış bilgi ya da cevaplanmamış soru parçası için "eksik" demesi. Önerilen bitti tanımı: dev'de h6'dan
 fazla tam doğru, hiçbir doğru cevap bozulmuyor, süre en fazla 2 kat. Tutmazsa döngü bırakılır; kalan hatalar ayrı ele
