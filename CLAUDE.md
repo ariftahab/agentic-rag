@@ -102,7 +102,11 @@ her değişiklik "kod iyileştirmesi" olarak değil, **deney** olarak yapılır:
 (24 belge: Mühendislik Fakültesi öğrencisinin danışmanlığında gereken mevzuat + lisansüstü), pdfplumber, `structural_v2`,
 bge-m3, hybrid (vector 30 + BM25 30, RRF) + bge-reranker fp16 (30 aday → 5 chunk), `gemini-3.5-flash-lite`, tek prompt
 `v1`, sabit cevap `summer_v1` (yaz okulu). Kapsam mekanizmaları (netleştirme, kapsam tamamlama, staj sabit cevabı)
-tek fakülte olduğu için çıkarıldı. Henüz soru seti yok (ilk set `sorular_v1`).
+tek fakülte olduğu için çıkarıldı.
+**Soru setleri ve son durum (2026-10-29):** `eval/sorular_v1-v6` geliştirme sırasında yazıldı; `val_v1` (110 soru) yalnız
+ölçüm içindir, üzerinde ayar yapılmaz; `dev_v1` (53 soru) yöntem denemeleri içindir. Değerlendirme: anlamca cevap +
+gerekli tool. Çalışma branch'i `exp/haiku-agent` (agent_h6; agent_h7 = reflection loop denemesi). **Oturuma başlarken
+`TODO.md`'nin en üstündeki "Kaldığımız yer" bölümünü oku.**
 **Agentic yol (2026-10-21, terminalde, production değil):** spec GitHub #1, ticket'lar #2-#12. Kullanıcılar danışman ve
 öğrenci; şimdilik yalnız Bilgisayar Mühendisliği. **Karar LLM'de, hesap kodda:** LLM tool seçer ve sonucu cümleye döker;
 AKTS, eşleme ve kurallar deterministik kodda. Girdi yalnız UBYS **tarihsel transkripti** (yarıyıl düzenli transkript bu
@@ -134,7 +138,7 @@ olmak için kaç kredi lazım" gibi tool calling). Belge ne kadar az o kadar iyi
 - `experiments/` — `evaluation.py` (kanıt tabanlı ilgililik, MRR@10, Hit@k, bağlam isabeti, cevap doğruluğu, netleştirme ve
   birleştirme metrikleri, McNemar/Wilcoxon), `run.py` (koşucu; takip sorularında rewrite önbellekli), `report.py`,
   `teshis_*.py` (alt küme teşhisleri).
-- `eval/` — soru setleri (`sorular_v1.json` ile başlayacak); grup A bulma, B kapsam, C çekimser kalma, D takip (`gecmis`),
+- `eval/` — soru setleri (`sorular_v1-v6`, `val_v1`, `dev_v1`; duyuru snapshot'ları `duyurular_v1-v2`); grup A bulma, B kapsam, C çekimser kalma, D takip (`gecmis`),
   E birleştirme.
 - `tests/` — pytest (`venv/Scripts/python.exe -m pytest -q`); gerçek transkript testleri yalnız yerelde (`tests/private/`).
 
