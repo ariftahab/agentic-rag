@@ -30,5 +30,7 @@
   "prompt_version": "agent_h9",
   "reranker_dtype": "fp16",
   "fixed_answers": "summer_v1"
- }
+ },
+ "notlar": "Sonuç (temiz commit 6291cbc, branch exp/haiku-agent, --bekle 5, 53/53, hata yok; bugün 2026-10-24, duyurular_v2). Anlamca okuma: 46 tam doğru, 7 kısmen, yanlış yok (EXP-019: 46/7). Hedef tuttu: iki çelişki sorusu tam doğru oldu. Yandal sertifikasında yandal yönergesini (aynı düzey, konuya özel ve yeni) geçerli saydı; uzaktan ödev oranında %40'ı verip 'yönerge YÖK usul ve esaslarının alt düzeyinde, %20 geçerli değil' dedi (EXP-019'da ikisini de aktarıyordu). 'Hiçbir doğru bozulmaz' kısmı tutmadı: iki soru kısmene düştü, ikisi de hiyerarşiyle ilgisiz. Çift anadal diplomasında mezun belgeleri yönergesinin 'diplomada belirtilmez' maddesi aramada gelmedi (bu soru reflection teşhisinde de aynı şekilde kaçmıştı). Çift anadal bölümüne geçişte ilgili fıkrayı buldu ama ters yönde okudu. Bunlar dev'deki tek koşu varyansının büyüklüğünü gösteriyor: h6 43, h8 46, h9 46 tam doğru; soru başına ±2-3 soruluk oynama hedeflenen etkiyle aynı büyüklükte. Bütünleme sorusu doğru kaldı ama sonucu 'çıkarımım' diye çekinceli verdi. Süre 12,8 → 13,2 sn. Gezinme tool'ları yine az (get_article 3, list_articles 1). Fazla tool çağrısı (toplu): get_announcements 10, get_graduation_requirements 6. Sonraki adım: nihai ölçüm val_v1'de (çelişki sorularının çoğu orada) ya da varyansı ayırmak için tekrar koşu.",
+ "kisa_not": "agent_h9 (belge düzeyi + çelişki kuralı): 46/53 (h8 46); iki çelişki sorusu düzeldi, iki ilgisiz soru varyansla düştü."
 }
