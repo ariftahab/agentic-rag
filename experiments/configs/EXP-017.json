@@ -31,6 +31,6 @@
   "reranker_dtype": "fp16",
   "fixed_answers": "summer_v1"
  },
- "notlar": "",
- "kisa_not": ""
+ "notlar": "Sonuç (temiz commit b3b0baa, branch exp/haiku-agent, --bekle 5, 53/53, hata yok; bugün 2026-10-24, duyurular_v2). Anlamca okuma (kısmen doğru = cevabın özü var ama kural eksik ya da kararsız): 43 tam doğru, 10 kısmen, yanlış yok. Kategoriler: tarih_takvim 5/5, tek_bilgi 4/4, cekimser 4/4, birim_ayrimi 3/3, prompt_injection 2/2, kosul_istisna 9/10, capraz_atif 7/10, birlestirme 9/15. Kısmenler: geçen bahar dönem şeref öğrencisi miydim (normal ders yükünü doğrulayamadı: analyze_transcript planın dönem AKTS toplamını vermiyor), ek sınav hakkı (soru iki anlamlı: tek-çift ya da azami süre ek sınavı; setin dogru_cevap'ı yalnız birini anıyor), kopya cezası ve yatay geçiş, iki yıllık hazırlık ve 14 dönem (yönetmelik metni de belirsiz), yandal sertifikası ve uzaktan ödev oranı (iki hükmü buldu, hangisinin geçerli olduğuna karar vermedi), af sonrası sınıf (40 AKTS eşiğini anmadı), çift anadal bölümüne geçiş, yurt dışı izni (Kayıt Kabul 25-27 bulunmadı), muafiyet sınavını tekrar (bir kez kuralını buldu ama sonuca bağlamadı). Hipotez tuttu: dev'de doğruluk val'den düşük (tam doğru 0,81; val'de 0,91) ve hatalar birleştirme/çapraz atıf/sürüm çelişkisinde toplanıyor. Gerekli tool 0,962; ortalama 14,2 sn, soru başına 2,2 tool çağrısı.",
+ "kisa_not": "agent_h6 dev baseline: 43/53 tam doğru, 10 kısmen; zayıf yer birlestirme 9/15 ve capraz_atif 7/10."
 }
