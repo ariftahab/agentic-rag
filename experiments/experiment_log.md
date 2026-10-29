@@ -30,6 +30,7 @@ Kalın hücre = parent'a göre değişen parametre.
 | EXP-016 | EXP-015 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | agent_h6 | claude-haiku-5-5 | 685 |
 | EXP-017 | EXP-016 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | agent_h6 | claude-haiku-5-5 | 685 |
 | EXP-018 | EXP-017 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | **agent_h7** | claude-haiku-5-5 | 685 |
+| EXP-019 | EXP-017 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | **agent_h8** | claude-haiku-5-5 | 685 |
 
 ## 2. Results
 
@@ -53,6 +54,7 @@ Kalın hücre = parent'a göre değişen parametre.
 | EXP-016 | agent_h6 val_v1 baseline: kategori bazında cevap doğruluğu (branch exp/haiku-agent) | val_v1 | – | – | – | – | – | – | referans (yeni soru seti, karşılaştırma yok) | – |
 | EXP-017 | agent_h6 dev_v1 baseline (branch exp/haiku-agent) | dev_v1 | – | – | – | – | – | – | referans (yeni soru seti, karşılaştırma yok) | – |
 | EXP-018 | agent_h7: taslak cevabı denetleyen döngü, en fazla 3 tur (dev_v1, branch exp/haiku-agent) | dev_v1 | – | – | – | – | – | – | answer acc. ↑ iyileşti (p=1.00, anlamlı değil) | ~ |
+| EXP-019 | agent_h8: madde gezinme tool'ları (list_articles, get_article) ve atıf ipuçları, dev_v1 | dev_v1 | – | – | – | – | – | – | answer acc. = değişmedi (p=1.00, anlamlı değil) | ✗ |
 
 Hyp.: ✓ doğrulandı · ✗ doğrulanmadı · ~ yön doğru ama anlamlı değil
 
@@ -76,6 +78,7 @@ Tool seçimi: beklenen tool'lar doğru argümanlarla çağrıldı, beklenmeyen t
 | EXP-016 | val_v1 | 0.909 | 0.627 | 0.627 | 0.964 | 1.000 | 1.000 | – | 0.955 | 0.045 | – | 1.87 | 2.22 | 110 | ✓ |
 | EXP-017 | dev_v1 | 0.943 | 0.660 | 0.660 | 0.962 | 1.000 | 1.000 | 0.000 | 0.981 | 0.019 | – | 2.17 | 2.40 | 53 | ✓ |
 | EXP-018 | dev_v1 | 0.962 | 0.396 | 0.396 | 0.981 | 1.000 | 1.000 | 0.000 | 0.943 | 0.057 | – | 4.43 | 4.83 | 53 | ✓ |
+| EXP-019 | dev_v1 | 0.943 | 0.528 | 0.528 | 0.962 | 1.000 | 1.000 | 0.000 | 0.981 | 0.019 | – | 2.23 | 2.55 | 53 | ✓ |
 
 ## 5. Notes
 
@@ -96,3 +99,4 @@ Tool seçimi: beklenen tool'lar doğru argümanlarla çağrıldı, beklenmeyen t
 - **EXP-016:** val_v1 baseline: anlamca 100/110; birlestirme 13/18 ve capraz_atif 8/10 en zayıf, injection 10/10; gereksiz tool çağrısı yaygın (tool seçimi 0,63).
 - **EXP-017:** agent_h6 dev baseline: 43/53 tam doğru, 10 kısmen; zayıf yer birlestirme 9/15 ve capraz_atif 7/10.
 - **EXP-018:** agent_h7 (Haiku denetleyici, 3 tur): 41/53 tam doğru (h6 43), 2 düzelen 4 kötüleşen; süre 3 kat; denetleyici bağlamsız olduğu için yanlış alarm.
+- **EXP-019:** agent_h8 (madde gezinme): 46/53 tam doğru (h6 43), 3 düzelen 0 bozulan; bitti tanımı (≥5) tutmadı, gezinme tool'u az kullanıldı.
