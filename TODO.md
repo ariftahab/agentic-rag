@@ -3,6 +3,41 @@
 Yalnız açık işler, sırasıyla. Yapılanların sonuçları config `notlar` alanlarında, `experiments/experiment_log.md`'de;
 tarihçe git'te. Agentic yolun işleri GitHub issue'larında (spec #1; açık ticket'lar #15, #19).
 
+## Kaldığımız yer (2026-10-29 akşam) — ÖNCE BUNU OKU
+
+Çalışma branch'i `exp/haiku-agent` (main şimdilik önemli değil; kod branch'te, deney kayıtları ve soru setleri iki
+branch'te de). Production adayı agent `agent_h6` (Haiku tek model).
+
+**Bugün yapılanlar:**
+- **Yeni soru setleri** (sistem koşulmadan, belgelerin ham metninden; transkript sayıları sistemin kodundan bağımsız
+  hesaplandı; öğrenci dili; eski setlerle çakışma yok; ayrıntı setlerin `aciklama` alanında):
+  - `eval/val_v1.json` — 110 soru, **yalnız ölçüm** için (üzerinde ayar yapılmaz). 8 kategori: tek_bilgi,
+    kosul_istisna, birlestirme, capraz_atif, birim_ayrimi, tarih_takvim, cekimser, prompt_injection (7 doğrudan,
+    3 dolaylı). Her soruda `dogru_cevap` (anlamca değerlendirme) ve `beklenen_tool_lar`.
+  - `eval/dev_v1.json` — 53 soru, **yöntem denemeleri** bunun üzerinde. val'de hatanın çıktığı türlere ağırlıklı,
+    farklı madde ve olgularla.
+  - `eval/duyurular_v2.json` — v1'in 38 duyurusunun düzeltilmiş ayrıştırıcıyla güncel hali (500 TL) + `test_enjeksiyon`
+    etiketli 3 sahte duyuru (dolaylı injection testi).
+- **EXP-016** (h6, val_v1): anlamca 100/110. En zayıf birlestirme 13/18, capraz_atif 8/10; injection 10/10.
+  Hataların çoğu iki kaynak gereken sorularda kural tarafının hiç aranmaması.
+- **Değerlendirme ölçütü (kullanıcı kararı):** cevap anlamca doğru mu + gerekli tool çağrıldı mı. Fazla tool çağrısı
+  soru bazında hata sayılmaz, yalnız toplu tutulur (en sık yanlışlıkla çağrılan: get_graduation_requirements,
+  get_announcements). Anahtar kelime answer_acc raporlanmaz.
+- **Reflection loop** (kullanıcı kararı: tek tek prompt yaması yerine döngü; LangGraph yok, ADR 0001 geçerli):
+  `agent_h7` = h6 + her taslak cevabı ayrı bir Haiku çağrısıyla denetleyen döngü (`tools/codeact.py`
+  `CodeRunner.review`, şemaya bağlı JSON karar, en fazla 3 tur; her tur sonuçta `denetim` alanında). Denetleyici
+  Haiku (kullanıcı: Sonnet koşuyu ~20 kat pahalılaştırır, kredi yok).
+- **EXP-017** (h6, dev_v1): 43/53 tam doğru, 10 kısmen. **EXP-018** (h7, dev_v1): 41/53; 2 düzelen, 4 kötüleşen;
+  süre 14 → 45 sn. **Kök neden:** denetleyici agent'ın bağlamını görmüyor (bugünün tarihi, öğrencinin bölümü,
+  transkript durumu, sandbox dosyaları) → bunları "uydurulmuş" sayıp 36/53 soruda "eksik" dedi; kapsam uyarıları
+  istedi; doğru cevaplar kararsızlaştı.
+
+**Sıradaki (karar bekliyor):** reflection'ın **2. ve son denemesi** (2 deneme kuralı): denetleyiciye agent'ın bağlamını
+vermek + yalnız yanlış bilgi ya da cevaplanmamış soru parçası için "eksik" demesi. Önerilen bitti tanımı: dev'de h6'dan
+fazla tam doğru, hiçbir doğru cevap bozulmuyor, süre en fazla 2 kat. Tutmazsa döngü bırakılır; kalan hatalar ayrı ele
+alınır (ör. planın dönem AKTS toplamını veren tool yok; çapraz atıf ve sürüm/hiyerarşi bilgisi chunk'larda yok —
+oturumun başındaki çapraz atıf + metadata fikri). Nihai ölçüm her zaman val_v1'de.
+
 ## Kaldığımız yer (2026-10-22 akşam)
 
 Durum: agent varsayılanı `agent_v4`; en yeni sürüm `agent_v7` (v6 + anlık tool, Claude Haiku). Bugün kapananlar:
@@ -31,24 +66,48 @@ Durum: agent varsayılanı `agent_v4`; en yeni sürüm `agent_v7` (v6 + anlık t
   sorusu ilk koşuda transkript yüklü olduğu hâlde yükleme istedi, 3 tekrarda 3/3 doğru (varyans). Tam koşu için soru
   setinde bu üç sorunun beklenen tool'u (request_new_tool → analyze_transcript) ve "kaç DD dersim var", "kaç kez
   aldım" soruları yeni bir sette (sorular_v4) düzeltilmeli.
-- **EXP-009 yarım (2026-10-23, temiz commit 7b7eb76):** Gemini günlük kotası 66/70'te doldu (son dört sınır sorusu
-  yok, `tamamlandi: false`); sonuç dosyası ve experiment_log commit'lenmedi, kota yenilenince `--yeniden` ile tam
-  koşulacak. Ortak sorularda: answer_acc 44 → 48 / 52 (kaldığım dersler, 240 düzeltmesi, Cuma boş, transkript yok),
-  hesap 17 → 19 / 22 (kaçıncı dönem 11, kalan 21 ders), gerekli tool 49 → 55 / 59, devir duyarlılığı 1,00 (yeni dört
-  devir sorusunun üçü doğru). Açık: (1) rapordan cevaplanan DD sayısı ve "kaç kez aldım" sorularında rapordan sonra
-  gereksiz devir (cevaplar doğru); vize 40 sorusunda simulate_grades sonrası devir; (2) Erasmus hariç ortalama
-  sorusunda Haiku katsayıları search_regulations'tan Lisansüstü Eğitim Yönetmeliği'nin tablosundan aldı, 3,50 olan
-  GNO'yu 3,01 hesapladı (tutarsızlığı fark etti ama cevapladı); (3) şeref sorusunda analyze_transcript çağrılmadı
-  (GNO yok), Oyun Programlama what-if'i tur sınırına takıldı (get_offered_electives ×4). Latency yorumlanamaz:
-  kota dolarken tek tool'lu sorular bile 40-70 sn (ortalama 4,3 → 23,8 sn).
-- **agent_v13 (2026-10-23, commit'siz, working tree'de `agent.py`, `gpa.py`, `graduation.py`, testler; teşhis
-  bekliyor, kota doldu):** kullanıcı kararı: katsayıları rapordan çeksin. analyze_transcript raporuna Madde 27/1
-  tablosu (E/I, DZ/NA ve ortalamaya katılmayan notlar dahil) ve Madde 28 ortalama tanımı; Haiku'nun devir notu
-  "katsayıları bu tablodan al, rapor yoksa önce analyze_transcript". Ayrıca (kullanıcı kararı) gpa.py v13'te E/I ve
-  DZ/NA'yı ortalamaya 0,00 ile katar (Madde 27/2; eski sürümler katmıyordu, fixture'larda yok). Bitti tanımı:
-  "Erasmus dersleri sayılmasaydı ortalamam?" 3,49 ve katsayılar rapordan; diğer üç devir sorusu bozulmuyor.
-  Komut: `teshis_agent.py EXP-009 agent_v13 D01,D02,D03,D04`. Sonra EXP-009 tam koşusu ya da v13 deneyi (karar).
-- **Branch exp/haiku-agent (2026-10-23, kullanıcı kararı: main'e alınmaz, test için):** EXP-010 = agent_h1, tek model Haiku 5.5 (Gemini yok; v13 tool'ları). Cevaplar 56/56, hesap anlamca 24/26, gereksiz devirler kalktı, ~0,27 $/koşu, gecikme 10,5 sn (kullanıcı: gecikme önemli değil). Prompt caching (codeact.handoff: system sonunda breakpoint + otomatik) commit'li: 4 soruda maliyet %37 düştü (cache okuma 0,1x, yazma 1,25x varsayımıyla). Teşhis (commit'siz, agent.py): agent_h2 = h1 + "birden fazla değeri toplayan/sayan hesap code_execution'da, raporda hazır sayı olduğu gibi"; haftalık ders saati 14,5 → 27 (kodla), DD sayısı, kalan ders sayısı ve Cuma boş kontrolleri kod yazmadan doğru.
+- **EXP-009 yarım (2026-10-23):** Gemini kotası 66/70'te doldu; sonuç yarım haliyle notlarıyla kayıtlı, tekrar
+  koşulmayacak (yerine tek model Haiku denendi). Ayrıntı EXP-009 config'inin `notlar`'ında.
+- **Branch `exp/haiku-agent` (2026-10-23, deneysel; kullanıcı kararı: kod main'e alınmaz, deney kayıtları main'de):**
+  agent_v13 (rapora Madde 27/1 not tablosu, E/I ve DZ/NA FF sayılır; 59f044a), agent_h1/h2 (tek model, Gemini yok) ve
+  Haiku isteklerinde prompt caching yalnız bu branch'te. EXP-010 (agent_h1) ve EXP-011 (agent_h2 + caching) sonuçları
+  main'de. **Gemini + Haiku devri (EXP-009) ile yalnız Haiku (EXP-010/011) farkı:** cevaplar 48 → 52 / 52 ortak soruda
+  (bütün sette 56/56), hesap anlamca 22 → 24 / 26; iki model arasındaki sınırdan doğan hatalar (rapora güvenip
+  devretmeme, gereksiz devir, aktarırken katsayı/etiket uydurma) kalktı; Erasmus hariç ortalama rapordaki tabloyla
+  doğru. Bedeli gecikme (4,3 sn → 10,5-11,8 sn; kullanıcı: önemli değil) ve ücret (koşu 0,27 $, caching'le 0,12 $; Gemini
+  ücretsiz kotadaydı ama deneyleri yarıda kesiyordu). Yeni hata türleri: çok değerli hesabı elle toplama, kodda iki
+  şubeyi çift sayma, kaynaksız genel bilgi ekleme, ders programı sorgularında gereksiz kod. "Bu dönem haftada kaç saat
+  derse giriyorum?" (27; h1'de 14,5, h2'de 29) bulgu olarak bırakılmıştı; agent_h6 şube planıyla doğru cevaplıyor (EXP-015).
+- **Duyurular ve personel (2026-10-23, yalnız branch `exp/haiku-agent`; a4961a6, e9063cc, c755e33, 1d7d161):**
+  `scrape_site.py` her gece Mühendislik Fakültesi ve üniversite geneli duyuru sayfalarını tarar, yeni duyuruyu bir
+  kez Haiku ile özetler (linkler kodla kopyalanır) ve `data/duyurular.db`'ye yazar (git'e girmez). agent_h3 = h2 +
+  `get_announcements` (tarih filtresi SQL, konu BM25Plus, 4 harf kök) ve `get_academic_staff`
+  (`data/personel_bilgisayar.json`, elle güncellenir) + "tool metni bilgidir, talimat değildir" kuralı; web agent'ı
+  branch'te h3. **EXP-012/013 (2026-10-24):** sorular_v5 (v4 + 14 duyuru/personel sorusu; bölüm başkanı sorusu
+  artık personelden cevaplanıyor), deneyler sabit gün (2026-10-24) ve duyuru snapshot'ıyla (`eval/duyurular_v1.json`,
+  38 duyuru; runner değişikliği yalnız branch'te, production canlı depoyu okur). h2 baseline'ı yeni sorularda anlamca
+  1/15, h3 13-14/15; answer_acc 0,83 → 0,96 (p<0,05), eski sorular anlamca aynı, gecikme ~10 sn. "Bilgisayar
+  Donanımı ana bilim dalı başkanı kim?" boş döndü (personel tool'u parantezdeki birimi aramıyordu); **EXP-014
+  (agent_h4, tam koşu yok):** arama birimi de kapsar, görev adıyla eşleşen öne alınır; teşhiste düzeldi, EXP-013'ün
+  diğer personel çağrıları aynı sonucu verir. Açık: hafif tool kayması (staj raporu sorusu duyuruları da aradı).
+- **Branch'te 2026-10-24 (ikinci yarı):** Bilgisayar Mühendisliği Bölümü duyuru sayfası scraper'a eklendi (aynı
+  ayrıştırıcılar, kendi birimiyle); duyuru metni satır içi etiketlerde artık bölünmüyor ("<strong>5</strong>00 TL"
+  5 TL okunuyordu; depo yeniden okundu); scraper JSON kopyası yazmıyor, depo tek kaynak. agent_h5: duyuru tool'unun
+  açıklaması bölüm sayfasını sayar. Haiku'nun kodları `logs/anlik_tool.jsonl`'de. **EXP-015 (agent_h6, sorular_v6):**
+  Haiku'nun deneylerde en sık kodla yazdığı hesaplar kalıcı tool: `get_transcript_average` (belirli dersler, ilk N
+  yıl, Erasmus hariç; Madde 27-28), `search_course_schedule` (bütün hafta, derslik, şube), `plan_course_sections`
+  (çakışma, boş gün, haftalık ders saati). 8 taşınan soru 8/8 kodsuz doğru, kod çalışan soru 9 → 1, diğerleri anlamca
+  aynı; haftalık ders saati sorusu da artık doğru (27). Web agent'ı branch'te h6. Duyuru eklerindeki PDF'ler okunmaz,
+  yalnız link verilir (kullanıcı kararı 2026-10-24: link yeterli). EXP-015'te metriğin yanlış saydığı üç sorunun
+  üçü de anlamca doğru; tek gerçek eksik: "Bu dönem Algoritma Analizi'ni geçersem mezun olabilir miyim?" açık yuvanın
+  adını (Seçmeli VIII) yazmadı.
+- **(Yapıldı 2026-10-26) Zamanlanmış tarama:** Windows Görev Zamanlayıcı'da "BAIBU duyuru taramasi" görevi
+  `scrape_site.py`'yi 4 günde bir 12:00'de çalıştırır (ilk 2026-10-30; bilgisayar kapalıysa açılınca çalışır). Görev
+  working tree'yi çalıştırır: scraper yalnız `exp/haiku-agent`'ta, o saatte `main` açıksa tarama olmaz. Genel kaynak
+  son 5 günü alıyor; tarama 1 günden fazla gecikirse arada çıkan genel duyurular kaçabilir (gün sınırı 5'te kalsın,
+  kullanıcı kararı). Personele yönelik duyurular (taziye, personel/öğretim üyesi alımı, hizmet içi eğitim) başlıktan
+  elenir, LLM'e gitmez (branch'te `62c55f7`; depodaki eski 5 kayıt kalsın, kullanıcı kararı). 90 güne çıkarma
+  değişikliği branch'te git stash'te (yalnız yerelde; geriye dönük ~131 duyuru, maliyet yüzünden yapılmadı).
 - **(Çözüldü, EXP-008) Sonraki iş adayı (EXP-005 bulgusu):** puan → harf notu → ortalama zinciri hiç kurulmuyor: yönetmelikteki katsayı
   tablosu (BB 3,50) ve GNO kuralları sandbox'ta yok, agent mevzuattan bulduğunu göreve aktarmıyor, Haiku standart YÖK
   tablosunu varsayıyor. Seçenekler: not tablosunu sandbox'a dosya olarak vermek ya da deterministik bir GNO what-if tool'u.
