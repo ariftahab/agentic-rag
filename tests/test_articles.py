@@ -135,3 +135,19 @@ def test_h9_is_h8_plus_the_conflict_rule():
     agent = AdvisorAgent(FakeRetriever(), None, graduation.load_plan(), prompt_version="agent_h9")
     assert agent.document_info and agent.navigation is not None
     assert AdvisorAgent(FakeRetriever(), None, graduation.load_plan(), prompt_version="agent_h8").document_info is None
+
+
+# --- agent_h10: ders programında günün durumu sınıf sorusundan önce ---
+
+def test_h10_reports_holiday_without_asking_for_the_class():
+    from datetime import date
+    from agent import AGENT_PROMPTS, make_tools
+    assert AGENT_PROMPTS["agent_h10"] == AGENT_PROMPTS["agent_h9"]
+    plan = graduation.load_plan()
+    new = {t.name: t for t in make_tools(None, plan, None, {}, date(2026, 10, 29), h6_tools=True, status_first=True)}
+    old = {t.name: t for t in make_tools(None, plan, None, {}, date(2026, 10, 29), h6_tools=True)}
+    assert "Cumhuriyet Bayramı" in new["get_course_schedule"].invoke({"gun": "bugün"})
+    assert "sınıf" in old["get_course_schedule"].invoke({"gun": "bugün"})            # eski sürümler aynı kalır
+    assert "hafta sonu" in new["get_course_schedule"].invoke({"gun": "2026-10-24"})
+    # Ders günü: sınıf sorusu korunur (transkript yok, sınıf yok)
+    assert "sınıf" in new["get_course_schedule"].invoke({"gun": "2026-10-30"})

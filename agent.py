@@ -301,42 +301,44 @@ AGENT_PROMPTS = {"agent_v1": _AGENT_V1_SYSTEM, "agent_v2": _AGENT_V2_SYSTEM, "ag
                  # agent_h8: h6 + madde gezinme tool'ları (NAVIGATION_PROMPTS); h7'nin denetim döngüsü yok.
                  "agent_h8": _AGENT_H8_SYSTEM,
                  # agent_h9: h8 + belge düzeyi ve tarihleri, çelişkide geçerli hükmü seçme kuralı (HIERARCHY_PROMPTS).
-                 "agent_h9": _AGENT_H9_SYSTEM}
+                 "agent_h9": _AGENT_H9_SYSTEM,
+                 # agent_h10: prompt h9 ile aynı; ders programında günün durumu sınıf sorusundan önce (STATUS_FIRST_PROMPTS).
+                 "agent_h10": _AGENT_H9_SYSTEM}
 AGENT_PROMPT_VERSION = "agent_v4"
 # Sonradan eklenen tool yalnız onu anlatan sürümlerde açılır: eski sürümlerin deneyleri (EXP-002, EXP-003) aynı tool
 # listesiyle tekrar üretilebilsin.
-REQUIREMENTS_TOOL_PROMPTS = {"agent_v5", "agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9"}
+REQUIREMENTS_TOOL_PROMPTS = {"agent_v5", "agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9", "agent_h10"}
 # Bu sürümlerde analyze_transcript kayıt yılını yazar, get_graduation_requirements transkript yüklüyse kişisel
 # sorular için analyze_transcript'e yönlendirir (EXP-004 aynı çıktılarla tekrar üretilebilsin).
-TRANSCRIPT_DETAIL_PROMPTS = {"agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9"}
+TRANSCRIPT_DETAIL_PROMPTS = {"agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9", "agent_h10"}
 # Anlık tool (request_new_tool, codeact) yalnız bu sürümlerde açılır.
-CODE_TOOL_PROMPTS = {"agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9"}
+CODE_TOOL_PROMPTS = {"agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9", "agent_h10"}
 # Bu sürümlerde request_new_tool tool olarak çalışmaz, devir sinyalidir (bkz. _AGENT_V9_SYSTEM).
 HANDOFF_PROMPTS = {"agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13"}
 # Not ortalaması tool'u (simulate_grades, gpa.py) yalnız bu sürümlerde açılır.
-GRADES_TOOL_PROMPTS = {"agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9"}
+GRADES_TOOL_PROMPTS = {"agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9", "agent_h10"}
 # Bu sürümlerde mezuniyet kuralları yalnız mevzuattaki metinle (graduation.load_rules(regulation_only=True)): toplam
 # AKTS Madde 22/1'deki 240; eski kural dosyasındaki "planın toplamı bağlayıcıdır" eklemesi (244) mevzuatta yok.
-REGULATION_RULES_PROMPTS = {"agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9"}
+REGULATION_RULES_PROMPTS = {"agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9", "agent_h10"}
 # Bu sürümlerde analyze_transcript ders geçmişini de yazar (dönemler, notlar, başarısız ve tekrarlanan dersler, kalan ders
 # sayısı); tool açıklaması da raporun içeriğini sayar.
-TRANSCRIPT_HISTORY_PROMPTS = {"agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9"}
+TRANSCRIPT_HISTORY_PROMPTS = {"agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9", "agent_h10"}
 # Bu sürümlerde analyze_transcript yönetmelikteki harf notu tablosunu ve ortalama tanımını da yazar; devirde Haiku
 # katsayıları oradan alır (HANDOFF_NOTE_V13).
-GRADE_TABLE_PROMPTS = {"agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9"}
+GRADE_TABLE_PROMPTS = {"agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9", "agent_h10"}
 # Tek model (branch exp/haiku-agent): döngünün tamamı CodeRunner'ın modeliyle; LLM (Gemini) kullanılmaz.
-SINGLE_MODEL_PROMPTS = {"agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9"}
+SINGLE_MODEL_PROMPTS = {"agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9", "agent_h10"}
 # Duyuru ve akademik personel tool'ları (announcements.py) yalnız bu sürümlerde açılır.
-SITE_TOOL_PROMPTS = {"agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9"}
+SITE_TOOL_PROMPTS = {"agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9", "agent_h10"}
 # Bu sürümlerde get_academic_staff görevin parantezdeki birimini de arar (announcements.search_staff_by_unit). EXP-013'te
 # "Bilgisayar Donanımı ana bilim dalı başkanı kim?" boş döndü; agent_h3 eski aramayla tekrar üretilebilsin.
-STAFF_UNIT_SEARCH_PROMPTS = {"agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9"}
+STAFF_UNIT_SEARCH_PROMPTS = {"agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9", "agent_h10"}
 # Bu sürümlerde get_announcements'ın açıklaması ve "bulunamadı" mesajı Bilgisayar Mühendisliği Bölümü duyurularını da
 # sayar (2026-10-24'te taranmaya başladı); h3/h4 eski açıklamayı görür.
-SITE_SOURCES_V2_PROMPTS = {"agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9"}
+SITE_SOURCES_V2_PROMPTS = {"agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9", "agent_h10"}
 # Transkriptten alt küme ortalaması (gpa.subset_average) ve ders programı araması / şube planı (schedule.find_lessons,
 # plan_sections) tool'ları yalnız bu sürümlerde açılır.
-H6_TOOL_PROMPTS = {"agent_h6", "agent_h7", "agent_h8", "agent_h9"}
+H6_TOOL_PROMPTS = {"agent_h6", "agent_h7", "agent_h8", "agent_h9", "agent_h10"}
 # Bu sürümlerde her taslak cevap ayrı bir denetleyici çağrısıyla (codeact.CodeRunner.review) soruyla ve tool
 # sonuçlarıyla karşılaştırılır; "eksik" kararında agent geri bildirimle devam eder, en fazla REVIEW_ROUNDS denetim.
 # EXP-016'da (val_v1) hataların çoğu iki kaynak gereken sorularda kural tarafının hiç getirilmemesiydi.
@@ -344,9 +346,13 @@ REVIEW_PROMPTS = {"agent_h7"}
 REVIEW_ROUNDS = 3
 # Mevzuatta madde düzeyinde gezinme (tools/articles.py) yalnız bu sürümlerde: list_articles, get_article ve
 # search_regulations sonucunda parçanın atıf yaptığı maddeler.
-NAVIGATION_PROMPTS = {"agent_h8", "agent_h9"}
+NAVIGATION_PROMPTS = {"agent_h8", "agent_h9", "agent_h10"}
 # Arama ve madde sonuçlarında belgenin düzeyi ve tarihleri (data/mevzuat_belgeleri.json) yalnız bu sürümlerde.
-HIERARCHY_PROMPTS = {"agent_h9"}
+HIERARCHY_PROMPTS = {"agent_h9", "agent_h10"}
+# Bu sürümlerde get_course_schedule, sınıf ve transkript yokken önce günün durumuna bakar (tatil, hafta sonu, dönem
+# dışı). 2026-10-29 web: "Bugün hangi dersler var?" sınıf sorusuna takıldı, tatil bilgisi hiç dönmedi; agent tarihsiz
+# search_course_schedule ile perşembe derslerini listeledi.
+STATUS_FIRST_PROMPTS = {"agent_h10"}
 ANNOUNCEMENTS_DOC_V2 = """Bilgisayar Mühendisliği Bölümü (ders ve sınav programları, derslerle ilgili duyurular), Mühendislik
         Fakültesi (son 90 gün) ve üniversite geneli (son günler) duyurularında (sınav, başvuru, kayıt, etkinlik, burs vb.)
         arar ve en ilgili en fazla 5 duyurunun başlığını, birimini, yayın tarihini, özetini, önemli tarihlerini, eklerini
@@ -425,7 +431,8 @@ def _references_line(navigation, doc=None, refs=None):
 def make_tools(retriever, plan, transcript, confirmations, today, with_requirements=False, transcript_detail=False,
                with_grades=False, rules=None, with_history=False, with_grade_table=False,
                code_runner=None, generated=None, found=None, site_db=None, staff_by_unit=False,
-               site_sources_v2=False, h6_tools=False, navigation=None, document_info=None):
+               site_sources_v2=False, h6_tools=False, navigation=None, document_info=None,
+               status_first=False):
     """Bu çağrıya (oturuma) bağlı tool'lar. `transcript` ve `confirmations` closure'da durur; LLM'in görebileceği
     argümanlar değildir. confirm_equivalence `confirmations` sözlüğünü yerinde günceller (çağıran taraf saklar).
     navigation (agent_h8): articles.ArticleIndex; verilirse madde gezinme tool'ları açılır ve arama sonucunda her
@@ -589,6 +596,11 @@ def make_tools(retriever, plan, transcript, confirmations, today, with_requireme
             return str(e)
         codes = None
         if not sinif and not dersler:
+            if status_first:  # agent_h10: tatil, hafta sonu, dönem dışı sınıf sorusundan önce
+                data = schedule.load_schedule()
+                result = schedule.lookup(data, day)
+                if result["durum"] in ("tatil", "hafta_sonu", "donem_disi"):
+                    return schedule.schedule_text(result, data)
             if transcript is None:
                 return ("Transkript yüklü değil ve sınıf ya da ders verilmedi. Kullanıcıya kaçıncı sınıf olduğunu ya da "
                         "hangi dersleri aldığını sor.")
@@ -788,6 +800,7 @@ class AdvisorAgent:
         self.navigation = (articles.ArticleIndex(getattr(retriever, "chunks", None) or [])
                            if prompt_version in NAVIGATION_PROMPTS else None)
         self.document_info = articles.load_document_info() if prompt_version in HIERARCHY_PROMPTS else None
+        self.status_first = prompt_version in STATUS_FIRST_PROMPTS
         self.documents = external_documents(plan, schedule.load_schedule())
         # (belge, madde) -> maddenin ilk chunk'ı: kural atıflarını kaynağa çevirmek için.
         self._articles = {}
@@ -824,7 +837,8 @@ class AdvisorAgent:
                            with_grade_table=self.with_grade_table,
                            code_runner=self.code_runner, generated=generated, found=found, site_db=self.site_db,
                            staff_by_unit=self.staff_by_unit, site_sources_v2=self.site_sources_v2,
-                           h6_tools=self.h6_tools, navigation=self.navigation, document_info=self.document_info)
+                           h6_tools=self.h6_tools, navigation=self.navigation, document_info=self.document_info,
+                           status_first=self.status_first)
         by_name = {t.name: t for t in tools}
         system = self.system.format(no_answer=config.NO_ANSWER, today=today.strftime("%d.%m.%Y"),
                                     transcript_state=TRANSCRIPT_LOADED if transcript else TRANSCRIPT_MISSING)
