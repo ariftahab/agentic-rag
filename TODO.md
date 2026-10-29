@@ -46,11 +46,16 @@ loop bırakıldı, `agent_h6` kalıyor; h8 kodu geri alındı (commit edilmedi).
 - **EXP-020** (`agent_h9` = h8 + `data/mevzuat_belgeleri.json` belge düzeyi/tarihleri + çelişki kuralı): dev 46/53; iki
   çelişki sorusu (yandal sertifikası, uzaktan ödev oranı) düzeldi, iki ilgisiz soru varyansla düştü. Dev'de tek koşu
   varyansı ±2-3 soru, hedeflenen etkiyle aynı büyüklükte.
-- **Karar bekliyor:** nihai ölçüm `agent_h9` ile val_v1'de (EXP-016 h6: 100/110) ya da varyans için tekrar koşu.
-  `mevzuat_belgeleri.json`'da mezun belgeleri yönergesinin "2018 öncesi ad" notunu kullanıcı doğrulamalı.
-- **Arayüz** (working tree'de, commit'siz; kullanıcı denesin): sohbet sayfası "BM RAG Agent", `chat.css`, katlanabilir
-  tool satırı, cevap başına ve sohbet toplamı token maliyeti (Haiku 5.5 fiyatları, `chat.js` `PRICING`); API cevabına
-  `usage`. Web agent'ı hâlâ `agent_h6`.
+- **`agent_h10`** (4134e2d) = h9 + ders programında günün durumu (tatil, hafta sonu, dönem dışı) sınıf sorusundan önce.
+  2026-10-29 web'de "Bugün hangi dersler var?" tatili görmedi. Dev ve val'de bu yoldan geçen soru yok (EXP-020, EXP-016
+  kontrol edildi), setlerde h10 = h9. h6 → h9 dev'de 4 düzelen 1 bozulan (McNemar p ≈ 0,38, anlamlı değil).
+- **SIRADAKİ (kullanıcı kararı): `agent_h10`'u val_v1'de test et** (yeni config, ust_deney EXP-016 h6 100/110; h6 → h10
+  üç değişiklik, `coklu_degisiklik_gerekcesi` yaz; ~110 Haiku isteği). Sonuç h6'dan kötü değilse web'i h10'a geçir
+  (`app/service.py` `WEB_AGENT_PROMPT_VERSION`) ve canlıda tatil günü "Bugün hangi dersler var?" kontrolü yap.
+- `mevzuat_belgeleri.json`'da mezun belgeleri yönergesinin "2018 öncesi ad" notunu kullanıcı doğrulamalı.
+- **Arayüz** (commit'lendi, 2026-10-29): sohbet sayfası "BM RAG Agent", nötr gri `chat.css`, cevaptan ayrı "Kaynaklar"
+  bölümü, katlanabilir tool satırı, cevap başına ve sohbet toplamı token maliyeti (Haiku 5.5 fiyatları, `chat.js`
+  `PRICING`), cevabın sonundaki "Kaynak:" paragrafı gizli; API cevabına `usage`. Web agent'ı hâlâ `agent_h6`.
 
 **Eski not — reflection (kapandı):** reflection'ın **2. ve son denemesi** (2 deneme kuralı): denetleyiciye agent'ın bağlamını
 vermek + yalnız yanlış bilgi ya da cevaplanmamış soru parçası için "eksik" demesi. Önerilen bitti tanımı: dev'de h6'dan
