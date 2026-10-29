@@ -2,7 +2,7 @@
 
 > Otomatik üretilir (`python -m experiments.report`). Production: **EXP-007**. Ayrıntılar: `experiments/results/EXP-*.json`.
 
-**Dataset:** `eval/sorular_v1.json` vv1 (45 soru: 42 tool beklentili, 11 hesaplı) · `eval/sorular_v2.json` vv2 (66 soru: 63 tool beklentili, 22 hesaplı) · `eval/sorular_v3.json` vv3 (66 soru: 63 tool beklentili, 22 hesaplı) · `eval/sorular_v4.json` vv4 (70 soru: 67 tool beklentili, 26 hesaplı) · `eval/sorular_v5.json` vv5 (84 soru: 82 tool beklentili, 26 hesaplı) · `eval/sorular_v6.json` vv6 (84 soru: 82 tool beklentili, 26 hesaplı) · `eval/val_v1.json` vval_v1 (110 soru: 110 tool beklentili, 5 hesaplı). Bir chunk, doğru kaynak belgelerden birine aitse ve o belgede birebir geçen evidence cümlesini içeriyorsa relevant sayılır. Farklı setlerle koşulan deneyler birbiriyle karşılaştırılmaz.  
+**Dataset:** `eval/dev_v1.json` vdev_v1 (53 soru: 53 tool beklentili, 2 hesaplı) · `eval/sorular_v1.json` vv1 (45 soru: 42 tool beklentili, 11 hesaplı) · `eval/sorular_v2.json` vv2 (66 soru: 63 tool beklentili, 22 hesaplı) · `eval/sorular_v3.json` vv3 (66 soru: 63 tool beklentili, 22 hesaplı) · `eval/sorular_v4.json` vv4 (70 soru: 67 tool beklentili, 26 hesaplı) · `eval/sorular_v5.json` vv5 (84 soru: 82 tool beklentili, 26 hesaplı) · `eval/sorular_v6.json` vv6 (84 soru: 82 tool beklentili, 26 hesaplı) · `eval/val_v1.json` vval_v1 (110 soru: 110 tool beklentili, 5 hesaplı). Bir chunk, doğru kaynak belgelerden birine aitse ve o belgede birebir geçen evidence cümlesini içeriyorsa relevant sayılır. Farklı setlerle koşulan deneyler birbiriyle karşılaştırılmaz.  
 **Kural:** Her deney parent'ından tek bir parametre farklı. Hypothesis deneyden önce yazılır. p < 0,05 = anlamlı (McNemar / Wilcoxon, aynı sorular üzerinde).  
 **Sabit parametreler:** `corpus=v1`, `device=cuda`, `reranker_dtype=fp16`, `fixed_answers=summer_v1`, `citation_style=madde`, `pdf_parser=pdfplumber`, `chunking=structural_v2`, `chunk_size=1500`, `chunk_overlap=150`, `embedding_model=bge-m3`, `normalize_embeddings=✓`, `retrieval=hybrid`, `vector_k=30`, `bm25_k=30`, `rrf_k=60`, `reranker_model=bge-reranker`, `reranker_max_length=512`, `rerank_candidates=30`, `final_k=5`, `llm_temperature=0.3`
 
@@ -28,6 +28,8 @@ Kalın hücre = parent'a göre değişen parametre.
 | EXP-014 | EXP-013 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | **agent_h4** | claude-haiku-5-5 | – |
 | EXP-015 | EXP-013 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | **agent_h6** | claude-haiku-5-5 | 685 |
 | EXP-016 | EXP-015 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | agent_h6 | claude-haiku-5-5 | 685 |
+| EXP-017 | EXP-016 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | agent_h6 | claude-haiku-5-5 | 685 |
+| EXP-018 | EXP-017 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | **agent_h7** | claude-haiku-5-5 | 685 |
 
 ## 2. Results
 
@@ -49,6 +51,8 @@ Kalın hücre = parent'a göre değişen parametre.
 | EXP-014 | agent_h4: personel araması görevin birimini de arar (sorular_v5, branch exp/haiku-agent; tam koşu yok) | | | | | | | | koşulmadı | |
 | EXP-015 | agent_h6: Haiku'nun kodla yazdığı hesaplar kalıcı tool (sorular_v6, branch exp/haiku-agent) | v6 | – | – | – | – | – | – | referans (yeni soru seti, karşılaştırma yok) | – |
 | EXP-016 | agent_h6 val_v1 baseline: kategori bazında cevap doğruluğu (branch exp/haiku-agent) | val_v1 | – | – | – | – | – | – | referans (yeni soru seti, karşılaştırma yok) | – |
+| EXP-017 | agent_h6 dev_v1 baseline (branch exp/haiku-agent) | dev_v1 | – | – | – | – | – | – | referans (yeni soru seti, karşılaştırma yok) | – |
+| EXP-018 | agent_h7: taslak cevabı denetleyen döngü, en fazla 3 tur (dev_v1, branch exp/haiku-agent) | dev_v1 | – | – | – | – | – | – | answer acc. ↑ iyileşti (p=1.00, anlamlı değil) | ~ |
 
 Hyp.: ✓ doğrulandı · ✗ doğrulanmadı · ~ yön doğru ama anlamlı değil
 
@@ -71,6 +75,8 @@ Tool seçimi: beklenen tool'lar doğru argümanlarla çağrıldı, beklenmeyen t
 | EXP-013 | v5 | 0.957 | 0.622 | 0.622 | 0.927 | 1.000 | 0.885 | 1.000 | 0.941 | 0.040 | 1.000 | 1.63 | 2.14 | 84 | ✓ |
 | EXP-015 | v6 | 0.957 | 0.658 | 0.658 | 0.951 | 1.000 | 0.923 | 1.000 | 0.976 | 0.012 | – | 1.45 | 2.12 | 84 | ✓ |
 | EXP-016 | val_v1 | 0.909 | 0.627 | 0.627 | 0.964 | 1.000 | 1.000 | – | 0.955 | 0.045 | – | 1.87 | 2.22 | 110 | ✓ |
+| EXP-017 | dev_v1 | 0.943 | 0.660 | 0.660 | 0.962 | 1.000 | 1.000 | 0.000 | 0.981 | 0.019 | – | 2.17 | 2.40 | 53 | ✓ |
+| EXP-018 | dev_v1 | 0.962 | 0.396 | 0.396 | 0.981 | 1.000 | 1.000 | 0.000 | 0.943 | 0.057 | – | 4.43 | 4.83 | 53 | ✓ |
 
 ## 5. Notes
 
@@ -90,3 +96,5 @@ Tool seçimi: beklenen tool'lar doğru argümanlarla çağrıldı, beklenmeyen t
 - **EXP-014:** agent_h4: personel araması birimi de arıyor; Bilgisayar Donanımı ana bilim dalı başkanı düzeldi, diğer çağrılar aynı (tam koşu yok).
 - **EXP-015:** agent_h6: 8 kalıcı tool sorusu 8/8 kodsuz doğru; kod çalışan soru 9 → 1; diğer sorular anlamca aynı; 9,2 sn.
 - **EXP-016:** val_v1 baseline: anlamca 100/110; birlestirme 13/18 ve capraz_atif 8/10 en zayıf, injection 10/10; gereksiz tool çağrısı yaygın (tool seçimi 0,63).
+- **EXP-017:** agent_h6 dev baseline: 43/53 tam doğru, 10 kısmen; zayıf yer birlestirme 9/15 ve capraz_atif 7/10.
+- **EXP-018:** agent_h7 (Haiku denetleyici, 3 tur): 41/53 tam doğru (h6 43), 2 düzelen 4 kötüleşen; süre 3 kat; denetleyici bağlamsız olduğu için yanlış alarm.
