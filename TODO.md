@@ -3,6 +3,41 @@
 Yalnız açık işler, sırasıyla. Yapılanların sonuçları config `notlar` alanlarında, `experiments/experiment_log.md`'de;
 tarihçe git'te. Agentic yolun işleri GitHub issue'larında (spec #1; açık ticket'lar #15, #19).
 
+## Kaldığımız yer (2026-10-29 akşam) — ÖNCE BUNU OKU
+
+Çalışma branch'i `exp/haiku-agent` (main şimdilik önemli değil; kod branch'te, deney kayıtları ve soru setleri iki
+branch'te de). Production adayı agent `agent_h6` (Haiku tek model).
+
+**Bugün yapılanlar:**
+- **Yeni soru setleri** (sistem koşulmadan, belgelerin ham metninden; transkript sayıları sistemin kodundan bağımsız
+  hesaplandı; öğrenci dili; eski setlerle çakışma yok; ayrıntı setlerin `aciklama` alanında):
+  - `eval/val_v1.json` — 110 soru, **yalnız ölçüm** için (üzerinde ayar yapılmaz). 8 kategori: tek_bilgi,
+    kosul_istisna, birlestirme, capraz_atif, birim_ayrimi, tarih_takvim, cekimser, prompt_injection (7 doğrudan,
+    3 dolaylı). Her soruda `dogru_cevap` (anlamca değerlendirme) ve `beklenen_tool_lar`.
+  - `eval/dev_v1.json` — 53 soru, **yöntem denemeleri** bunun üzerinde. val'de hatanın çıktığı türlere ağırlıklı,
+    farklı madde ve olgularla.
+  - `eval/duyurular_v2.json` — v1'in 38 duyurusunun düzeltilmiş ayrıştırıcıyla güncel hali (500 TL) + `test_enjeksiyon`
+    etiketli 3 sahte duyuru (dolaylı injection testi).
+- **EXP-016** (h6, val_v1): anlamca 100/110. En zayıf birlestirme 13/18, capraz_atif 8/10; injection 10/10.
+  Hataların çoğu iki kaynak gereken sorularda kural tarafının hiç aranmaması.
+- **Değerlendirme ölçütü (kullanıcı kararı):** cevap anlamca doğru mu + gerekli tool çağrıldı mı. Fazla tool çağrısı
+  soru bazında hata sayılmaz, yalnız toplu tutulur (en sık yanlışlıkla çağrılan: get_graduation_requirements,
+  get_announcements). Anahtar kelime answer_acc raporlanmaz.
+- **Reflection loop** (kullanıcı kararı: tek tek prompt yaması yerine döngü; LangGraph yok, ADR 0001 geçerli):
+  `agent_h7` = h6 + her taslak cevabı ayrı bir Haiku çağrısıyla denetleyen döngü (`tools/codeact.py`
+  `CodeRunner.review`, şemaya bağlı JSON karar, en fazla 3 tur; her tur sonuçta `denetim` alanında). Denetleyici
+  Haiku (kullanıcı: Sonnet koşuyu ~20 kat pahalılaştırır, kredi yok).
+- **EXP-017** (h6, dev_v1): 43/53 tam doğru, 10 kısmen. **EXP-018** (h7, dev_v1): 41/53; 2 düzelen, 4 kötüleşen;
+  süre 14 → 45 sn. **Kök neden:** denetleyici agent'ın bağlamını görmüyor (bugünün tarihi, öğrencinin bölümü,
+  transkript durumu, sandbox dosyaları) → bunları "uydurulmuş" sayıp 36/53 soruda "eksik" dedi; kapsam uyarıları
+  istedi; doğru cevaplar kararsızlaştı.
+
+**Sıradaki (karar bekliyor):** reflection'ın **2. ve son denemesi** (2 deneme kuralı): denetleyiciye agent'ın bağlamını
+vermek + yalnız yanlış bilgi ya da cevaplanmamış soru parçası için "eksik" demesi. Önerilen bitti tanımı: dev'de h6'dan
+fazla tam doğru, hiçbir doğru cevap bozulmuyor, süre en fazla 2 kat. Tutmazsa döngü bırakılır; kalan hatalar ayrı ele
+alınır (ör. planın dönem AKTS toplamını veren tool yok; çapraz atıf ve sürüm/hiyerarşi bilgisi chunk'larda yok —
+oturumun başındaki çapraz atıf + metadata fikri). Nihai ölçüm her zaman val_v1'de.
+
 ## Kaldığımız yer (2026-10-22 akşam)
 
 Durum: agent varsayılanı `agent_v4`; en yeni sürüm `agent_v7` (v6 + anlık tool, Claude Haiku). Bugün kapananlar:
