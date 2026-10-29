@@ -4,8 +4,10 @@
   <meta charset="utf-8">
   <!-- interactive-widget: Android Chrome klavye açılınca sayfanın yüksekliğini küçültsün, yazı kutusu klavyenin üstünde kalsın. -->
   <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
-  <title>BAİBÜ Kampüs Asistanı</title>
+  <title>BM RAG Agent</title>
   <link rel="stylesheet" href="/static/style.css">
+  <!-- Yalnız sohbet sayfasının görünümü; /belgeler ve /admin yüklemez. -->
+  <link rel="stylesheet" href="/static/chat.css">
   <!-- marked: markdown -> HTML, DOMPurify: HTML temizleme (XSS koruması). Sürümler sabit. -->
   <script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
@@ -15,12 +17,14 @@
 <body class="chat-body">
   <header class="topbar">
     <div class="topbar-inner">
-      <div class="brand">BAİBÜ Kampüs Asistanı<small>mevzuat asistanı</small></div>
+      <div class="brand"><span class="brand-mark" aria-hidden="true">BM</span>BM RAG Agent<small>Bilgisayar Mühendisliği · BAİBÜ</small></div>
       <nav class="nav">
         <a href="/" class="active">Sohbet</a>
         <a href="/belgeler">Belgeler</a>
         <a href="/admin">Değerlendirme</a>
       </nav>
+      <!-- Bu sohbette LLM token'larına harcanan tahmini toplam (chat.js hesaplar; yenilemede sıfırlanır). -->
+      <div class="cost-total" id="cost-total" aria-live="polite"></div>
       <div class="status"></div>
     </div>
   </header>
@@ -29,12 +33,21 @@
     <div class="messages" id="messages">
       <div class="messages-inner" id="messages-inner">
         <div class="empty" id="empty">
-          <h1>Ne öğrenmek istersiniz?</h1>
-          <div>Üniversitenin yönetmelik ve yönergelerine göre cevap verir, kaynağını gösterir.</div>
+          <div class="empty-mark" aria-hidden="true">BM</div>
+          <h1>BM RAG Agent</h1>
+          <p class="lead">Bilgisayar Mühendisliği öğrencileri ve danışmanları için tool kullanan bir agent. Sorunuza göre
+            uygun tool'u seçer; hesapları kodla yapar, cevabı kaynağıyla verir.</p>
+          <ul class="capabilities">
+            <li><strong>Mevzuat</strong>Yönetmelik ve yönergelerde arama: staj, ders kaydı, sınavlar, mezuniyet, yatay geçiş.</li>
+            <li><strong>Transkript</strong>UBYS tarihsel transkriptinizle mezuniyet durumu, eksik dersler, not ortalaması ve "bu dersleri alırsam" hesabı.</li>
+            <li><strong>Ders programı</strong>Bu dönemin dersleri (saat, şube, derslik), şube seçimi ve çakışmalar, açılan seçmeliler.</li>
+            <li><strong>Duyurular ve personel</strong>Bölüm, fakülte ve üniversite duyuruları; öğretim elemanlarının iletişim bilgileri.</li>
+          </ul>
           <div class="examples">
             <button>Yatay geçiş başvurusu için not ortalaması şartı nedir?</button>
-            <button>Bir dersten devamsızlık sınırı ne kadar?</button>
-            <button>Kayıt dondurma hangi durumlarda yapılabilir?</button>
+            <button>Bugün hangi dersler var?</button>
+            <button>Bu dönem hangi seçmeli dersler açılıyor?</button>
+            <button>Mezun olmak için kaç AKTS eksiğim var?</button>
           </div>
         </div>
       </div>
@@ -52,11 +65,12 @@
         <input type="file" id="transcript-file" accept="application/pdf,.pdf" hidden>
       </div>
       <div class="composer-inner">
-        <textarea id="question" rows="1" placeholder="Sorunuzu yazın…" aria-label="Soru"></textarea>
+        <textarea id="question" rows="1" placeholder="Mevzuat, mezuniyet durumu ya da ders programı hakkında sorun…" aria-label="Soru"></textarea>
         <button class="btn btn-primary" id="send" type="submit">Gönder</button>
       </div>
       <div class="composer-hint">
         <span>Enter: gönder · Shift+Enter: yeni satır</span>
+        <span class="cost-total cost-total-hint" aria-hidden="true"></span>
         <button class="link-btn" id="new-chat" type="button">Yeni sohbet</button>
       </div>
     </form>

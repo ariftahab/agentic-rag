@@ -1,0 +1,241 @@
+/* BM RAG Agent — yalnız sohbet sayfasının görünümü.
+   style.css'ten sonra yüklenir ve her kural body.chat-body altında yazılır: /belgeler ve /admin bu dosyayı
+   yüklemez, ortak style.css değişmez. Renk değişkenleri body.chat-body üzerinde yeniden tanımlanır; sayfadaki her
+   öğe (sağdan açılan kaynak paneli dahil, o da body'nin çocuğu) yeni paleti miras alır.
+   Palet nötr gri; tek vurgu sönük bir mürekkep mavisi (link, odak, sayı rozeti). Doygun ya da parlak renk yok. */
+
+body.chat-body {
+  --bg: #f6f6f5;
+  --surface: #ffffff;
+  --surface-2: #f0f0ee;       /* kaynaklar bölümü, tool satırı */
+  --text: #1c1d1f;
+  --text-muted: #63666b;
+  --border: #e2e2df;
+  --border-strong: #c9c9c5;   /* cevap ile kaynaklar arasındaki ayırıcı */
+  --accent: #3d5468;          /* sönük mürekkep mavisi */
+  --accent-soft: #e9edf0;
+  --accent-ink: #ffffff;
+  --user-bubble: #e8e8e5;
+  --user-ink: #1c1d1f;
+  --bot-bubble: #ffffff;
+  --tool-bg: #f0f0ee;
+  --danger: #9a3b30;
+  --danger-soft: #f6ebe9;
+  --radius: 12px;
+  --content-width: 760px;
+  --font: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, monospace;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  color-scheme: light;
+  font: 15.5px/1.65 var(--font);
+  background: var(--bg);
+}
+
+@media (prefers-color-scheme: dark) {
+  body.chat-body {
+    --bg: #161718;
+    --surface: #1e1f21;
+    --surface-2: #252628;
+    --text: #e6e6e4;
+    --text-muted: #9a9c9f;
+    --border: #2e3033;
+    --border-strong: #45484c;
+    --accent: #9fb2c3;
+    --accent-soft: #2a3036;
+    --accent-ink: #161718;
+    --user-bubble: #2c2d30;
+    --user-ink: #e6e6e4;
+    --bot-bubble: #1e1f21;
+    --tool-bg: #252628;
+    --danger: #e0a198;
+    --danger-soft: #3a2a27;
+    --shadow: none;
+    color-scheme: dark;
+  }
+  /* style.css koyu modda birincil butonun yazısını sabit renge çeker; burada değişkene bağlanır. */
+  body.chat-body .btn-primary { color: var(--accent-ink); }
+}
+
+/* --- Üst bar --- */
+
+.chat-body .topbar { background: var(--surface); }
+.chat-body .brand { display: flex; align-items: center; gap: 9px; font-family: var(--font-display); font-size: 15.5px; letter-spacing: -0.01em; }
+.chat-body .brand-mark {
+  display: inline-grid; place-items: center; width: 26px; height: 26px; flex-shrink: 0;
+  border-radius: 7px; background: var(--text); color: var(--bg);
+  font: 700 11px/1 var(--font-mono); letter-spacing: 0;
+}
+.chat-body .brand small { margin-left: 0; font-size: 12.5px; }
+.chat-body .nav a { border-radius: 8px; padding: 5px 12px; }
+.chat-body .status { font-family: var(--font-mono); font-size: 11.5px; }
+
+/* --- Karşılama --- */
+
+.chat-body .empty { margin-top: 7vh; color: var(--text-muted); }
+.chat-body .empty-mark {
+  display: inline-grid; place-items: center; width: 48px; height: 48px; margin-bottom: 14px;
+  border-radius: 12px; background: var(--text); color: var(--bg);
+  font: 700 17px/1 var(--font-mono);
+}
+.chat-body .empty h1 {
+  font-family: var(--font-display); font-size: 27px; font-weight: 650; letter-spacing: -0.02em; margin: 0 0 6px;
+  color: var(--text);
+}
+.chat-body .empty .lead { max-width: 520px; margin: 0 auto; font-size: 15px; }
+
+.chat-body .capabilities {
+  list-style: none; margin: 22px auto 0; padding: 0; max-width: 620px;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; text-align: left;
+}
+.chat-body .capabilities li {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  padding: 10px 14px; font-size: 13.5px; line-height: 1.5; min-width: 0;
+}
+.chat-body .capabilities strong { display: block; color: var(--text); font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+
+.chat-body .examples { margin-top: 18px; }
+.chat-body .examples button {
+  background: var(--surface); border: 1px solid var(--border); padding: 6px 14px; font-size: 13.5px;
+  color: var(--text-muted); max-width: 100%; border-radius: 8px;
+}
+.chat-body .examples button:hover { border-color: var(--border-strong); color: var(--text); }
+
+/* --- Mesajlar --- */
+
+.chat-body .messages-inner { gap: 22px; }
+
+.chat-body .msg-user {
+  background: var(--user-bubble); color: var(--user-ink);
+  padding: 10px 16px; border-radius: var(--radius) var(--radius) 4px var(--radius);
+}
+
+/* Agent cevabı: düz kart. Kartın içinde üç bölge ayrı durur: cevap metni, altında kenardan kenara "Kaynaklar"
+   bölümü (ayrı zemin + belirgin üst çizgi), en altta tool satırı ve meta. */
+.chat-body .msg-bot {
+  background: var(--bot-bubble); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px 20px 10px; box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.chat-body .answer h1, .chat-body .answer h2, .chat-body .answer h3 { font-family: var(--font-display); line-height: 1.3; margin: 14px 0 6px; }
+.chat-body .answer h1 { font-size: 18px; }
+.chat-body .answer h2 { font-size: 16.5px; }
+.chat-body .answer h3 { font-size: 15.5px; }
+.chat-body .answer code { font-family: var(--font-mono); font-size: 0.9em; background: var(--surface-2); border-radius: 4px; padding: 0 4px; }
+.chat-body .answer pre { background: var(--tool-bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+.chat-body .answer pre code { background: none; padding: 0; }
+.chat-body .answer table { border-collapse: collapse; font-size: 14px; margin: 0 0 10px; }
+.chat-body .answer th, .chat-body .answer td { border: 1px solid var(--border); padding: 4px 10px; text-align: left; }
+.chat-body .answer th { background: var(--surface-2); font-weight: 600; }
+.chat-body .answer a, .chat-body .answer .cite { color: var(--accent); }
+
+.chat-body .sources {
+  margin: 14px -20px 0; padding: 10px 20px 12px;
+  background: var(--surface-2); border-top: 1px solid var(--border-strong); border-bottom: 1px solid var(--border);
+  display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+}
+.chat-body .sources::before {
+  content: "Kaynaklar"; flex-basis: 100%;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted);
+}
+.chat-body .sources:empty { display: none; }
+.chat-body .source-chip {
+  border-radius: 6px; padding: 3px 10px; margin: 0;
+  background: var(--surface); border: 1px solid var(--border); color: var(--text);
+}
+.chat-body .source-chip:hover { border-color: var(--border-strong); background: var(--surface); }
+
+/* Kullanılan tool'lar: varsayılan kapalı tek satır; açılınca sırayla çağrılar ve argümanları. */
+.chat-body .tools { margin-top: 10px; font-size: 12.5px; color: var(--text-muted); }
+.chat-body details.tools {
+  background: transparent; border: 1px solid var(--border); border-radius: 8px; min-width: 0;
+}
+.chat-body details.tools > summary {
+  list-style: none; cursor: pointer; padding: 5px 10px;
+  display: flex; align-items: center; gap: 8px; min-width: 0;
+}
+.chat-body details.tools > summary::-webkit-details-marker { display: none; }
+.chat-body details.tools > summary::before {
+  content: "▸"; flex-shrink: 0; font-size: 11px; transition: transform 0.15s ease;
+}
+.chat-body details.tools[open] > summary::before { transform: rotate(90deg); }
+.chat-body details.tools > summary:hover { color: var(--text); }
+.chat-body details.tools > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-radius: 8px; }
+.chat-body .tool-label { flex-shrink: 0; font-weight: 600; }
+.chat-body .tool-count {
+  flex-shrink: 0; min-width: 18px; padding: 0 6px; border-radius: 6px; text-align: center;
+  background: var(--surface-2); color: var(--text); font-weight: 600; font-size: 11.5px;
+}
+/* Kapalıyken tool adları tek satırda; sığmazsa "…" ile kesilir (sayfa yatay taşmaz). */
+.chat-body .tool-names {
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-family: var(--font-mono); font-size: 11.5px;
+}
+.chat-body details.tools[open] .tool-names { visibility: hidden; }
+.chat-body .tool-list { margin: 0; padding: 2px 10px 8px 30px; display: grid; gap: 4px; }
+.chat-body .tool-list li { min-width: 0; overflow-wrap: anywhere; }
+.chat-body .tool-list code {
+  font-family: var(--font-mono); font-size: 11.5px; background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 5px; padding: 1px 6px; display: inline-block; max-width: 100%;
+}
+.chat-body .tools-none { font-style: italic; }
+.chat-body .tools-warn {
+  display: inline-block; padding: 2px 10px; border-radius: 6px;
+  background: var(--danger-soft); color: var(--danger); font-weight: 600;
+}
+
+.chat-body .meta { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border); }
+.chat-body .fb button { border-radius: 6px; }
+
+.chat-body .msg-info {
+  background: var(--surface-2); color: var(--text-muted); font-weight: 500; text-align: center; max-width: 100%;
+}
+.chat-body .msg-error { border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent); border-radius: 10px; }
+
+/* "Cevap hazırlanıyor": agent birden çok tool çağırabildiği için bekleme uzun sürebilir; yavaş yanıp sönen nokta. */
+.chat-body .typing { display: flex; align-items: center; gap: 8px; }
+.chat-body .typing::before {
+  content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--text-muted); flex-shrink: 0;
+  animation: agent-pulse 1.2s ease-in-out infinite;
+}
+@keyframes agent-pulse { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .chat-body .typing::before { animation: none; } }
+
+/* --- Yazı kutusu --- */
+
+.chat-body .composer { background: linear-gradient(to top, var(--bg) 70%, transparent); }
+.chat-body .composer-inner { border-radius: 12px; padding: 8px 8px 8px 12px; }
+.chat-body .composer-inner:focus-within { border-color: var(--border-strong); box-shadow: none; }
+.chat-body .composer textarea::placeholder { color: var(--text-muted); opacity: 0.85; }
+.chat-body .composer .btn-primary {
+  border-radius: 8px; padding: 7px 16px; font-weight: 600;
+  background: var(--text); border-color: var(--text); color: var(--bg);
+}
+.chat-body .transcript-badge { font-weight: 600; }
+
+@media (max-width: 640px) {
+  .chat-body .brand small { display: none; }
+  .chat-body .empty { margin-top: 3vh; }
+  .chat-body .empty-mark { width: 42px; height: 42px; font-size: 15px; }
+  .chat-body .empty h1 { font-size: 23px; }
+  .chat-body .capabilities { grid-template-columns: minmax(0, 1fr); }
+  .chat-body .msg-bot { padding: 12px 14px 8px; }
+  .chat-body .sources { margin: 12px -14px 0; padding: 8px 14px 10px; }
+  .chat-body .msg-user { max-width: 90%; }
+}
+
+/* --- Token maliyeti: üst barda sohbet toplamı, cevap altında o cevabın maliyeti --- */
+.chat-body .cost-total {
+  flex-shrink: 0; margin-left: auto; white-space: nowrap;
+  font: 600 12px/1 var(--font-mono); color: var(--text-muted);
+  border: 1px solid var(--border); padding: 5px 10px; border-radius: 6px;
+}
+.chat-body .cost-total:empty { display: none; }
+.chat-body .status { margin-left: 0; }
+.chat-body .meta .cost { font-family: var(--font-mono); font-size: 11.5px; }
+.chat-body .cost-total-hint { display: none; }
+@media (max-width: 640px) {
+  .chat-body .topbar .cost-total { display: none; }
+  .chat-body .composer-hint { justify-content: space-between; align-items: center; }
+  .chat-body .cost-total-hint { display: inline-block; margin-left: 0; font-size: 11px; padding: 4px 8px; }
+}
