@@ -5,8 +5,15 @@ metadata'sı); ayrı bir dosya ya da index gerekmez.
 EXP-016/017'de (agent_h6) hataların çoğu, cevabın dayandığı ikinci maddenin aramada sıralamaya girmemesiydi: bulunan
 madde başka bir maddeye atıf yapıyordu ya da agent doğru belgeyi bildiği hâlde ilgili madde getirilmedi.
 """
+import json
 import re
 import unicodedata
+
+import config
+
+# agent_h9: belgelerin düzeyi ve tarihleri (elle çıkarıldı; bkz. dosyanın 'aciklama' alanı).
+DOCUMENT_INFO_PATH = config.DATA_DIR / "mevzuat_belgeleri.json"
+LEVELS = "1 kanun, 2 YÖK düzenlemesi, 3 üniversite yönetmeliği, 4 Senato yönergesi"
 
 # Başka belgelere yapılan atıflarda belgenin metindeki adı → corpus dosyası. Yalnız korpusta olan belgeler; kanunlara ve
 # korpus dışı yönetmeliklere yapılan atıflar izlenmez.
@@ -27,6 +34,26 @@ _EXTERNAL = re.compile(r"(sayılı|kanun\w*|yönetmeliğ\w*|yönerge\w*|esas\w*|
                        re.IGNORECASE)
 # "bu Yönetmeliğin 11 inci maddesi": belgenin kendisine atıf.
 _SELF = re.compile(r"\bbu\s+(yönetmeliğin|yönergenin|usul ve esasların)\s*(?:\([^)]*\)\s*)?$", re.IGNORECASE)
+
+
+def load_document_info(path=DOCUMENT_INFO_PATH):
+    """Kaynak dosya → {"duzey", "duzey_sira", "kabul"?, "son_degisiklik"?, "tarih_notu"?}."""
+    return json.loads(path.read_text(encoding="utf-8"))["belgeler"]
+
+
+def document_line(info, source):
+    """agent_h9: parçanın kaynak etiketinin altına belgenin düzeyi ve tarihleri; belge tabloda yoksa (takvim) boş."""
+    d = info.get(source)
+    if d is None:
+        return ""
+    parts = [f"düzey {d['duzey_sira']}/4 ({LEVELS}): {d['duzey']}"]
+    if d.get("kabul"):
+        parts.append(f"kabul {d['kabul']}")
+    if d.get("son_degisiklik"):
+        parts.append(f"son değişiklik {d['son_degisiklik']}")
+    if d.get("tarih_notu"):
+        parts.append(d["tarih_notu"])
+    return f"(Belge: {'; '.join(parts)})\n"
 
 
 def normalize(text):

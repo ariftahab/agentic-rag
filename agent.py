@@ -268,6 +268,15 @@ _H8_RULES = ("- search_regulations sonucunda bir parçanın altında \"Atıf yap
              "belgenin madde başlıklarına bak ve başlığı soruyla ilgili maddeleri get_article ile oku.\n")
 _AGENT_H8_SYSTEM = _AGENT_H6_SYSTEM.replace(_H1_CODE_RULE, _H8_RULES + _H1_CODE_RULE)
 assert _AGENT_H8_SYSTEM != _AGENT_H6_SYSTEM
+# agent_h9: h8 + mevzuat parçalarında belgenin düzeyi ve tarihleri (data/mevzuat_belgeleri.json). EXP-016/017/019'da iki
+# belge aynı konuda farklı hüküm verdiğinde agent ikisini de aktarıp geçerli olanı seçmedi (sürüm ve hiyerarşi bilgisi
+# chunk'larda yoktu).
+_H9_RULES = ("- Mevzuat sonuçlarında her parçanın altında belgenin düzeyi ve tarihleri yazar. İki belge aynı konuda farklı "
+             "hüküm veriyorsa geçerli olanı şu sırayla seç: düzeyi üst olan (kanun, YÖK düzenlemesi, üniversite "
+             "yönetmeliği, Senato yönergesi sırasıyla); düzeyler aynıysa daha yeni tarihli olan ve konuyu daha özel "
+             "düzenleyen. Cevabı geçerli hükümle kesin ver ve diğer hükmün neden uygulanmadığını bir cümleyle belirt.\n")
+_AGENT_H9_SYSTEM = _AGENT_H8_SYSTEM.replace(_H1_CODE_RULE, _H9_RULES + _H1_CODE_RULE)
+assert _AGENT_H9_SYSTEM != _AGENT_H8_SYSTEM
 
 AGENT_PROMPTS = {"agent_v1": _AGENT_V1_SYSTEM, "agent_v2": _AGENT_V2_SYSTEM, "agent_v3": _AGENT_V3_SYSTEM,
                  "agent_v4": _AGENT_V4_SYSTEM, "agent_v5": _AGENT_V5_SYSTEM,
@@ -290,42 +299,44 @@ AGENT_PROMPTS = {"agent_v1": _AGENT_V1_SYSTEM, "agent_v2": _AGENT_V2_SYSTEM, "ag
                  # agent_h7: prompt h6 ile aynı; her taslak cevap denetleyiciyle kontrol edilir (REVIEW_PROMPTS).
                  "agent_h7": _AGENT_H6_SYSTEM,
                  # agent_h8: h6 + madde gezinme tool'ları (NAVIGATION_PROMPTS); h7'nin denetim döngüsü yok.
-                 "agent_h8": _AGENT_H8_SYSTEM}
+                 "agent_h8": _AGENT_H8_SYSTEM,
+                 # agent_h9: h8 + belge düzeyi ve tarihleri, çelişkide geçerli hükmü seçme kuralı (HIERARCHY_PROMPTS).
+                 "agent_h9": _AGENT_H9_SYSTEM}
 AGENT_PROMPT_VERSION = "agent_v4"
 # Sonradan eklenen tool yalnız onu anlatan sürümlerde açılır: eski sürümlerin deneyleri (EXP-002, EXP-003) aynı tool
 # listesiyle tekrar üretilebilsin.
-REQUIREMENTS_TOOL_PROMPTS = {"agent_v5", "agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8"}
+REQUIREMENTS_TOOL_PROMPTS = {"agent_v5", "agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9"}
 # Bu sürümlerde analyze_transcript kayıt yılını yazar, get_graduation_requirements transkript yüklüyse kişisel
 # sorular için analyze_transcript'e yönlendirir (EXP-004 aynı çıktılarla tekrar üretilebilsin).
-TRANSCRIPT_DETAIL_PROMPTS = {"agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8"}
+TRANSCRIPT_DETAIL_PROMPTS = {"agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9"}
 # Anlık tool (request_new_tool, codeact) yalnız bu sürümlerde açılır.
-CODE_TOOL_PROMPTS = {"agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8"}
+CODE_TOOL_PROMPTS = {"agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9"}
 # Bu sürümlerde request_new_tool tool olarak çalışmaz, devir sinyalidir (bkz. _AGENT_V9_SYSTEM).
 HANDOFF_PROMPTS = {"agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13"}
 # Not ortalaması tool'u (simulate_grades, gpa.py) yalnız bu sürümlerde açılır.
-GRADES_TOOL_PROMPTS = {"agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8"}
+GRADES_TOOL_PROMPTS = {"agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9"}
 # Bu sürümlerde mezuniyet kuralları yalnız mevzuattaki metinle (graduation.load_rules(regulation_only=True)): toplam
 # AKTS Madde 22/1'deki 240; eski kural dosyasındaki "planın toplamı bağlayıcıdır" eklemesi (244) mevzuatta yok.
-REGULATION_RULES_PROMPTS = {"agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8"}
+REGULATION_RULES_PROMPTS = {"agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9"}
 # Bu sürümlerde analyze_transcript ders geçmişini de yazar (dönemler, notlar, başarısız ve tekrarlanan dersler, kalan ders
 # sayısı); tool açıklaması da raporun içeriğini sayar.
-TRANSCRIPT_HISTORY_PROMPTS = {"agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8"}
+TRANSCRIPT_HISTORY_PROMPTS = {"agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9"}
 # Bu sürümlerde analyze_transcript yönetmelikteki harf notu tablosunu ve ortalama tanımını da yazar; devirde Haiku
 # katsayıları oradan alır (HANDOFF_NOTE_V13).
-GRADE_TABLE_PROMPTS = {"agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8"}
+GRADE_TABLE_PROMPTS = {"agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9"}
 # Tek model (branch exp/haiku-agent): döngünün tamamı CodeRunner'ın modeliyle; LLM (Gemini) kullanılmaz.
-SINGLE_MODEL_PROMPTS = {"agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8"}
+SINGLE_MODEL_PROMPTS = {"agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9"}
 # Duyuru ve akademik personel tool'ları (announcements.py) yalnız bu sürümlerde açılır.
-SITE_TOOL_PROMPTS = {"agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8"}
+SITE_TOOL_PROMPTS = {"agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9"}
 # Bu sürümlerde get_academic_staff görevin parantezdeki birimini de arar (announcements.search_staff_by_unit). EXP-013'te
 # "Bilgisayar Donanımı ana bilim dalı başkanı kim?" boş döndü; agent_h3 eski aramayla tekrar üretilebilsin.
-STAFF_UNIT_SEARCH_PROMPTS = {"agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8"}
+STAFF_UNIT_SEARCH_PROMPTS = {"agent_h4", "agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9"}
 # Bu sürümlerde get_announcements'ın açıklaması ve "bulunamadı" mesajı Bilgisayar Mühendisliği Bölümü duyurularını da
 # sayar (2026-10-24'te taranmaya başladı); h3/h4 eski açıklamayı görür.
-SITE_SOURCES_V2_PROMPTS = {"agent_h5", "agent_h6", "agent_h7", "agent_h8"}
+SITE_SOURCES_V2_PROMPTS = {"agent_h5", "agent_h6", "agent_h7", "agent_h8", "agent_h9"}
 # Transkriptten alt küme ortalaması (gpa.subset_average) ve ders programı araması / şube planı (schedule.find_lessons,
 # plan_sections) tool'ları yalnız bu sürümlerde açılır.
-H6_TOOL_PROMPTS = {"agent_h6", "agent_h7", "agent_h8"}
+H6_TOOL_PROMPTS = {"agent_h6", "agent_h7", "agent_h8", "agent_h9"}
 # Bu sürümlerde her taslak cevap ayrı bir denetleyici çağrısıyla (codeact.CodeRunner.review) soruyla ve tool
 # sonuçlarıyla karşılaştırılır; "eksik" kararında agent geri bildirimle devam eder, en fazla REVIEW_ROUNDS denetim.
 # EXP-016'da (val_v1) hataların çoğu iki kaynak gereken sorularda kural tarafının hiç getirilmemesiydi.
@@ -333,7 +344,9 @@ REVIEW_PROMPTS = {"agent_h7"}
 REVIEW_ROUNDS = 3
 # Mevzuatta madde düzeyinde gezinme (tools/articles.py) yalnız bu sürümlerde: list_articles, get_article ve
 # search_regulations sonucunda parçanın atıf yaptığı maddeler.
-NAVIGATION_PROMPTS = {"agent_h8"}
+NAVIGATION_PROMPTS = {"agent_h8", "agent_h9"}
+# Arama ve madde sonuçlarında belgenin düzeyi ve tarihleri (data/mevzuat_belgeleri.json) yalnız bu sürümlerde.
+HIERARCHY_PROMPTS = {"agent_h9"}
 ANNOUNCEMENTS_DOC_V2 = """Bilgisayar Mühendisliği Bölümü (ders ve sınav programları, derslerle ilgili duyurular), Mühendislik
         Fakültesi (son 90 gün) ve üniversite geneli (son günler) duyurularında (sınav, başvuru, kayıt, etkinlik, burs vb.)
         arar ve en ilgili en fazla 5 duyurunun başlığını, birimini, yayın tarihini, özetini, önemli tarihlerini, eklerini
@@ -412,11 +425,12 @@ def _references_line(navigation, doc=None, refs=None):
 def make_tools(retriever, plan, transcript, confirmations, today, with_requirements=False, transcript_detail=False,
                with_grades=False, rules=None, with_history=False, with_grade_table=False,
                code_runner=None, generated=None, found=None, site_db=None, staff_by_unit=False,
-               site_sources_v2=False, h6_tools=False, navigation=None):
+               site_sources_v2=False, h6_tools=False, navigation=None, document_info=None):
     """Bu çağrıya (oturuma) bağlı tool'lar. `transcript` ve `confirmations` closure'da durur; LLM'in görebileceği
     argümanlar değildir. confirm_equivalence `confirmations` sözlüğünü yerinde günceller (çağıran taraf saklar).
     navigation (agent_h8): articles.ArticleIndex; verilirse madde gezinme tool'ları açılır ve arama sonucunda her
-    parçanın atıf yaptığı maddeler yazılır."""
+    parçanın atıf yaptığı maddeler yazılır. document_info (agent_h9): articles.load_document_info(); verilirse mevzuat
+    parçalarının etiketinin altına belgenin düzeyi ve tarihleri yazılır."""
 
     def search_regulations(query: str) -> str:
         """Üniversitenin yönetmelik ve yönergelerinde (staj, ders kaydı, sınavlar, mezuniyet, yatay geçiş, lisansüstü vb.)
@@ -428,9 +442,13 @@ def make_tools(retriever, plan, transcript, confirmations, today, with_requireme
         docs = retriever.search(query)
         if found is not None:  # cevabın kaynakları (arayüzde düğme ve atıf linki)
             found.extend(docs)
-        if navigation is None:
+        if navigation is None and document_info is None:
             return _format_context(docs)
-        return "\n\n".join(_format_context([d]) + _references_line(navigation, d) for d in docs)
+        return "\n\n".join(f"[{source_label(d)}]\n{_document_line(d.metadata['source'])}{d.page_content}"
+                           + (_references_line(navigation, d) if navigation is not None else "") for d in docs)
+
+    def _document_line(source):
+        return articles.document_line(document_info, source) if document_info is not None else ""
 
     def list_articles(belge: str = "") -> str:
         """Bir yönetmelik ya da yönergenin madde başlıklarını (içindekiler) bölümleriyle döndürür; belge boşsa ya da
@@ -472,7 +490,7 @@ def make_tools(retriever, plan, transcript, confirmations, today, with_requireme
         refs = []
         for part in parts:
             refs += [r for r in navigation.references(part) if r not in refs]
-        return f"[{source_label(parts[0])}]\n{text}" + _references_line(navigation, refs=refs)
+        return f"[{source_label(parts[0])}]\n{_document_line(source)}{text}" + _references_line(navigation, refs=refs)
 
     def analyze_transcript() -> str:
         """Oturumda yüklü transkripti öğretim planıyla karşılaştırır: şu an geçilen AKTS, bu dönemin dersleri
@@ -769,6 +787,7 @@ class AdvisorAgent:
         self.review_rounds = REVIEW_ROUNDS if prompt_version in REVIEW_PROMPTS else 0
         self.navigation = (articles.ArticleIndex(getattr(retriever, "chunks", None) or [])
                            if prompt_version in NAVIGATION_PROMPTS else None)
+        self.document_info = articles.load_document_info() if prompt_version in HIERARCHY_PROMPTS else None
         self.documents = external_documents(plan, schedule.load_schedule())
         # (belge, madde) -> maddenin ilk chunk'ı: kural atıflarını kaynağa çevirmek için.
         self._articles = {}
@@ -805,7 +824,7 @@ class AdvisorAgent:
                            with_grade_table=self.with_grade_table,
                            code_runner=self.code_runner, generated=generated, found=found, site_db=self.site_db,
                            staff_by_unit=self.staff_by_unit, site_sources_v2=self.site_sources_v2,
-                           h6_tools=self.h6_tools, navigation=self.navigation)
+                           h6_tools=self.h6_tools, navigation=self.navigation, document_info=self.document_info)
         by_name = {t.name: t for t in tools}
         system = self.system.format(no_answer=config.NO_ANSWER, today=today.strftime("%d.%m.%Y"),
                                     transcript_state=TRANSCRIPT_LOADED if transcript else TRANSCRIPT_MISSING)

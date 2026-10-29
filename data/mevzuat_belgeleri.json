@@ -1,0 +1,28 @@
+{
+ "aciklama": "Corpus v1 mevzuat belgelerinin düzeyi ve tarihleri (agent_h9; tools/articles.py). Elle, belgelerin ilk ve son sayfalarından ve metindeki değişiklik notlarından çıkarıldı (2026-10-29). duzey_sira: 1 kanun, 2 YÖK düzenlemesi (yönetmelik, usul ve esaslar), 3 üniversite yönetmeliği (Resmî Gazete), 4 Senato yönergesi ya da usul ve esasları. Tarih metinde yoksa tarih_notu metindeki ipucunu verir.",
+ "belgeler": {
+  "Ogrenci_disiplin_Isleri.pdf": {"duzey": "kanun (2547 sayılı Yükseköğretim Kanunu, Madde 54)", "duzey_sira": 1, "son_degisiklik": "2023-02-02"},
+  "kurumlar arası kredi transferi.pdf": {"duzey": "YÖK yönetmeliği", "duzey_sira": 2, "kabul": "2010-04-24", "son_degisiklik": "2026-02-28"},
+  "önlisans mezunu lisans öğrenimine devam.pdf": {"duzey": "YÖK yönetmeliği (dikey geçiş)", "duzey_sira": 2, "son_degisiklik": "2025-02-21"},
+  "uzaktan-ogretime-iliskin-usul-esas.pdf": {"duzey": "YÖK usul ve esasları", "duzey_sira": 2, "son_degisiklik": "2022-09-14"},
+  "önlisans lisans eğitim öğretim.pdf": {"duzey": "üniversite yönetmeliği (Resmî Gazete)", "duzey_sira": 3, "kabul": "2019-10-14", "son_degisiklik": "2024-09-23"},
+  "ogrenci-kayıt-yonerge.pdf": {"duzey": "üniversite yönetmeliği (Resmî Gazete)", "duzey_sira": 3, "kabul": "1993-08-23", "son_degisiklik": "2024-09-16"},
+  "lisansüstü eğitim yönetmeliği.pdf": {"duzey": "üniversite yönetmeliği (Resmî Gazete)", "duzey_sira": 3, "kabul": "2017-01-23", "son_degisiklik": "2019-11-24"},
+  "alan dışı seçmeli ders yönergesi.pdf": {"duzey": "Senato yönergesi", "duzey_sira": 4, "kabul": "2024-09-04", "son_degisiklik": "2026-02-25"},
+  "engelli öğrenciler danışma ve koordinasyon.pdf": {"duzey": "Senato yönergesi", "duzey_sira": 4, "kabul": "2014-06-05"},
+  "engelli öğrenciler için eğitim ve ölçme değerlendirme yönergesi.pdf": {"duzey": "Senato yönergesi", "duzey_sira": 4, "kabul": "2024-12-26"},
+  "intibak yönergesi.pdf": {"duzey": "Senato yönergesi", "duzey_sira": 4, "kabul": "2025-04-17"},
+  "lisansüstü eğitim enst müdürlüğü lisansüstü tez benzerlik.pdf": {"duzey": "Senato yönergesi", "duzey_sira": 4, "kabul": "2022-03-10"},
+  "lisansüstü eğitim öğretim.pdf": {"duzey": "Senato yönergesi", "duzey_sira": 4, "kabul": "2022-08-11"},
+  "makine müh bitirme projesi 1ve2 usul ve esaslar.pdf": {"duzey": "Senato usul ve esasları", "duzey_sira": 4, "kabul": "2024-12-26"},
+  "mezun ogrenci verilecek belgelerin duzenlenmesi yonergesi.pdf": {"duzey": "Senato yönergesi", "duzey_sira": 4, "tarih_notu": "kabul tarihi metinde yok; metin üniversitenin 2018 öncesi adını (Abant İzzet Baysal Üniversitesi) kullanıyor"},
+  "mühendislik fakültesi staj yönergesi.pdf": {"duzey": "Senato yönergesi", "duzey_sira": 4, "kabul": "2026-08-05"},
+  "ogrenci_danismanligi.pdf": {"duzey": "Senato yönergesi", "duzey_sira": 4, "kabul": "2004-04-07"},
+  "uygulamali-egitimler-yonergesi.pdf": {"duzey": "Senato yönergesi", "duzey_sira": 4, "tarih_notu": "kabul tarihi metinde yok; 17/06/2021 tarihli YÖK Uygulamalı Eğitimler Çerçeve Yönetmeliğine dayanıyor"},
+  "uzaktan eğitim.pdf": {"duzey": "Senato yönergesi", "duzey_sira": 4, "kabul": "2015", "tarih_notu": "2015-2016 öğretim yılında yürürlüğe girdi"},
+  "yandal programı.pdf": {"duzey": "Senato yönergesi", "duzey_sira": 4, "kabul": "2023-01-12", "son_degisiklik": "2026-02-25"},
+  "yatay-gecis-yonergesi.pdf": {"duzey": "Senato yönergesi", "duzey_sira": 4, "kabul": "2023-07-20", "son_degisiklik": "2025-09-05"},
+  "çift anadal program yönergesi.pdf": {"duzey": "Senato yönergesi", "duzey_sira": 4, "kabul": "2024-08-01", "son_degisiklik": "2026-06-18"},
+  "öğrenci sağlık işleri ve sağlık raporları.pdf": {"duzey": "Senato yönergesi", "duzey_sira": 4, "kabul": "2021-03-19"}
+ }
+}
