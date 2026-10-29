@@ -169,3 +169,63 @@ def test_handoff_stops_after_the_request_limit():
                          for _ in range(codeact.MAX_HANDOFF_REQUESTS)])
     result = codeact.CodeRunner(client).handoff("s", CONVERSATION, [SearchTool()], lambda n, a: "r", {})
     assert result["answer"] == codeact.UNFINISHED and len(client.requests) == codeact.MAX_HANDOFF_REQUESTS
+
+
+# --- Denetim (agent_h7): taslak cevap ayrı bir çağrıyla denetlenir, "eksik"te aynı konuşma devam eder ---
+
+import json  # noqa: E402
+
+
+def verdict(karar, eksikler=(), tools=()):
+    return response(text(json.dumps({"karar": karar, "eksikler": list(eksikler), "onerilen_tool_lar": list(tools),
+                                     "gerekce": "g"}, ensure_ascii=False)))
+
+
+QUESTION = [SystemMessage("system"), HumanMessage("Ortak zorunlu derslerim hangileri?")]
+
+
+def test_review_sends_feedback_and_the_agent_continues_until_approved():
+    client = FakeClient([response(text("8 zorunlu dersin var.")),
+                         verdict("eksik", ["ortak zorunlu tanımı aranmadı"], ["search_regulations"]),
+                         response(tool_use("search_regulations", {"query": "ortak zorunlu"}), stop_reason="tool_use"),
+                         response(text("Ortak zorunlu 3 ders: AİİT, Türk Dili, Yabancı Dil.")),
+                         verdict("tamam")])
+    result = codeact.CodeRunner(client).handoff("s", QUESTION, [SearchTool()], lambda n, a: "Madde 20/4", {},
+                                                review_rounds=3, question="Ortak zorunlu derslerim hangileri?")
+    review_request = client.requests[1]
+    assert review_request["output_config"]["format"]["schema"] == codeact.REVIEW_SCHEMA
+    assert "tools" not in review_request                                 # denetleyici tool çağırmaz
+    assert "8 zorunlu dersin var." in review_request["messages"][0]["content"]
+    note = client.requests[2]["messages"][-1]
+    assert note["role"] == "user" and "ortak zorunlu tanımı aranmadı" in note["content"][0]["text"]
+    second_review = client.requests[4]["messages"][0]["content"]
+    assert "search_regulations" in second_review and "Madde 20/4" in second_review  # tool sonucu denetlenir
+    assert result["answer"] == "Ortak zorunlu 3 ders: AİİT, Türk Dili, Yabancı Dil."
+    assert [(r["tur"], r["karar"], r["sonra_cagrilan"]) for r in result["review"]] == [
+        (1, "eksik", ["search_regulations"]), (2, "tamam", [])]
+    assert result["review"][0]["taslak"] == "8 zorunlu dersin var."
+
+
+def test_review_stops_after_the_round_limit_and_keeps_the_last_revision():
+    replies = []
+    for i in range(codeact_rounds := 3):
+        replies += [response(text(f"taslak {i}")), verdict("eksik", ["x"])]
+    replies.append(response(text("son düzeltme")))
+    client = FakeClient(replies)
+    result = codeact.CodeRunner(client).handoff("s", QUESTION, [SearchTool()], lambda n, a: "r", {},
+                                                review_rounds=codeact_rounds, question="q")
+    assert len(result["review"]) == codeact_rounds and result["answer"] == "son düzeltme"
+    assert len(client.requests) == 2 * codeact_rounds + 1                  # son düzeltme denetlenmez
+
+
+def test_unparseable_review_keeps_the_draft():
+    client = FakeClient([response(text("taslak")), response(text("bozuk"))])
+    result = codeact.CodeRunner(client).handoff("s", QUESTION, [SearchTool()], lambda n, a: "r", {},
+                                                review_rounds=3, question="q")
+    assert result["answer"] == "taslak" and result["review"][0]["karar"] == "tamam"
+
+
+def test_without_review_rounds_no_review_call_is_made():
+    client = FakeClient([response(text("cevap"))])
+    result = codeact.CodeRunner(client).handoff("s", QUESTION, [SearchTool()], lambda n, a: "r", {})
+    assert len(client.requests) == 1 and result["review"] == []

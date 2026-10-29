@@ -276,42 +276,49 @@ AGENT_PROMPTS = {"agent_v1": _AGENT_V1_SYSTEM, "agent_v2": _AGENT_V2_SYSTEM, "ag
                  # (SITE_SOURCES_V2_PROMPTS).
                  "agent_h5": _AGENT_H3_SYSTEM,
                  # agent_h6: h5 + get_transcript_average, search_course_schedule, plan_course_sections (H6_TOOL_PROMPTS).
-                 "agent_h6": _AGENT_H6_SYSTEM}
+                 "agent_h6": _AGENT_H6_SYSTEM,
+                 # agent_h7: prompt h6 ile aynı; her taslak cevap denetleyiciyle kontrol edilir (REVIEW_PROMPTS).
+                 "agent_h7": _AGENT_H6_SYSTEM}
 AGENT_PROMPT_VERSION = "agent_v4"
 # Sonradan eklenen tool yalnız onu anlatan sürümlerde açılır: eski sürümlerin deneyleri (EXP-002, EXP-003) aynı tool
 # listesiyle tekrar üretilebilsin.
-REQUIREMENTS_TOOL_PROMPTS = {"agent_v5", "agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6"}
+REQUIREMENTS_TOOL_PROMPTS = {"agent_v5", "agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7"}
 # Bu sürümlerde analyze_transcript kayıt yılını yazar, get_graduation_requirements transkript yüklüyse kişisel
 # sorular için analyze_transcript'e yönlendirir (EXP-004 aynı çıktılarla tekrar üretilebilsin).
-TRANSCRIPT_DETAIL_PROMPTS = {"agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6"}
+TRANSCRIPT_DETAIL_PROMPTS = {"agent_v6", "agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7"}
 # Anlık tool (request_new_tool, codeact) yalnız bu sürümlerde açılır.
-CODE_TOOL_PROMPTS = {"agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6"}
+CODE_TOOL_PROMPTS = {"agent_v7", "agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7"}
 # Bu sürümlerde request_new_tool tool olarak çalışmaz, devir sinyalidir (bkz. _AGENT_V9_SYSTEM).
 HANDOFF_PROMPTS = {"agent_v9", "agent_v10", "agent_v11", "agent_v12", "agent_v13"}
 # Not ortalaması tool'u (simulate_grades, gpa.py) yalnız bu sürümlerde açılır.
-GRADES_TOOL_PROMPTS = {"agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6"}
+GRADES_TOOL_PROMPTS = {"agent_v10", "agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7"}
 # Bu sürümlerde mezuniyet kuralları yalnız mevzuattaki metinle (graduation.load_rules(regulation_only=True)): toplam
 # AKTS Madde 22/1'deki 240; eski kural dosyasındaki "planın toplamı bağlayıcıdır" eklemesi (244) mevzuatta yok.
-REGULATION_RULES_PROMPTS = {"agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6"}
+REGULATION_RULES_PROMPTS = {"agent_v11", "agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7"}
 # Bu sürümlerde analyze_transcript ders geçmişini de yazar (dönemler, notlar, başarısız ve tekrarlanan dersler, kalan ders
 # sayısı); tool açıklaması da raporun içeriğini sayar.
-TRANSCRIPT_HISTORY_PROMPTS = {"agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6"}
+TRANSCRIPT_HISTORY_PROMPTS = {"agent_v12", "agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7"}
 # Bu sürümlerde analyze_transcript yönetmelikteki harf notu tablosunu ve ortalama tanımını da yazar; devirde Haiku
 # katsayıları oradan alır (HANDOFF_NOTE_V13).
-GRADE_TABLE_PROMPTS = {"agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6"}
+GRADE_TABLE_PROMPTS = {"agent_v13", "agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7"}
 # Tek model (branch exp/haiku-agent): döngünün tamamı CodeRunner'ın modeliyle; LLM (Gemini) kullanılmaz.
-SINGLE_MODEL_PROMPTS = {"agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6"}
+SINGLE_MODEL_PROMPTS = {"agent_h1", "agent_h2", "agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7"}
 # Duyuru ve akademik personel tool'ları (announcements.py) yalnız bu sürümlerde açılır.
-SITE_TOOL_PROMPTS = {"agent_h3", "agent_h4", "agent_h5", "agent_h6"}
+SITE_TOOL_PROMPTS = {"agent_h3", "agent_h4", "agent_h5", "agent_h6", "agent_h7"}
 # Bu sürümlerde get_academic_staff görevin parantezdeki birimini de arar (announcements.search_staff_by_unit). EXP-013'te
 # "Bilgisayar Donanımı ana bilim dalı başkanı kim?" boş döndü; agent_h3 eski aramayla tekrar üretilebilsin.
-STAFF_UNIT_SEARCH_PROMPTS = {"agent_h4", "agent_h5", "agent_h6"}
+STAFF_UNIT_SEARCH_PROMPTS = {"agent_h4", "agent_h5", "agent_h6", "agent_h7"}
 # Bu sürümlerde get_announcements'ın açıklaması ve "bulunamadı" mesajı Bilgisayar Mühendisliği Bölümü duyurularını da
 # sayar (2026-10-24'te taranmaya başladı); h3/h4 eski açıklamayı görür.
-SITE_SOURCES_V2_PROMPTS = {"agent_h5", "agent_h6"}
+SITE_SOURCES_V2_PROMPTS = {"agent_h5", "agent_h6", "agent_h7"}
 # Transkriptten alt küme ortalaması (gpa.subset_average) ve ders programı araması / şube planı (schedule.find_lessons,
 # plan_sections) tool'ları yalnız bu sürümlerde açılır.
-H6_TOOL_PROMPTS = {"agent_h6"}
+H6_TOOL_PROMPTS = {"agent_h6", "agent_h7"}
+# Bu sürümlerde her taslak cevap ayrı bir denetleyici çağrısıyla (codeact.CodeRunner.review) soruyla ve tool
+# sonuçlarıyla karşılaştırılır; "eksik" kararında agent geri bildirimle devam eder, en fazla REVIEW_ROUNDS denetim.
+# EXP-016'da (val_v1) hataların çoğu iki kaynak gereken sorularda kural tarafının hiç getirilmemesiydi.
+REVIEW_PROMPTS = {"agent_h7"}
+REVIEW_ROUNDS = 3
 ANNOUNCEMENTS_DOC_V2 = """Bilgisayar Mühendisliği Bölümü (ders ve sınav programları, derslerle ilgili duyurular), Mühendislik
         Fakültesi (son 90 gün) ve üniversite geneli (son günler) duyurularında (sınav, başvuru, kayıt, etkinlik, burs vb.)
         arar ve en ilgili en fazla 5 duyurunun başlığını, birimini, yayın tarihini, özetini, önemli tarihlerini, eklerini
@@ -689,6 +696,7 @@ class AdvisorAgent:
         self.staff_by_unit = prompt_version in STAFF_UNIT_SEARCH_PROMPTS
         self.site_sources_v2 = prompt_version in SITE_SOURCES_V2_PROMPTS
         self.h6_tools = prompt_version in H6_TOOL_PROMPTS
+        self.review_rounds = REVIEW_ROUNDS if prompt_version in REVIEW_PROMPTS else 0
         self.documents = external_documents(plan, schedule.load_schedule())
         # (belge, madde) -> maddenin ilk chunk'ı: kural atıflarını kaynağa çevirmek için.
         self._articles = {}
@@ -782,9 +790,12 @@ class AdvisorAgent:
             calls.append({"name": "code_execution", "args": {}})
         else:
             generated.pop()
-        return {"answer": answer, "tool_calls": calls, "turns": record["istek_sayisi"],
-                "usage": {**record["tokens"], "reasoning": 0}, "generated_code": generated,
-                "sources": _unique_chunks(found), "documents": list(documents.values())}
+        out = {"answer": answer, "tool_calls": calls, "turns": record["istek_sayisi"],
+               "usage": {**record["tokens"], "reasoning": 0}, "generated_code": generated,
+               "sources": _unique_chunks(found), "documents": list(documents.values())}
+        if self.review_rounds:  # denetim turları (agent_h7): karar, eksikler, sonrasında çağrılan tool'lar
+            out["review"] = record["denetim"]
+        return out
 
     def _hand_off(self, call, system, messages, tools, transcript, calls, generated, found, documents, on_tool_call):
         """Devir (agent_v9): döngü aynı mesaj listesiyle Haiku'yla devam eder; Haiku agent'ın tool'larını (devir tool'u
@@ -811,12 +822,16 @@ class AdvisorAgent:
             return result
         try:
             out = self.code_runner.handoff(system + self.handoff_note, messages,
-                                           [t for t in tools if t.name != "request_new_tool"], execute, files)
+                                           [t for t in tools if t.name != "request_new_tool"], execute, files,
+                                           **({"review_rounds": self.review_rounds, "question": messages[-1].text}
+                                              if self.review_rounds else {}))
         except Exception as e:  # log'da hangi aşamada olduğu görünsün
             record["hata"] = f"{type(e).__name__}: {str(e)[:300]}"
             raise
         record.update(haiku_cevabi=out["answer"], adimlar=out["steps"], istek_sayisi=out["requests"],
                       sure_ms=out["duration_ms"], tokens=out["tokens"], bitis=out["stop_reason"])
+        if self.review_rounds:
+            record["denetim"] = out["review"]
         return out["answer"]
 
     def _collect_cited(self, text, found, documents):

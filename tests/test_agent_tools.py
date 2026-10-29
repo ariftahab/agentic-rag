@@ -597,3 +597,32 @@ def test_agent_h2_adds_only_the_arithmetic_rule():
     added = [line for line in h2 if line not in h1]
     assert len(added) == 1 and "code_execution" in added[0] and "olduğu gibi aktar" in added[0]
     assert [line for line in h1 if line not in h2] == []
+
+
+class FakeReviewRunner(FakeHandoffRunner):
+    """agent_h7: denetim argümanlarını kaydeder ve bir denetim turu döndürür."""
+
+    def handoff(self, system, messages, tools, execute, files, review_rounds=0, question=""):
+        out = super().handoff(system, messages, tools, execute, files)
+        self.received.update(review_rounds=review_rounds, question=question)
+        out["review"] = [{"tur": 1, "karar": "tamam", "eksikler": [], "onerilen_tool_lar": [], "gerekce": "g",
+                          "taslak": "Haiku cevabı", "sonra_cagrilan": []}]
+        return out
+
+
+def test_agent_h7_reviews_each_answer_and_returns_the_rounds():
+    from agent import AGENT_PROMPTS, REVIEW_ROUNDS
+    assert AGENT_PROMPTS["agent_h7"] == AGENT_PROMPTS["agent_h6"]   # prompt aynı, fark yalnız denetim
+    runner = FakeReviewRunner()
+    result = AdvisorAgent(retriever=None, llm=None, plan=graduation.load_plan(), prompt_version="agent_h7",
+                          code_runner=runner).ask("Mezun olmak için neyim eksik?", transcript=SAMPLE)
+    assert runner.received["review_rounds"] == REVIEW_ROUNDS == 3
+    assert runner.received["question"] == "Mezun olmak için neyim eksik?"
+    assert result["review"][0]["karar"] == "tamam"
+    assert "plan_course_sections" in runner.received["tools"]           # h6'nın tool'ları açık
+
+
+def test_agent_h6_does_not_review():
+    result = AdvisorAgent(retriever=None, llm=None, plan=graduation.load_plan(), prompt_version="agent_h6",
+                          code_runner=FakeSingleRunner()).ask("Mezun olmak için neyim eksik?", transcript=SAMPLE)
+    assert "review" not in result

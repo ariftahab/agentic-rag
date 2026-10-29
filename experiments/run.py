@@ -325,6 +325,9 @@ def agent_rows(agent, items, wait, plan, transcripts_dir=None, today=None):
                 row["tokens"] = out["usage"]
             if out.get("generated_code"):  # anlık tool kayıtları: görev, Haiku'nun adımları ve cevabı, süre, token
                 row["anlik_tool"] = out["generated_code"]
+            if "review" in out:  # denetim turları (agent_h7): her turun kararı, eksikleri, sonrasında çağrılan tool'lar
+                row["denetim"] = out["review"]
+                row["denetim_turu"] = len(out["review"])
         except Exception as e:  # kota dolarsa kalan soruları boşuna deneme
             print(f"  Agent hatası ({item['id']}): {type(e).__name__}: {str(e)[:200]}")
             if "ResourceExhausted" in type(e).__name__ or "429" in str(e):
