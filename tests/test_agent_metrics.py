@@ -10,7 +10,7 @@ import pytest
 from langchain_core.messages import AIMessage, ToolMessage
 
 import config
-import graduation
+from tools import graduation
 from experiments import evaluation as ev
 from experiments import report
 from experiments import run

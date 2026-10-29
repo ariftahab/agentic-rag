@@ -13,7 +13,7 @@ Kaynak: BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği, Madde 26 (ba�
 import math
 import re
 
-import graduation
+from tools import graduation
 
 REGULATION = "BAİBÜ Önlisans, Lisans Eğitim-Öğretim Yönetmeliği"
 SOURCES = {

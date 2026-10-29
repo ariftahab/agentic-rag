@@ -29,9 +29,9 @@ from datetime import datetime
 
 
 import config
-import graduation
-import transcript as transcript_parser
-import codeact
+from tools import graduation
+from tools import transcript as transcript_parser
+from tools import codeact
 from agent import AdvisorAgent
 
 # Branch exp/haiku-agent: web'deki agent tek model Claude Haiku: döngünün tamamı, hazır tool'lar ve anlık kod

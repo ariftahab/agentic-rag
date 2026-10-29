@@ -6,9 +6,9 @@ ilgili soruların cevapları.
 """
 from datetime import date
 
-import gpa
-import graduation
-import schedule
+from tools import gpa
+from tools import graduation
+from tools import schedule
 from agent import AdvisorAgent, make_tools
 from experiments import evaluation as ev
 

@@ -6,7 +6,7 @@ from datetime import date
 
 import pytest
 
-import schedule
+from tools import schedule
 
 DATA = schedule.load_schedule()
 WEDNESDAY = date(2026, 10, 21)

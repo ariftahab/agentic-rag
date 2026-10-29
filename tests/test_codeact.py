@@ -7,7 +7,7 @@ from types import SimpleNamespace as NS
 
 import pytest
 
-import codeact
+from tools import codeact
 
 
 def text(t):

@@ -10,9 +10,9 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import codeact  # noqa: E402
-import graduation  # noqa: E402
-import schedule  # noqa: E402
+from tools import codeact  # noqa: E402
+from tools import graduation  # noqa: E402
+from tools import schedule  # noqa: E402
 
 # Kişisel bilgisiz, uydurma transkript: gerçek transkript sandbox denemesine gönderilmez.
 TRANSCRIPT = {"donemler": [{"donem": "2024-2025 Güz", "dersler": [

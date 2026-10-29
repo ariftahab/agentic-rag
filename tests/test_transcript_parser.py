@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-import transcript
+from tools import transcript
 
 PRIVATE = Path(__file__).parent / "private"
 PERSONAL_FILE = PRIVATE / "kisisel.json"

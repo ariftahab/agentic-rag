@@ -7,7 +7,7 @@ from datetime import date
 
 import pytest
 
-import graduation
+from tools import graduation
 from agent import make_tools
 from experiments import evaluation as ev
 from experiments import run

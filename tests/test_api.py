@@ -13,7 +13,7 @@ import pytest
 from fastapi.testclient import TestClient
 from langchain_core.messages import AIMessage
 
-import transcript
+from tools import transcript
 from agent import AdvisorAgent
 from app.api import app, get_service
 from app.service import ChatService

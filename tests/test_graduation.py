@@ -4,7 +4,7 @@ Beklenen değerler elle hesaplanmıştır; plan ve transkript bilerek küçük t
 """
 import pytest
 
-import graduation
+from tools import graduation
 
 PLAN = {
     "bolum": "Bilgisayar Mühendisliği",

@@ -4,8 +4,8 @@ Beklenen değerler yönetmelikten elle hesaplandı (sorular_v2'nin ortalama soru
 """
 import pytest
 
-import gpa
-import graduation
+from tools import gpa
+from tools import graduation
 from experiments import evaluation as ev
 
 PLAN = graduation.load_plan()

@@ -4,7 +4,7 @@ Agent'ın transkript tool'ları (analiz, what-if) bu modülün üzerine kurulur;
 cümleye dökmek LLM'de.
 
 Komut satırı (gerçek transkriptle elle doğrulamak için):
-    python graduation.py <tarihsel_transkript.pdf>
+    python -m tools.graduation <tarihsel_transkript.pdf>
 """
 import json
 import math
@@ -632,7 +632,7 @@ def _count_text(low, high):
 
 def grade_table_text():
     """Yönetmelikteki harf notu tablosu ve ortalama tanımı (agent_v13): devirde katsayılar bu tablodan alınır."""
-    import gpa  # gpa graduation'ı içe aktarır
+    from tools import gpa  # gpa graduation'ı içe aktarır
 
     lines = ["", f"HARF NOTLARI, KATSAYILAR VE ORTALAMA (ortalama hesaplarında bu katsayılar kullanılır) "
                  f"[{gpa.REGULATION}, Madde 27, fıkra 1-2; {gpa.SOURCES['ortalama']}]"]
@@ -648,7 +648,7 @@ def history_text(transcript, report, plan, rules=None, coeff=None):
     """analyze_transcript'e eklenen ders geçmişi (agent_v12): dönem dönem bütün dersler ve harf notları, yarıyıl
     ortalamaları, harf notu dağılımı, başarısız olunan ve tekrarlanan dersler, mezuniyete kalan ders sayısı. EXP-008'de
     özette olmayan bilgiyi agent "yok" diye okudu ("kaldığın ders yok", kayıt yılından tahmin edilen dönem)."""
-    import gpa  # gpa graduation'ı içe aktarır
+    from tools import gpa  # gpa graduation'ı içe aktarır
 
     rules = rules or load_rules()
     passing = set(_rule(rules, "gecer_notlar")["deger"])
@@ -812,7 +812,7 @@ def _offered_note(slot_name, offered, taken):
 
 
 if __name__ == "__main__":
-    import transcript
+    from tools import transcript
 
     try:
         parsed = transcript.parse_transcript(sys.argv[1])

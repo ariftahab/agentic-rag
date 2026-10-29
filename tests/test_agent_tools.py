@@ -10,9 +10,9 @@ from pathlib import Path
 import pytest
 from langchain_core.messages import AIMessage, ToolMessage
 
-import gpa
-import graduation
-import schedule
+from tools import gpa
+from tools import graduation
+from tools import schedule
 from agent import AdvisorAgent, NO_TRANSCRIPT
 
 PLAN = {
@@ -84,7 +84,7 @@ def test_analyze_transcript_without_transcript_asks_for_historical():
 
 @pytest.mark.skipif(not HISTORICAL.is_file(), reason="gerçek tarihsel transkript yok")
 def test_llm_never_receives_personal_values():
-    import transcript
+    from tools import transcript
 
     parsed = transcript.parse_transcript(HISTORICAL)
     _, llm, _ = ask_with_analysis(parsed, graduation.load_plan())

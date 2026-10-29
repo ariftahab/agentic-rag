@@ -37,7 +37,7 @@ def main():
 
     transcript = None  # parse edilmiş, kişisel bilgilerden arındırılmış sözlük; yalnız bu süreç boyunca bellekte
     if args.transkript:
-        import transcript as transcript_parser
+        from tools import transcript as transcript_parser
         try:
             transcript = transcript_parser.parse_transcript(args.transkript)
         except transcript_parser.TranscriptFormatError as e:

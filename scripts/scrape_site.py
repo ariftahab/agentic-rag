@@ -15,7 +15,7 @@ PDF ya da başka birimin sayfası): kısa metin LLM'e gitmez, kendisi özettir; 
 yazmaz, uyduramaz). Akademik personel taranmaz: liste data/personel_bilgisayar.json'da sabit (announcements.py).
 
 Komut satırı:
-    python scrape_site.py [--kaynak muhendislik|bm|genel] [--limit 3] [--gun 90]
+    python -m scripts.scrape_site [--kaynak muhendislik|bm|genel] [--limit 3] [--gun 90]
 """
 import argparse
 import json
@@ -28,7 +28,7 @@ from urllib.parse import quote, urljoin
 import httpx
 from bs4 import BeautifulSoup
 
-import announcements
+from tools import announcements
 import config
 
 # HTTP header'ı yalnız ASCII

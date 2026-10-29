@@ -255,7 +255,7 @@ def site_snapshot(name):
     (data/duyurular.db) her gece değiştiği için deneyler onu kullanmaz. Dönüş: veritabanı yolu."""
     import tempfile
     from pathlib import Path
-    import announcements
+    from tools import announcements
     path = Path(tempfile.mkdtemp(prefix="duyurular_")) / "duyurular.db"
     conn = announcements.connect(path)
     try:
@@ -271,7 +271,7 @@ def make_agent(exp_id, cfg, site_db=None):
     Model agent.AGENT_LLM_MODEL sabitinden değil config'ten alınır; böylece kullanılan model sonuçta kayıtlıdır.
     site_db: duyuru tool'unun deposu (yalnız agent_h3 kullanır). Dönüş: (agent, index manifest'i)."""
     from langchain_google_genai import ChatGoogleGenerativeAI
-    import graduation
+    from tools import graduation
     import ingest
     from agent import CODE_TOOL_PROMPTS, REQUEST_TIMEOUT_S, SINGLE_MODEL_PROMPTS, AdvisorAgent
     from rag import Retriever
@@ -279,7 +279,7 @@ def make_agent(exp_id, cfg, site_db=None):
     store, chunks, manifest = ingest.load_index(cfg)
     code_runner = None
     if cfg.prompt_version in SINGLE_MODEL_PROMPTS:  # tek model (agent_h1): döngünün tamamı config'teki Claude modelinde
-        import codeact
+        from tools import codeact
         agent = AdvisorAgent(Retriever(cfg, store, chunks), None, graduation.load_plan(),
                              prompt_version=cfg.prompt_version, code_runner=codeact.CodeRunner(model=cfg.llm_model),
                              site_db=site_db)
@@ -287,7 +287,7 @@ def make_agent(exp_id, cfg, site_db=None):
     llm = ChatGoogleGenerativeAI(model=cfg.llm_model, temperature=cfg.llm_temperature, max_retries=2,
                                  timeout=REQUEST_TIMEOUT_S)
     if cfg.prompt_version in CODE_TOOL_PROMPTS:  # anlık tool (#18): production'daki gibi Claude Haiku sandbox'ı
-        import codeact
+        from tools import codeact
         code_runner = codeact.CodeRunner()
     agent = AdvisorAgent(Retriever(cfg, store, chunks), llm, graduation.load_plan(), prompt_version=cfg.prompt_version,
                          code_runner=code_runner)
@@ -302,7 +302,7 @@ def agent_rows(agent, items, wait, plan, transcripts_dir=None, today=None):
     Bir metriğin alanı soruda yoksa o metriğin değeri satıra yazılmaz (ortalamaya girmez).
     agent_ms: ask() çağrısının tamamı (LLM turları + tool'ların çalışması), sorular arası bekleme hariç.
     """
-    import graduation
+    from tools import graduation
     # Anlık tool metrikleri yalnız tool'un açık olduğu koşularda: eski sürümlerde "çağrılmadı" bilgi taşımaz.
     code_tool = getattr(agent, "code_runner", None) is not None
     single = getattr(agent, "single_model", False)
@@ -467,7 +467,7 @@ def run_agent(exp_id, exp, cfg, diff, dataset, dataset_hash, wait):
     (compare) karşılaştırılır. Transkript fixture'larının, öğretim planının ve kuralların hash'i de kaydedilir:
     bunlar değişirse aynı soru seti farklı doğru cevaplar demektir.
     """
-    import graduation
+    from tools import graduation
     from agent import MAX_TURNS
     # Soru seti sabit bir gün ve duyuru anlık görüntüsü verebilir (sorular_v5); vermezse bugün ve deposuz koşulur.
     today = date.fromisoformat(dataset["bugun"]) if dataset.get("bugun") else None

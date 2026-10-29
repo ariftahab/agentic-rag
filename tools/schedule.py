@@ -2,7 +2,7 @@
 buradan okur. RAG'a girmez; LLM kullanılmaz.
 
 Komut satırı (veriyi yeniden üretmek için):
-    python schedule.py
+    python -m tools.schedule
 """
 import itertools
 import json
@@ -12,8 +12,8 @@ from datetime import date, timedelta
 import pdfplumber
 
 import config
-import gpa
-import graduation
+from tools import gpa
+from tools import graduation
 
 PDF_PATH = config.DATA_DIR / "2026_27_Güz_Lisans_v2.pdf"
 SCHEDULE_PATH = config.DATA_DIR / "schedule" / "bilgisayar_2026-2027_guz.json"

@@ -6,8 +6,8 @@ import json
 import pytest
 from bs4 import BeautifulSoup
 
-import announcements
-import scrape_site
+from tools import announcements
+from scripts import scrape_site
 from agent import AdvisorAgent
 
 

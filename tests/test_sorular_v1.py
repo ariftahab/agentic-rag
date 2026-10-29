@@ -12,7 +12,7 @@ from datetime import date
 import pytest
 
 import config
-import graduation
+from tools import graduation
 import ingest
 from agent import make_tools
 from experiments import evaluation as ev

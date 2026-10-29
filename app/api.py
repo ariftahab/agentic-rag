@@ -18,7 +18,7 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel, Field
 
 from app.service import MAX_TRANSCRIPT_BYTES, ChatService
-from transcript import ASK_FOR_HISTORICAL, TranscriptFormatError
+from tools.transcript import ASK_FOR_HISTORICAL, TranscriptFormatError
 
 
 # --- Şemalar (API sözleşmesi) ---

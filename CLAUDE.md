@@ -121,14 +121,16 @@ olmak için kaç kredi lazım" gibi tool calling). Belge ne kadar az o kadar iyi
 - `rag.py` — `Retriever.rank()`/`search()`: vector | bm25 | hybrid (RRF) + reranker. `PROMPTS`: v1.
   `RagBot` (stateless): `ask(question, history)` → rewrite (geçmiş varsa) → sabit cevap kontrolü (`fixed_answer`) →
   retrieval → Gemini.
-- `transcript.py` — UBYS tarihsel transkript parser'ı (kişisel bilgisiz dict; `TranscriptFormatError`).
-- `graduation.py` — mezuniyet değerlendirmesi (LLM'siz): `evaluate(transcript, plan)` iki senaryo (şu an / bu dönem
+- `tools/transcript.py` — UBYS tarihsel transkript parser'ı (kişisel bilgisiz dict; `TranscriptFormatError`).
+- `tools/graduation.py` — mezuniyet değerlendirmesi (LLM'siz): `evaluate(transcript, plan)` iki senaryo (şu an / bu dönem
   geçilirse), eksik zorunlular, seçmeli yuvaları, kaynaklı kurallar; `graduation_requirements()`. Veri `data/plan/`
-  (2024-2025 öğretim planı, yönetmelik kuralları). Komut: `python graduation.py <pdf>`.
+  (2024-2025 öğretim planı, yönetmelik kuralları). Komut: `python -m tools.graduation <pdf>`.
 - `agent.py` — elle yazılmış agent döngüsü (`bind_tools`, LangGraph yok), tool'lar `search_regulations`,
   `analyze_transcript`, `confirm_equivalence`, `simulate_courses` (what-if), `get_course_schedule`,
   `get_offered_electives`; prompt `agent_v4` (EXP-003; v1-v3 korunur).
-- `schedule.py` — bu dönemin ders programı; günün dersleri ve yuva etiketlerinden açılan seçmeliler.
+- `tools/schedule.py` — bu dönemin ders programı; günün dersleri ve yuva etiketlerinden açılan seçmeliler.
+- `tools/` ayrıca `gpa.py` (not ortalaması), `announcements.py` (duyuru ve personel sorguları), `codeact.py` (anlık tool).
+  `scripts/scrape_site.py` — gece duyuru taraması (`python -m scripts.scrape_site`).
 - `chat.py` — CLI (`--agent --transkript <pdf>` agent yolu). `app/` — FastAPI (`api.py`), iş mantığı ve JSONL log'ları (`service.py`, `logs/`), vanilla JS frontend
   (`static/`: sohbet, belgeler, /admin değerlendirme), `main.py` (tek sunucu).
 - `experiments/` — `evaluation.py` (kanıt tabanlı ilgililik, MRR@10, Hit@k, bağlam isabeti, cevap doğruluğu, netleştirme ve

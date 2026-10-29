@@ -9,8 +9,8 @@ from datetime import date
 
 import pytest
 
-import graduation
-import schedule
+from tools import graduation
+from tools import schedule
 from agent import make_tools
 from experiments import evaluation as ev
 from experiments import run

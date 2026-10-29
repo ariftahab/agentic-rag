@@ -18,12 +18,12 @@ from langchain_core.tools import StructuredTool
 from langchain_google_genai import ChatGoogleGenerativeAI
 from pydantic import BaseModel, Field
 
-import announcements
+from tools import announcements
 import config
-import gpa
-import graduation
+from tools import gpa
+from tools import graduation
 import ingest
-import schedule
+from tools import schedule
 from rag import Retriever, _format_context, _to_messages, token_usage
 
 MAX_TURNS = 5  # bir soru için en fazla LLM çağrısı (tool turları + nihai cevap)
@@ -704,7 +704,7 @@ class AdvisorAgent:
         # yerine hata verilir, chat.py bunu yakalayıp sohbete devam eder.
         llm = None if prompt_version in SINGLE_MODEL_PROMPTS else ChatGoogleGenerativeAI(
             model=AGENT_LLM_MODEL, temperature=cfg.llm_temperature, max_retries=2, timeout=REQUEST_TIMEOUT_S)
-        import codeact  # anthropic paketi yalnız anlık tool'u kullanan sürümde gerekir
+        from tools import codeact  # anthropic paketi yalnız anlık tool'u kullanan sürümde gerekir
         return cls(Retriever(cfg, store, chunks), llm, graduation.load_plan(), prompt_version=prompt_version,
                    code_runner=codeact.CodeRunner() if prompt_version in CODE_TOOL_PROMPTS else None)
 
