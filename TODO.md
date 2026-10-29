@@ -40,7 +40,19 @@ sorusunda (h7'de kötüleşen 4, düzelen 2, şeref sorusu, 3 kontrol): yanlış
 chunk hiç bulunmamıştı, denetleyici yalnız getirilen kanıtla tutarlılığı görebiliyor). **Kullanıcı kararı: reflection
 loop bırakıldı, `agent_h6` kalıyor; h8 kodu geri alındı (commit edilmedi).**
 
-**Sıradaki (karar bekliyor):** reflection'ın **2. ve son denemesi** (2 deneme kuralı): denetleyiciye agent'ın bağlamını
+**Sonra (2026-10-29 gece, kullanıcı: "1 ve 2'yi arka arkaya yap"):**
+- **EXP-019** (`agent_h8` = h6 + `list_articles` / `get_article` + arama sonucunda açık atıflar; `tools/articles.py`): dev 46/53
+  (h6 43), 3 düzelen 0 bozulan; bitti tanımı (≥5) tutmadı, gezinme tool'u az çağrıldı.
+- **EXP-020** (`agent_h9` = h8 + `data/mevzuat_belgeleri.json` belge düzeyi/tarihleri + çelişki kuralı): dev 46/53; iki
+  çelişki sorusu (yandal sertifikası, uzaktan ödev oranı) düzeldi, iki ilgisiz soru varyansla düştü. Dev'de tek koşu
+  varyansı ±2-3 soru, hedeflenen etkiyle aynı büyüklükte.
+- **Karar bekliyor:** nihai ölçüm `agent_h9` ile val_v1'de (EXP-016 h6: 100/110) ya da varyans için tekrar koşu.
+  `mevzuat_belgeleri.json`'da mezun belgeleri yönergesinin "2018 öncesi ad" notunu kullanıcı doğrulamalı.
+- **Arayüz** (working tree'de, commit'siz; kullanıcı denesin): sohbet sayfası "BM RAG Agent", `chat.css`, katlanabilir
+  tool satırı, cevap başına ve sohbet toplamı token maliyeti (Haiku 5.5 fiyatları, `chat.js` `PRICING`); API cevabına
+  `usage`. Web agent'ı hâlâ `agent_h6`.
+
+**Eski not — reflection (kapandı):** reflection'ın **2. ve son denemesi** (2 deneme kuralı): denetleyiciye agent'ın bağlamını
 vermek + yalnız yanlış bilgi ya da cevaplanmamış soru parçası için "eksik" demesi. Önerilen bitti tanımı: dev'de h6'dan
 fazla tam doğru, hiçbir doğru cevap bozulmuyor, süre en fazla 2 kat. Tutmazsa döngü bırakılır; kalan hatalar ayrı ele
 alınır (ör. planın dönem AKTS toplamını veren tool yok; çapraz atıf ve sürüm/hiyerarşi bilgisi chunk'larda yok —
