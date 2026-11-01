@@ -32,7 +32,7 @@ METRIC_NAMES = {"mrr@10": "MRR@10", "context_chars": "context chars", "answer_ac
                 "anlik_tool_isabeti": "anlık tool isabeti", "anlik_tool_duyarliligi": "anlık tool duyarlılığı",
                 "anlik_tool_gereksiz_orani": "gereksiz anlık tool", "haiku_dogrulugu": "Haiku hesabı"}
 # Agent tablosu: başlık -> llm.metrics anahtarı
-AGENT_COLUMNS = [("Answer acc.", "answer_acc"), ("Tool seçimi", "tool_secimi_dogrulugu"),
+AGENT_COLUMNS = [("Tool seçimi", "tool_secimi_dogrulugu"),
                  ("Tool adı", "tool_adi_dogrulugu"), ("Gerekli tool", "gerekli_tool_dogrulugu"),
                  ("Yan etkisiz", "yan_etkisiz_orani"), ("Hesap (cevap)", "hesap_dogrulugu"),
                  ("Hesap (tool)", "arac_hesap_dogrulugu"), ("Anlık tool isabeti", "anlik_tool_isabeti"),

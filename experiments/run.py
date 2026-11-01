@@ -349,7 +349,7 @@ def agent_rows(agent, items, wait, plan, transcripts_dir=None, today=None):
                 row["arac_hesap_dogru"] = calc["arac_hesap_dogru"]
         rows.append(row)
         marks = [f"{label} {'OK' if row[key] else 'YANLIŞ'}" for key, label in
-                 (("tool_dogru", "tool"), ("hesap_dogru", "hesap"), ("answer_ok", "cevap")) if key in row]
+                 (("tool_dogru", "tool"), ("hesap_dogru", "hesap")) if key in row]
         print(f"  {item['id']} " + (", ".join(marks) or "değerlendirme alanı yok"))
         if n + 1 < len(items):
             time.sleep(wait)
@@ -517,7 +517,7 @@ def run_agent(exp_id, exp, cfg, diff, dataset, dataset_hash, wait):
     m = result["llm"]["metrics"]
     print("  " + " ".join(f"{k}={m[k]:.3f}" for k in ("tool_secimi_dogrulugu", "tool_adi_dogrulugu", "gerekli_tool_dogrulugu", "yan_etkisiz_orani", "hesap_dogrulugu",
                                                       "arac_hesap_dogrulugu", "anlik_tool_isabeti", "anlik_tool_duyarliligi",
-                                                      "anlik_tool_gereksiz_orani", "haiku_dogrulugu", "answer_acc") if k in m))
+                                                      "anlik_tool_gereksiz_orani", "haiku_dogrulugu") if k in m))
     if result["karsilastirma"] and "karar" in result["karsilastirma"]:
         k = result["karsilastirma"]["karar"]
         print(f"  Karar ({k['metrik']}): {k['sonuc']} | Hipotez: {k['hipotez']}")
