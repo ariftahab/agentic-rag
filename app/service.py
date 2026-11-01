@@ -38,7 +38,8 @@ from agent import AdvisorAgent
 # (code_execution) aynı modelde, Gemini yok. agent_h3 = agent_h2 (EXP-011) + duyuru ve akademik personel tool'ları;
 # agent_h4 = h3 + personel araması birimi de arar (EXP-014). Klasik RAG (RagBot) production config'iyle aynı kalır.
 # agent_h6 = h5 + transkriptten alt küme ortalaması, bütün haftada program araması, şube planı (EXP-015).
-WEB_AGENT_PROMPT_VERSION = "agent_h6"
+# agent_h10 = h6 + madde gezinme tool'ları, belge düzeyi ve çelişki kuralı, ders programında günün durumu (EXP-021).
+WEB_AGENT_PROMPT_VERSION = "agent_h10"
 from rag import RagBot, source_label
 
 LOG_DIR = config.ROOT / "logs"
