@@ -32,6 +32,7 @@ Kalın hücre = parent'a göre değişen parametre.
 | EXP-018 | EXP-017 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | **agent_h7** | claude-haiku-5-5 | 685 |
 | EXP-019 | EXP-017 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | **agent_h8** | claude-haiku-5-5 | 685 |
 | EXP-020 | EXP-019 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | **agent_h9** | claude-haiku-5-5 | 685 |
+| EXP-021 | EXP-016 | agent | v1 | cuda | pdfplumber | structural_v2 | 1500 | 150 | bge-m3 | ✓ | hybrid | bge-reranker | 5 | **agent_h10** | claude-haiku-5-5 | 685 |
 
 ## 2. Results
 
@@ -57,6 +58,7 @@ Kalın hücre = parent'a göre değişen parametre.
 | EXP-018 | agent_h7: taslak cevabı denetleyen döngü, en fazla 3 tur (dev_v1, branch exp/haiku-agent) | dev_v1 | – | – | – | – | – | – | answer acc. ↑ iyileşti (p=1.00, anlamlı değil) | ~ |
 | EXP-019 | agent_h8: madde gezinme tool'ları (list_articles, get_article) ve atıf ipuçları, dev_v1 | dev_v1 | – | – | – | – | – | – | answer acc. = değişmedi (p=1.00, anlamlı değil) | ✗ |
 | EXP-020 | agent_h9: mevzuat sonuçlarında belge düzeyi ve tarihleri + çelişkide geçerli hükmü seçme kuralı, dev_v1 | dev_v1 | – | – | – | – | – | – | answer acc. = değişmedi (p=1.00, anlamlı değil) | ✗ |
+| EXP-021 | agent_h10 val_v1: gezinme tool'ları + belge düzeyi/çelişki kuralı + ders programında günün durumu (branch exp/haiku-agent) | val_v1 | – | – | – | – | – | – | answer acc. ↑ iyileşti (p=0.77, anlamlı değil) | ~ |
 
 Hyp.: ✓ doğrulandı · ✗ doğrulanmadı · ~ yön doğru ama anlamlı değil
 
@@ -64,24 +66,25 @@ Hyp.: ✓ doğrulandı · ✗ doğrulanmadı · ~ yön doğru ama anlamlı deği
 
 Tool seçimi: beklenen tool'lar doğru argümanlarla çağrıldı, beklenmeyen tool yok. Tool adı: aynısı, argümanlara bakmadan. Gerekli tool: beklenen tool'lar doğru argümanlarla çağrıldı, fazla çağrı serbest. Yan etkisiz: oturum durumunu değiştiren tool (teyit kaydı) beklenmeden çağrılmadı. Hesap (cevap): elle hesaplanan AKTS/GNO cevapta tam olarak geçiyor. Hesap (tool): aynı sayılar deterministik modülün sonucuyla aynı (LLM'den bağımsız). Answer acc. anlamca ayrıca okunur.
 
-| Exp | Set | Answer acc. | Tool seçimi | Tool adı | Gerekli tool | Yan etkisiz | Hesap (cevap) | Hesap (tool) | Anlık tool isabeti | Gereksiz anlık tool | Haiku hesabı | Ort. tool çağrısı | Ort. tur | n | Tamamlandı |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| EXP-002 | v1 | 0.732 | 0.738 | 0.738 | 0.809 | 0.976 | 0.636 | 1.000 | – | – | – | 1.07 | 2.04 | 45 | ✓ |
-| EXP-003 | v1 | 0.780 | 0.714 | 0.714 | 0.905 | 1.000 | 0.727 | 1.000 | – | – | – | 1.13 | 2.11 | 45 | ✓ |
-| EXP-004 | v1 | 0.854 | 0.691 | 0.691 | 0.833 | 1.000 | 0.727 | 1.000 | – | – | – | 1.22 | 2.13 | 45 | ✓ |
-| EXP-005 | v2 | 0.875 | 0.603 | 0.603 | 0.809 | 1.000 | 0.500 | 1.000 | 0.879 | 0.038 | 0.750 | 1.29 | 2.24 | 66 | ✓ |
-| EXP-006 | v2 | 0.679 | 0.682 | 0.682 | 0.762 | 1.000 | 0.455 | 1.000 | 0.894 | 0.000 | 0.571 | 0.98 | 2.03 | 66 | ✓ |
-| EXP-008 | v3 | 0.857 | 0.698 | 0.698 | 0.841 | 1.000 | 0.773 | 1.000 | 0.894 | 0.053 | 1.000 | 1.17 | 2.02 | 66 | ✓ |
-| EXP-010 | v4 | 1.000 | 0.687 | 0.687 | 0.940 | 1.000 | 0.962 | 1.000 | 0.929 | 0.032 | 1.000 | 1.54 | 2.06 | 70 | ✓ |
-| EXP-011 | v4 | 1.000 | 0.642 | 0.642 | 0.925 | 1.000 | 0.962 | 1.000 | 0.914 | 0.065 | 1.000 | 1.53 | 2.07 | 70 | ✓ |
-| EXP-012 | v5 | 0.829 | 0.500 | 0.500 | 0.768 | 1.000 | 0.962 | 1.000 | 0.917 | 0.079 | 1.000 | 1.46 | 2.07 | 84 | ✓ |
-| EXP-013 | v5 | 0.957 | 0.622 | 0.622 | 0.927 | 1.000 | 0.885 | 1.000 | 0.941 | 0.040 | 1.000 | 1.63 | 2.14 | 84 | ✓ |
-| EXP-015 | v6 | 0.957 | 0.658 | 0.658 | 0.951 | 1.000 | 0.923 | 1.000 | 0.976 | 0.012 | – | 1.45 | 2.12 | 84 | ✓ |
-| EXP-016 | val_v1 | 0.909 | 0.627 | 0.627 | 0.964 | 1.000 | 1.000 | – | 0.955 | 0.045 | – | 1.87 | 2.22 | 110 | ✓ |
-| EXP-017 | dev_v1 | 0.943 | 0.660 | 0.660 | 0.962 | 1.000 | 1.000 | 0.000 | 0.981 | 0.019 | – | 2.17 | 2.40 | 53 | ✓ |
-| EXP-018 | dev_v1 | 0.962 | 0.396 | 0.396 | 0.981 | 1.000 | 1.000 | 0.000 | 0.943 | 0.057 | – | 4.43 | 4.83 | 53 | ✓ |
-| EXP-019 | dev_v1 | 0.943 | 0.528 | 0.528 | 0.962 | 1.000 | 1.000 | 0.000 | 0.981 | 0.019 | – | 2.23 | 2.55 | 53 | ✓ |
-| EXP-020 | dev_v1 | 0.943 | 0.547 | 0.547 | 0.943 | 1.000 | 1.000 | 0.000 | 0.981 | 0.019 | – | 2.17 | 2.42 | 53 | ✓ |
+| Exp | Set | Tool seçimi | Tool adı | Gerekli tool | Yan etkisiz | Hesap (cevap) | Hesap (tool) | Anlık tool isabeti | Gereksiz anlık tool | Haiku hesabı | Ort. tool çağrısı | Ort. tur | n | Tamamlandı |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| EXP-002 | v1 | 0.738 | 0.738 | 0.809 | 0.976 | 0.636 | 1.000 | – | – | – | 1.07 | 2.04 | 45 | ✓ |
+| EXP-003 | v1 | 0.714 | 0.714 | 0.905 | 1.000 | 0.727 | 1.000 | – | – | – | 1.13 | 2.11 | 45 | ✓ |
+| EXP-004 | v1 | 0.691 | 0.691 | 0.833 | 1.000 | 0.727 | 1.000 | – | – | – | 1.22 | 2.13 | 45 | ✓ |
+| EXP-005 | v2 | 0.603 | 0.603 | 0.809 | 1.000 | 0.500 | 1.000 | 0.879 | 0.038 | 0.750 | 1.29 | 2.24 | 66 | ✓ |
+| EXP-006 | v2 | 0.682 | 0.682 | 0.762 | 1.000 | 0.455 | 1.000 | 0.894 | 0.000 | 0.571 | 0.98 | 2.03 | 66 | ✓ |
+| EXP-008 | v3 | 0.698 | 0.698 | 0.841 | 1.000 | 0.773 | 1.000 | 0.894 | 0.053 | 1.000 | 1.17 | 2.02 | 66 | ✓ |
+| EXP-010 | v4 | 0.687 | 0.687 | 0.940 | 1.000 | 0.962 | 1.000 | 0.929 | 0.032 | 1.000 | 1.54 | 2.06 | 70 | ✓ |
+| EXP-011 | v4 | 0.642 | 0.642 | 0.925 | 1.000 | 0.962 | 1.000 | 0.914 | 0.065 | 1.000 | 1.53 | 2.07 | 70 | ✓ |
+| EXP-012 | v5 | 0.500 | 0.500 | 0.768 | 1.000 | 0.962 | 1.000 | 0.917 | 0.079 | 1.000 | 1.46 | 2.07 | 84 | ✓ |
+| EXP-013 | v5 | 0.622 | 0.622 | 0.927 | 1.000 | 0.885 | 1.000 | 0.941 | 0.040 | 1.000 | 1.63 | 2.14 | 84 | ✓ |
+| EXP-015 | v6 | 0.658 | 0.658 | 0.951 | 1.000 | 0.923 | 1.000 | 0.976 | 0.012 | – | 1.45 | 2.12 | 84 | ✓ |
+| EXP-016 | val_v1 | 0.627 | 0.627 | 0.964 | 1.000 | 1.000 | – | 0.955 | 0.045 | – | 1.87 | 2.22 | 110 | ✓ |
+| EXP-017 | dev_v1 | 0.660 | 0.660 | 0.962 | 1.000 | 1.000 | 0.000 | 0.981 | 0.019 | – | 2.17 | 2.40 | 53 | ✓ |
+| EXP-018 | dev_v1 | 0.396 | 0.396 | 0.981 | 1.000 | 1.000 | 0.000 | 0.943 | 0.057 | – | 4.43 | 4.83 | 53 | ✓ |
+| EXP-019 | dev_v1 | 0.528 | 0.528 | 0.962 | 1.000 | 1.000 | 0.000 | 0.981 | 0.019 | – | 2.23 | 2.55 | 53 | ✓ |
+| EXP-020 | dev_v1 | 0.547 | 0.547 | 0.943 | 1.000 | 1.000 | 0.000 | 0.981 | 0.019 | – | 2.17 | 2.42 | 53 | ✓ |
+| EXP-021 | val_v1 | 0.564 | 0.564 | 0.973 | 1.000 | 0.800 | – | 0.946 | 0.054 | – | 2.03 | 2.36 | 110 | ✓ |
 
 ## 5. Notes
 
@@ -104,3 +107,4 @@ Tool seçimi: beklenen tool'lar doğru argümanlarla çağrıldı, beklenmeyen t
 - **EXP-018:** agent_h7 (Haiku denetleyici, 3 tur): 41/53 tam doğru (h6 43), 2 düzelen 4 kötüleşen; süre 3 kat; denetleyici bağlamsız olduğu için yanlış alarm.
 - **EXP-019:** agent_h8 (madde gezinme): 46/53 tam doğru (h6 43), 3 düzelen 0 bozulan; bitti tanımı (≥5) tutmadı, gezinme tool'u az kullanıldı.
 - **EXP-020:** agent_h9 (belge düzeyi + çelişki kuralı): 46/53 (h8 46); iki çelişki sorusu düzeldi, iki ilgisiz soru varyansla düştü.
+- **EXP-021:** agent_h10 val_v1: anlamca 107/110 (h6 101, aynı okuma); çapraz atıf ve çelişki sorularında düzelme, süre ~%39 uzun; stajsız AKTS sorusu hâlâ yanlış.
