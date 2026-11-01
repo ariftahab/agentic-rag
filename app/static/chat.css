@@ -22,7 +22,7 @@ body.chat-body {
   --danger: #9a3b30;
   --danger-soft: #f6ebe9;
   --radius: 12px;
-  --content-width: 760px;
+  --content-width: 1100px;
   --font: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-display: "Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
   --font-mono: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, monospace;
