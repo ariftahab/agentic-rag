@@ -4,76 +4,66 @@
   <meta charset="utf-8">
   <!-- interactive-widget: Android Chrome klavye açılınca sayfanın yüksekliğini küçültsün, yazı kutusu klavyenin üstünde kalsın. -->
   <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
-  <title>BM RAG Agent</title>
-  <link rel="stylesheet" href="/static/style.css">
-  <!-- Yalnız sohbet sayfasının görünümü; /belgeler ve /admin yüklemez. -->
+  <title>Danışman Asistanı</title>
+  <link rel="stylesheet" href="/static/shell.css">
   <link rel="stylesheet" href="/static/chat.css">
   <!-- marked: markdown -> HTML, DOMPurify: HTML temizleme (XSS koruması). Sürümler sabit. -->
   <script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
+  <script src="/static/shell.js"></script>
   <script src="/static/common.js" defer></script>
+  <script src="/static/arac_bilgisi.js" defer></script>
   <script src="/static/chat.js" defer></script>
+  <script src="/static/belgeler.js" defer></script>
+  <script src="/static/araclar.js" defer></script>
 </head>
-<body class="chat-body">
-  <header class="topbar">
-    <div class="topbar-inner">
-      <div class="brand"><span class="brand-mark" aria-hidden="true">BM</span>BM RAG Agent<small>Bilgisayar Mühendisliği · BAİBÜ</small></div>
-      <nav class="nav">
-        <a href="/" class="active">Sohbet</a>
-        <a href="/belgeler">Belgeler</a>
-        <a href="/admin">Değerlendirme</a>
-      </nav>
-      <!-- Bu sohbette LLM token'larına harcanan tahmini toplam (chat.js hesaplar; yenilemede sıfırlanır). -->
-      <div class="cost-total" id="cost-total" aria-live="polite"></div>
-      <div class="status"></div>
-    </div>
-  </header>
-
-  <main class="chat-page">
-    <div class="messages" id="messages">
-      <div class="messages-inner" id="messages-inner">
-        <div class="empty" id="empty">
-          <div class="empty-mark" aria-hidden="true">BM</div>
-          <h1>BM RAG Agent</h1>
-          <p class="lead">Bilgisayar Mühendisliği öğrencileri ve danışmanları için tool kullanan bir agent. Sorunuza göre
-            uygun tool'u seçer; hesapları kodla yapar, cevabı kaynağıyla verir.</p>
-          <ul class="capabilities">
-            <li><strong>Mevzuat</strong>Yönetmelik ve yönergelerde arama: staj, ders kaydı, sınavlar, mezuniyet, yatay geçiş.</li>
-            <li><strong>Transkript</strong>UBYS tarihsel transkriptinizle mezuniyet durumu, eksik dersler, not ortalaması ve "bu dersleri alırsam" hesabı.</li>
-            <li><strong>Ders programı</strong>Bu dönemin dersleri (saat, şube, derslik), şube seçimi ve çakışmalar, açılan seçmeliler.</li>
-            <li><strong>Duyurular ve personel</strong>Bölüm, fakülte ve üniversite duyuruları; öğretim elemanlarının iletişim bilgileri.</li>
-          </ul>
-          <div class="examples">
-            <button>Yatay geçiş başvurusu için not ortalaması şartı nedir?</button>
-            <button>Bugün hangi dersler var?</button>
-            <button>Bu dönem hangi seçmeli dersler açılıyor?</button>
-            <button>Mezun olmak için kaç AKTS eksiğim var?</button>
+<body>
+<!--KABUK-->
+    <section class="view is-empty" id="view-chat">
+      <div class="empty">
+        <img src="/static/logo-baibu.png" alt="">
+        <h1>Merhaba, nasıl yardımcı olabilirim?</h1>
+        <p>Mevzuatı arar, transkriptinizle mezuniyet durumunuzu hesaplar, ders programını ve duyuruları getiririm. Her cevabın yanında kaynağını görürsünüz.</p>
+        <div class="empty-composer-slot" id="slot"></div>
+        <div class="chips" id="chips"></div>
+      </div>
+      <div class="chat-scroll" id="scroll"><div class="chat-col" id="msgs" aria-live="polite"></div></div>
+      <div class="dock" id="dock">
+        <form class="composer" id="composer">
+          <textarea id="q" rows="1" placeholder="Mevzuat, mezuniyet durumu veya ders programı hakkında sorun…" aria-label="Soru"></textarea>
+          <div class="composer-bar">
+            <!-- Transkript yalnız bu sayfanın JS belleğinde durur; sayfa yenilenince ya da kapanınca kaybolur. -->
+            <button class="tool-btn" id="tr-btn" type="button" title="UBYS'den indirilen tarihsel transkripti (PDF) yükleyin. Yalnız bu sayfanın belleğinde durur; sayfa yenilenince silinir."><svg class="ico"><use href="#i-clip"/></svg><span id="tr-label">Transkript yükle</span></button>
+            <button class="tool-x" id="tr-remove" type="button" title="Transkripti kaldır" aria-label="Transkripti kaldır" hidden><svg class="ico"><use href="#i-x"/></svg></button>
+            <input type="file" id="tr-file" accept="application/pdf,.pdf" hidden>
+            <button class="send" id="send" type="submit" disabled aria-label="Gönder"><svg class="ico" style="stroke-width:2.4"><use href="#i-up"/></svg></button>
           </div>
-        </div>
+          <div class="tr-note" id="tr-note" role="status" hidden></div>
+        </form>
+        <div class="disclaimer">Cevaplar resmî görüş değildir; kesin bilgi için danışmanınıza veya ilgili birime başvurun.</div>
       </div>
-    </div>
+    </section>
 
-    <form class="composer" id="composer">
-      <!-- Transkript yalnız bu sayfanın JS belleğinde durur; sayfa yenilenince ya da kapanınca kaybolur. -->
-      <div class="transcript-bar" id="transcript-bar">
-        <span id="transcript-hint">UBYS'den indirilen <strong>tarihsel transkripti</strong> (PDF) yükleyin.</span>
-        <span class="transcript-badge" id="transcript-badge" hidden>
-          <span id="transcript-label"></span>
-          <button class="link-btn" id="transcript-remove" type="button">Kaldır</button>
-        </span>
-        <button class="link-btn" id="transcript-pick" type="button">Transkript yükle</button>
-        <input type="file" id="transcript-file" accept="application/pdf,.pdf" hidden>
-      </div>
-      <div class="composer-inner">
-        <textarea id="question" rows="1" placeholder="Mevzuat, mezuniyet durumu ya da ders programı hakkında sorun…" aria-label="Soru"></textarea>
-        <button class="btn btn-primary" id="send" type="submit">Gönder</button>
-      </div>
-      <div class="composer-hint">
-        <span>Enter: gönder · Shift+Enter: yeni satır</span>
-        <span class="cost-total cost-total-hint" aria-hidden="true"></span>
-        <button class="link-btn" id="new-chat" type="button">Yeni sohbet</button>
-      </div>
-    </form>
-  </main>
+    <!-- Belgeler ve Araçlar görünümleri: ilk gösterildiklerinde yüklenir (belgeler.js, araclar.js). -->
+    <section class="view" id="view-docs">
+      <div class="page"><div class="page-in">
+        <h1>Belgeler</h1>
+        <p class="lead">Asistanın cevap verirken dayandığı yönetmelik, yönerge ve takvimler ile bölümün yapılandırılmış verileri. Bir belgenin maddelerini açabilir ya da onunla ilgili soru sorabilirsiniz.</p>
+        <div class="toolbar">
+          <label class="field"><svg class="ico"><use href="#i-search"/></svg><input id="doc-q" type="search" placeholder="Belge ara (ör. staj, yatay geçiş)" aria-label="Belge ara" autocomplete="off"></label>
+          <div class="seg" id="doc-seg" role="group" aria-label="Belge türü"></div>
+        </div>
+        <div id="docs"></div>
+      </div></div>
+    </section>
+
+    <section class="view" id="view-tools">
+      <div class="page"><div class="page-in">
+        <h1>Araçlar</h1>
+        <p class="lead">Asistan, sorunuza göre bu araçlardan hangisine ihtiyaç olduğuna kendisi karar verir. Hesaplar modele bırakılmaz, kodla yapılır; kaynağı olan her bilgi cevapta gösterilir.</p>
+        <div id="tools"></div>
+      </div></div>
+    </section>
+<!--/KABUK-->
 </body>
 </html>

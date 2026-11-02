@@ -1,6 +1,8 @@
 // Ortak yardımcılar: API çağrıları, güvenli markdown, atıf eşleştirme, kaynak paneli.
 // Framework yok; tarayıcının kendi API'leri (fetch, DOM) kullanılıyor.
 
+const $ = (id) => document.getElementById(id);
+
 // --- API ---
 
 // fetch'i saran yardımcı: JSON gönderir/alır, HTTP hatasında API'nin "detail" mesajıyla hata fırlatır.
@@ -127,6 +129,28 @@ function renderAnswer(text, sources = []) {
   return DOMPurify.sanitize(html);
 }
 
+// --- Belge başlıkları ---
+// Belgeler insan okunur başlıkla gösterilir (dosya adıyla değil). Eşleme /static/belge_basliklari.json'dadır;
+// listede olmayan belge dosya adından türetilen bir başlık alır.
+
+let docTitlesPromise = null;
+
+function loadDocTitles() {
+  docTitlesPromise ||= fetch("/static/belge_basliklari.json").then((r) => r.json()).catch(() => ({ belgeler: {} }));
+  return docTitlesPromise;
+}
+
+// "yatay-gecis_yonergesi.pdf" -> "Yatay gecis yonergesi" (eşlemesi olmayan belge için yedek başlık)
+function titleFromFilename(source) {
+  const t = source.replace(/\.pdf$/i, "").replace(/[-_]+/g, " ").trim();
+  return t.charAt(0).toLocaleUpperCase("tr") + t.slice(1);
+}
+
+async function friendlyTitle(source, fallback) {
+  const info = (await loadDocTitles()).belgeler[source];
+  return (info && info.baslik) || fallback || titleFromFilename(source);
+}
+
 // --- Kaynak paneli ---
 
 const panel = {
@@ -226,7 +250,7 @@ async function openChunk(chunkId, fikra = null) {
     let sub = c.label.slice(c.title.length).replace(/^,\s*/, "");
     if (fikra) sub += range ? ` · fıkra ${fikra}` : ` · fıkra ${fikra} bu metinde bulunamadı`;
     panel.show({
-      title: c.title,
+      title: await friendlyTitle(c.source, c.title),
       sub,
       html: chunkHtml(reflow(c.text), range),
       pdf: { url: pdfUrl(c.source, c.page), page: c.page },
@@ -239,12 +263,13 @@ async function openChunk(chunkId, fikra = null) {
   }
 }
 
-async function openDocument(source, title) {
-  panel.show({ title, sub: "Yükleniyor…", html: "" });
+// title: corpus'taki başlık (chunk etiketlerinden ayıklamak için); shownTitle: panelde görünen insan okunur başlık.
+async function openDocument(source, title, shownTitle = title) {
+  panel.show({ title: shownTitle, sub: "Yükleniyor…", html: "" });
   try {
     const chunks = await api(`/documents/${encodeURIComponent(source)}/chunks`);
     panel.show({
-      title,
+      title: shownTitle,
       sub: `${chunks.length} chunk`,
       html: chunks.map((c) => `
         <div class="chunk-block">
@@ -254,7 +279,7 @@ async function openDocument(source, title) {
       pdf: { url: pdfUrl(source) },
     });
   } catch (e) {
-    panel.show({ title, html: `<p>${escapeHtml(e.message)}</p>` });
+    panel.show({ title: shownTitle, html: `<p>${escapeHtml(e.message)}</p>` });
   }
 }
 
@@ -269,20 +294,4 @@ document.addEventListener("click", (e) => {
   openChunk(Number(el.dataset.chunk), el.dataset.fikra ? Number(el.dataset.fikra) : null);
 });
 
-// --- Üst bar durumu ---
-
-async function loadStatus() {
-  const el = document.querySelector(".status");
-  if (!el) return;
-  try {
-    const h = await api("/health");
-    el.textContent = `${h.experiment} · ${h.commit} · ${h.documents} belge`;
-  } catch {
-    el.textContent = "sunucuya ulaşılamıyor";
-  }
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  panel.init();
-  loadStatus();
-});
+document.addEventListener("DOMContentLoaded", () => panel.init());

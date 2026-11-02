@@ -1,0 +1,55 @@
+{
+  "aciklama": "Belgeler sayfasının insan okunur başlık, açıklama ve konu grupları. Anahtar corpus'taki PDF dosya adıdır (GET /documents -> source); listede olmayan belge dosya adından türetilen başlıkla 'Diğer' grubunda görünür. tur: mevzuat | takvim; kapsam: uni | fac | dept | grad.",
+  "gruplar": [
+    "Eğitim-öğretim ve kayıt",
+    "Geçiş, intibak ve ek programlar",
+    "Staj ve uygulamalı eğitim",
+    "Uzaktan eğitim",
+    "Öğrenci hakları ve destek",
+    "Lisansüstü",
+    "Akademik takvim",
+    "Diğer"
+  ],
+  "belgeler": {
+    "önlisans lisans eğitim öğretim.pdf": {"baslik": "Ön Lisans ve Lisans Eğitim-Öğretim Yönetmeliği", "aciklama": "Dersler, sınavlar, not sistemi, mezuniyet, devamsızlık ve süreler.", "grup": "Eğitim-öğretim ve kayıt", "tur": "mevzuat", "kapsam": "uni"},
+    "ogrenci-kayıt-yonerge.pdf": {"baslik": "Öğrenci Kayıt Kabul İşleri Yönetmeliği", "aciklama": "Kayıt, kayıt yenileme, kayıt dondurma ve ilişik kesme.", "grup": "Eğitim-öğretim ve kayıt", "tur": "mevzuat", "kapsam": "uni"},
+    "alan dışı seçmeli ders yönergesi.pdf": {"baslik": "Alan Dışı Seçmeli Ders Yönergesi", "aciklama": "Başka bölümlerden seçmeli ders alma kuralları.", "grup": "Eğitim-öğretim ve kayıt", "tur": "mevzuat", "kapsam": "uni"},
+    "ogrenci_danismanligi.pdf": {"baslik": "Öğrenci Danışmanlığı", "aciklama": "Danışmanın görevleri ve danışmanlık süreci.", "grup": "Eğitim-öğretim ve kayıt", "tur": "mevzuat", "kapsam": "uni"},
+    "mezun ogrenci verilecek belgelerin duzenlenmesi yonergesi.pdf": {"baslik": "Mezun Öğrencilere Verilecek Belgelerin Düzenlenmesi Yönergesi", "aciklama": "Diploma ve mezuniyet belgeleri.", "grup": "Eğitim-öğretim ve kayıt", "tur": "mevzuat", "kapsam": "uni"},
+
+    "yatay-gecis-yonergesi.pdf": {"baslik": "Yatay Geçiş Yönergesi", "aciklama": "Kurum içi ve kurumlar arası yatay geçiş şartları.", "grup": "Geçiş, intibak ve ek programlar", "tur": "mevzuat", "kapsam": "uni"},
+    "intibak yönergesi.pdf": {"baslik": "İntibak Yönergesi", "aciklama": "Önceki derslerin sayılması (muafiyet ve intibak).", "grup": "Geçiş, intibak ve ek programlar", "tur": "mevzuat", "kapsam": "uni"},
+    "kurumlar arası kredi transferi.pdf": {"baslik": "Kurumlar Arası Kredi Transferi", "aciklama": "Başka üniversitelerden ders ve kredi aktarımı.", "grup": "Geçiş, intibak ve ek programlar", "tur": "mevzuat", "kapsam": "uni"},
+    "önlisans mezunu lisans öğrenimine devam.pdf": {"baslik": "Ön Lisans Mezunlarının Lisans Öğrenimine Devam Yönergesi", "aciklama": "Dikey geçiş ve devam şartları.", "grup": "Geçiş, intibak ve ek programlar", "tur": "mevzuat", "kapsam": "uni"},
+    "çift anadal program yönergesi.pdf": {"baslik": "Çift Anadal Programı Yönergesi", "aciklama": "Çift anadal başvuru ve yürütme esasları.", "grup": "Geçiş, intibak ve ek programlar", "tur": "mevzuat", "kapsam": "uni"},
+    "yandal programı.pdf": {"baslik": "Yandal Programı", "aciklama": "Yandal başvuru ve sertifika şartları.", "grup": "Geçiş, intibak ve ek programlar", "tur": "mevzuat", "kapsam": "uni"},
+
+    "mühendislik fakültesi staj yönergesi.pdf": {"baslik": "Mühendislik Fakültesi Staj Yönergesi", "aciklama": "Staj süresi, başvuru, rapor ve değerlendirme.", "grup": "Staj ve uygulamalı eğitim", "tur": "mevzuat", "kapsam": "fac"},
+    "uygulamali-egitimler-yonergesi.pdf": {"baslik": "Uygulamalı Eğitimler Yönergesi", "aciklama": "İşletmede eğitim ve uygulamalı eğitim esasları.", "grup": "Staj ve uygulamalı eğitim", "tur": "mevzuat", "kapsam": "uni"},
+    "makine müh bitirme projesi 1ve2 usul ve esaslar.pdf": {"baslik": "Bitirme Projesi 1-2 Usul ve Esasları", "aciklama": "Bitirme projesinin yürütülmesi ve değerlendirilmesi.", "grup": "Staj ve uygulamalı eğitim", "tur": "mevzuat", "kapsam": "dept"},
+
+    "uzaktan eğitim.pdf": {"baslik": "Uzaktan Eğitim", "aciklama": "Uzaktan verilen derslerin genel esasları.", "grup": "Uzaktan eğitim", "tur": "mevzuat", "kapsam": "uni"},
+    "uzaktan-ogretime-iliskin-usul-esas.pdf": {"baslik": "Uzaktan Öğretime İlişkin Usul ve Esaslar", "aciklama": "Uzaktan öğretimde sınav ve devam kuralları.", "grup": "Uzaktan eğitim", "tur": "mevzuat", "kapsam": "uni"},
+
+    "Ogrenci_disiplin_Isleri.pdf": {"baslik": "Öğrenci Disiplin İşleri", "aciklama": "Disiplin suçları ve cezaları.", "grup": "Öğrenci hakları ve destek", "tur": "mevzuat", "kapsam": "uni"},
+    "engelli öğrenciler danışma ve koordinasyon.pdf": {"baslik": "Engelli Öğrenciler Danışma ve Koordinasyon", "aciklama": "Engelli öğrenci birimi ve destek süreçleri.", "grup": "Öğrenci hakları ve destek", "tur": "mevzuat", "kapsam": "uni"},
+    "engelli öğrenciler için eğitim ve ölçme değerlendirme yönergesi.pdf": {"baslik": "Engelli Öğrenciler için Eğitim ve Ölçme-Değerlendirme Yönergesi", "aciklama": "Sınav ve eğitimde uyarlamalar.", "grup": "Öğrenci hakları ve destek", "tur": "mevzuat", "kapsam": "uni"},
+    "öğrenci sağlık işleri ve sağlık raporları.pdf": {"baslik": "Öğrenci Sağlık İşleri ve Sağlık Raporları", "aciklama": "Sağlık raporunun geçerliliği ve işleyişi.", "grup": "Öğrenci hakları ve destek", "tur": "mevzuat", "kapsam": "uni"},
+
+    "lisansüstü eğitim yönetmeliği.pdf": {"baslik": "Lisansüstü Eğitim Yönetmeliği", "aciklama": "Yüksek lisans ve doktora genel esasları.", "grup": "Lisansüstü", "tur": "mevzuat", "kapsam": "grad"},
+    "lisansüstü eğitim öğretim.pdf": {"baslik": "Lisansüstü Eğitim-Öğretim", "aciklama": "Lisansüstü ders, tez ve süre kuralları.", "grup": "Lisansüstü", "tur": "mevzuat", "kapsam": "grad"},
+    "lisansüstü eğitim enst müdürlüğü lisansüstü tez benzerlik.pdf": {"baslik": "Lisansüstü Tez Benzerlik (Enstitü)", "aciklama": "Tez benzerlik oranı ve raporlama.", "grup": "Lisansüstü", "tur": "mevzuat", "kapsam": "grad"},
+
+    "akademik-takvim-2026-2027.pdf": {"baslik": "2026-2027 Akademik Takvimi", "aciklama": "Kayıt, ders, sınav ve tatil tarihleri.", "grup": "Akademik takvim", "tur": "takvim", "kapsam": "uni"}
+  },
+  "bolum_verileri": {
+    "grup": "Bölüm verileri (yapılandırılmış)",
+    "aciklama": "Cevaplar bu verilere araçlar üzerinden ulaşır; belge olarak aranmazlar, bu yüzden madde listesi yoktur.",
+    "kartlar": [
+      {"baslik": "Öğretim Planı (2024-2025)", "aciklama": "Zorunlu dersler, seçmeli yuvaları ve AKTS değerleri.", "kapsam": "dept"},
+      {"baslik": "Ders Programı (2026-2027 Güz)", "aciklama": "Gün, saat, derslik, şube ve öğretim elemanı.", "kapsam": "dept"},
+      {"baslik": "Akademik Personel", "aciklama": "Öğretim elemanlarının unvan, görev ve iletişim bilgileri.", "kapsam": "dept"},
+      {"baslik": "Duyurular", "aciklama": "Bölüm, fakülte ve üniversite duyuruları; her gece taranarak güncellenir.", "kapsam": "uni"}
+    ]
+  }
+}

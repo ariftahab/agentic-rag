@@ -1,0 +1,69 @@
+/* Belgeler, Araçlar ve Değerlendirme sayfalarına özgü görünümler (kartlar ve ortak bileşenler shell.css'te). */
+
+/* ---------- değerlendirme: özet kartlar, sekmeler, tablo ---------- */
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-bottom: 8px; }
+.stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; }
+.stat .v { font: 600 30px/1.1 var(--font-display); }
+.stat .v small { font-size: 15px; color: var(--muted); font-weight: 500; }
+.stat .l { color: var(--muted); font-size: 13.5px; margin-top: 6px; }
+.stat-src { grid-column: 1 / -1; color: var(--muted); font-size: 12.5px; }
+.bar { height: 7px; border-radius: 4px; background: var(--surface-2); margin-top: 10px; overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--accent); }
+.stages { font-size: 13px; color: var(--muted); margin: 0 0 18px; }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin: 22px 0 16px; }
+.tabs button { border: 0; background: transparent; padding: 9px 14px; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; font-weight: 600; }
+.tabs button.on { color: var(--text); border-bottom-color: var(--accent); }
+.tbl-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); }
+.tbl { width: 100%; border-collapse: collapse; background: var(--surface); font-size: 14.5px; }
+.tbl th, .tbl td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.tbl th { color: var(--muted); font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: .5px; background: var(--surface-2); white-space: nowrap; }
+.tbl tr:last-child td { border-bottom: 0; }
+.tbl small { color: var(--muted); }
+.tbl td:last-child { min-width: 280px; }
+.fine { color: var(--muted); font-size: 13px; margin: 12px 0 0; max-width: 90ch; }
+
+/* ---------- değerlendirme: kullanıcı cevapları ---------- */
+.check { display: flex; gap: 6px; align-items: center; color: var(--muted); font-size: 14px; }
+.shown { margin-left: auto; color: var(--muted); font-size: 13px; }
+.mt { margin-top: 10px; }
+.record { min-width: 0; overflow-wrap: anywhere; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 12px; }
+.record .q { font-weight: 600; }
+.record .rq { font-size: 13px; color: var(--muted); font-style: italic; }
+.record .answer { margin-top: 8px; font-size: 14.5px; }
+.record .answer p { margin: 0 0 8px; }
+.record .answer ul, .record .answer ol { margin: 0 0 8px; padding-left: 22px; }
+.record .answer pre, .record .answer table { display: block; max-width: 100%; overflow-x: auto; }
+.record .answer .citations { border-top: 1px solid var(--border); margin-top: 10px; padding-top: 8px; font-size: 13.5px; }
+.record .answer .citations-head { font: 600 12px var(--font); text-transform: uppercase; letter-spacing: .6px; color: var(--muted); margin-bottom: 4px; }
+.record .answer .citations ol { margin: 0; padding-left: 22px; }
+.record .answer a.cite { color: var(--blue); text-decoration: none; }
+.record .answer sup.cite-ref { color: var(--accent); font-weight: 700; font-size: .72em; margin-left: 1px; }
+.record .sources { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+.record .source-chip { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 3px 10px; font-size: 13px; color: var(--text); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.record a.source-chip { display: inline-block; text-decoration: none; }
+.record .source-chip:hover { border-color: var(--accent); color: var(--accent); }
+.record .source-chip.active { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.record .info { margin-top: 8px; font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 12px; }
+.badge { display: inline-block; padding: 0 7px; border-radius: 999px; font-size: 12px; background: var(--surface-2); color: var(--muted); }
+.badge.ok { background: var(--accent-soft); color: var(--accent); }
+.badge.bad { background: var(--danger-soft); color: var(--danger); }
+
+.eval-form { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border); display: grid; gap: 8px; font-size: 13.5px; }
+.eval-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.eval-row > span { width: 170px; color: var(--muted); }
+.choice input { position: absolute; opacity: 0; pointer-events: none; }
+.choice span { display: inline-block; padding: 3px 10px; border: 1px solid var(--border); border-radius: 999px; cursor: pointer; }
+.choice input:checked + span { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.choice input:disabled + span { opacity: 0.4; cursor: default; }
+.choice input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 1px; }
+.eval-form textarea { width: 100%; min-height: 54px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); font: inherit; resize: vertical; }
+.eval-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.saved { font-size: 12.5px; color: var(--accent); }
+.saved.err { color: var(--danger); }
+.delete-box { margin-left: auto; font-size: 13px; }
+.delete-confirm { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; color: var(--danger); }
+.delete-confirm[hidden], .delete-box [hidden] { display: none; }
+
+@media (max-width: 860px) {
+  .eval-row > span { width: 100%; }
+}
