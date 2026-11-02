@@ -1,11 +1,12 @@
-// Değerlendirme sayfası: kayıtları listeler, her cevap için elle etiket formu gösterir.
+// Değerlendirme sayfası: "Deneyler" sekmesi experiments/results/ içindeki gerçek sonuçları gösterir (GET /admin/experiments);
+// "Kullanıcı cevapları" sekmesi kayıtları listeler ve her cevap için elle etiket formu gösterir.
 
 const LABELS = {
   answer: { dogru: "Doğru", kismen: "Kısmen", yanlis: "Yanlış", cevapsiz: "Cevapsız (doğru)" },
   source: { evet: "Evet", hayir: "Hayır", emin_degil: "Emin değilim" },
   stage: { rewrite: "Rewrite", retrieval: "Retrieval", generation: "Generation", corpus_yok: "Corpus'ta yok" },
   // Agent cevabında hata zincirin hangi halkasında (service.AGENT_ERROR_STAGES).
-  agentStage: { tool_secimi: "Tool seçimi", tool_sonucu: "Tool sonucu", generation: "Generation", corpus_yok: "Corpus'ta yok" },
+  agentStage: { tool_secimi: "Araç seçimi", tool_sonucu: "Araç sonucu", generation: "Generation", corpus_yok: "Corpus'ta yok" },
 };
 const STAGE_TEXT = { ...LABELS.stage, ...LABELS.agentStage };
 const NEEDS_STAGE = ["yanlis", "kismen"]; // hata aşaması yalnız bu etiketlerde sorulur
@@ -30,6 +31,62 @@ async function loadSummary() {
   document.getElementById("stats").innerHTML =
     stats.map(([v, label]) => `<div class="stat"><div class="v">${v}</div><div class="l">${label}</div></div>`).join("");
   document.getElementById("stages").textContent = `Hata aşamaları: ${stages}`;
+}
+
+// --- Deneyler ---
+
+const num = (x, digits) => x.toFixed(digits).replace(".", ",");
+
+function runStatsHtml(run) {
+  const cards = [];
+  if (run.needed_tool_acc != null) {
+    cards.push(`<div class="stat"><div class="v">${Math.round(run.needed_tool_acc * 100)}<small> %</small></div>` +
+      `<div class="l">Gerekli araç çağrıldı (fazladan çağrı serbest)</div><div class="bar"><i style="width:${run.needed_tool_acc * 100}%"></i></div></div>`);
+  }
+  if (run.tool_choice_acc != null) {
+    cards.push(`<div class="stat"><div class="v">${num(run.tool_choice_acc, 2)}</div>` +
+      `<div class="l">Araç seçimi tam isabet (eksik ve fazla araç yok)</div><div class="bar"><i style="width:${run.tool_choice_acc * 100}%"></i></div></div>`);
+  }
+  if (run.mean_latency_ms != null) {
+    cards.push(`<div class="stat"><div class="v">≈ ${num(run.mean_latency_ms / 1000, 1)}<small> sn</small></div><div class="l">Ortalama yanıt süresi</div></div>`);
+  }
+  return `${cards.join("")}<div class="stat-src">${escapeHtml(run.id)} · ${escapeHtml(run.prompt || "")} · ${escapeHtml(run.dataset)} · ${run.question_count} soru</div>`;
+}
+
+function runsHtml(runs) {
+  const rows = runs.map((r) => `<tr>
+      <td><b>${escapeHtml(r.id)}</b><br><small>${escapeHtml(r.prompt || "")}${r.git_dirty ? " · temiz commit değil" : ""}</small></td>
+      <td>${escapeHtml(r.dataset || "")}<br><small>${r.question_count} soru</small></td>
+      <td>${r.needed_tool_acc != null ? `%${Math.round(r.needed_tool_acc * 100)}` : "—"}</td>
+      <td>${r.tool_choice_acc != null ? num(r.tool_choice_acc, 2) : "—"}</td>
+      <td>${r.mean_latency_ms != null ? `${num(r.mean_latency_ms / 1000, 1)} sn` : "—"}</td>
+      <td>${escapeHtml(r.note || "")}</td></tr>`).join("");
+  return `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Deney</th><th>Soru seti</th><th>Gerekli araç</th><th>Araç seçimi</th><th>Ort. süre</th><th>Not</th></tr></thead>` +
+    `<tbody>${rows}</tbody></table></div>
+    <p class="fine">Veriler experiments/results/ altındaki sonuç dosyalarından ve config'lerdeki tek satırlık nottan okunur. Cevap doğruluğu anlamca okunarak notta yazılır
+    (anahtar kelimeyle ölçülen otomatik doğruluk ön değerlendirmedir, burada gösterilmez). Soru setleri ve kapsamlar farklı olduğundan satırlar doğrudan karşılaştırılamaz.</p>`;
+}
+
+async function loadRuns() {
+  const box = document.getElementById("runs");
+  try {
+    const runs = await api("/admin/experiments");
+    // Üst kartlar: ayar yapılmamış doğrulama setinin (val_v1) en son koşusu.
+    const latest = runs.find((r) => r.dataset === "val_v1");
+    document.getElementById("run-stats").innerHTML = latest ? runStatsHtml(latest) : "";
+    box.innerHTML = runs.length ? runsHtml(runs) : `<p class="lead">Henüz deney sonucu yok.</p>`;
+  } catch (err) {
+    box.innerHTML = `<div class="msg-error">${escapeHtml(err.message)}</div>`;
+  }
+}
+
+function showTab(tab) {
+  document.querySelectorAll("#eval-tabs button").forEach((b) => {
+    b.classList.toggle("on", b.dataset.t === tab);
+    b.setAttribute("aria-selected", String(b.dataset.t === tab));
+  });
+  document.getElementById("tab-runs").hidden = tab !== "runs";
+  document.getElementById("tab-answers").hidden = tab !== "answers";
 }
 
 function choices(name, options, selected, disabled = false) {
@@ -61,16 +118,18 @@ function recordHtml(r) {
     : `<span class="badge">değerlendirilmedi</span>`;
   const sources = r.sources.map(sourceChip).join("");
   const kind = r.kind === "agent"
-    ? `<div class="rq">Agent · ${r.tool_calls.length ? r.tool_calls.map(escapeHtml).join(" → ") : "tool kullanılmadı"}</div>`
+    ? `<div class="rq">Agent · ${r.tool_calls.length
+        ? r.tool_calls.map((t) => `<span title="${escapeHtml(t)}">${escapeHtml(toolLabel(t))}</span>`).join(" → ")
+        : "araç kullanılmadı"}</div>`
     : "";
   const stageLabels = r.kind === "agent" ? LABELS.agentStage : LABELS.stage;
 
   if (r.error) {
     return `<div class="record" data-id="${r.id}">
       <div class="q">${escapeHtml(r.question)}</div>
-      <div class="msg-error" style="margin-top:8px">${escapeHtml(r.error)}</div>
+      <div class="msg-error mt">${escapeHtml(r.error)}</div>
       <div class="info"><span>${r.time.replace("T", " ")}</span><span>${r.experiment}</span></div>
-      <div class="eval-actions" style="margin-top:10px">${deleteControls()}</div>
+      <div class="eval-actions mt">${deleteControls()}</div>
     </div>`;
   }
   const stageDisabled = !NEEDS_STAGE.includes(e?.answer_label);
@@ -136,7 +195,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
     const saved = form.querySelector(".saved");
     if (!body.answer_label || !body.source_ok) {
-      saved.style.color = "var(--danger)";
+      saved.classList.add("err");
       saved.textContent = "Cevap ve kaynak seçilmeli.";
       return;
     }
@@ -145,11 +204,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       // Kaydı yerinde güncelle; "yalnız değerlendirilmemişler" açıksa kart bir sonraki çizimde listeden çıkar.
       const r = records.find((x) => x.id === id);
       r.evaluation = { ...body, time: new Date().toISOString() };
-      saved.style.color = "";
+      saved.classList.remove("err");
       saved.textContent = "Kaydedildi ✓";
       loadSummary();
     } catch (err) {
-      saved.style.color = "var(--danger)";
+      saved.classList.add("err");
       saved.textContent = err.message;
     }
   });
@@ -179,6 +238,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   document.getElementById("only-pending").addEventListener("change", render);
+  document.getElementById("eval-tabs").addEventListener("click", (e) => { if (e.target.dataset.t) showTab(e.target.dataset.t); });
+  loadRuns();
 
   try {
     await reload();

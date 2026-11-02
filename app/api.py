@@ -17,7 +17,7 @@ from fastapi.responses import FileResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel, Field
 
-from app.service import MAX_TRANSCRIPT_BYTES, ChatService
+from app.service import MAX_TRANSCRIPT_BYTES, ChatService, experiment_runs
 from tools.transcript import ASK_FOR_HISTORICAL, TranscriptFormatError
 
 
@@ -148,6 +148,20 @@ class RecordOut(BaseModel):
     error: str | None
     feedback: int | None = Field(description="Son 👍 (1) / 👎 (-1); yoksa null")
     evaluation: Evaluation | None
+
+
+class ExperimentRun(BaseModel):
+    id: str
+    time: str | None
+    dataset: str | None
+    question_count: int
+    prompt: str | None = Field(description="Agent prompt sürümü (ör. agent_h10)")
+    title: str | None
+    note: str | None = Field(description="Config'teki tek satırlık anlamca özet (kisa_not)")
+    needed_tool_acc: float | None = Field(description="Gerekli tool'un çağrıldığı soruların oranı")
+    tool_choice_acc: float | None = Field(description="Tool seçiminin beklenenle tam örtüştüğü soruların oranı")
+    mean_latency_ms: float | None
+    git_dirty: bool | None
 
 
 class Health(BaseModel):
@@ -373,3 +387,9 @@ def delete_record(answer_id: str, service: ChatService = Depends(get_service)):
 def summary(service: ChatService = Depends(get_service)):
     """Değerlendirme özeti: etiket dağılımı, doğruluk, kaynak doğruluğu, hata aşamaları, 👍/👎 sayıları."""
     return service.summary()
+
+
+@app.get("/admin/experiments", response_model=list[ExperimentRun], tags=["yönetici"], dependencies=[Depends(require_admin)])
+def experiments():
+    """experiments/results/ altındaki agent deneylerinin özeti (yeniden eskiye); yalnız okunur."""
+    return experiment_runs()

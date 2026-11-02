@@ -67,6 +67,37 @@ def _now():
     return datetime.now().isoformat(timespec="seconds")
 
 
+def experiment_runs(experiments_dir=None):
+    """Deney sonuçlarının özeti (/admin/experiments): experiments/results/*.json ve config'lerindeki kisa_not.
+
+    Yalnız okunur; sayılar sonuç dosyalarından gelir, burada hesaplanan ya da elle yazılan değer yoktur. Agent
+    metrikleri olmayan sonuçlar atlanır. En yeni deney başta. `kisa_not` config'teki tek satırlık anlamca özettir
+    (otomatik answer_acc anahtar kelimeyle ölçüldüğü için anlamca okuma yalnız orada yazılıdır)."""
+    base = experiments_dir or config.EXPERIMENTS_DIR
+    rows = []
+    for path in sorted((base / "results").glob("EXP-*.json")):
+        result = json.loads(path.read_text(encoding="utf-8"))
+        metrics = (result.get("llm") or {}).get("metrics")
+        if not metrics:
+            continue
+        config_path = base / "configs" / path.name
+        cfg = json.loads(config_path.read_text(encoding="utf-8")) if config_path.is_file() else {}
+        rows.append({
+            "id": result["id"],
+            "time": result.get("calisma_zamani"),
+            "dataset": result["dataset"].get("surum"),
+            "question_count": metrics["n"],
+            "prompt": (result.get("agent") or {}).get("prompt_version"),
+            "title": cfg.get("baslik"),
+            "note": cfg.get("kisa_not"),
+            "needed_tool_acc": metrics.get("gerekli_tool_dogrulugu"),
+            "tool_choice_acc": metrics.get("tool_secimi_dogrulugu"),
+            "mean_latency_ms": metrics.get("agent_ms"),
+            "git_dirty": (result.get("environment") or {}).get("git_dirty"),
+        })
+    return sorted(rows, key=lambda r: r["time"] or "", reverse=True)
+
+
 class ChatService:
     def __init__(self, bot, experiment_id, log_dir=LOG_DIR, agent=None):
         # bot ve agent dışarıdan verilir (dependency injection): testlerde gerçek modeller yerine sahteleri verilebilir.
