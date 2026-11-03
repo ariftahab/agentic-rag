@@ -163,3 +163,8 @@ Python 3.11 · Claude Haiku (Anthropic SDK: tool use, code execution, prompt cac
 
 Arif Taha Bülbül · [LinkedIn](https://www.linkedin.com/in/arif-taha-b%C3%BClb%C3%BCl-824a451b4/) ·
 [GitHub](https://github.com/ariftahab)
+
+## Lisans
+
+Kod [MIT](LICENSE) lisansıyla dağıtılır. `data/` klasöründeki PDF'ler ve kampüs verileri Bolu Abant İzzet Baysal
+Üniversitesine aittir ve lisansın kapsamında değildir.
